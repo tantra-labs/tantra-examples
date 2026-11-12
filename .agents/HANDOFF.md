@@ -1,35 +1,21 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Phase / Slice Status
-* **Honba staged port (`docs/plans/0002-honba-examples-staged-port.md`)** — **ALL 9 STAGES COMPLETE (Stages 0–8)**:
-  * **Stage 0 (pre-flight)** — deps and extras verified, gap tracking reserved.
-  * **Stage 1 (shared harness)** — harness modules, kernel mirror `_kernel/`, unit tests; gaps 0001–0004 + 0006.
-  * **Stage 2 (SDK fundamentals)** — `basic` 5, `candles` 4, `strategies` 16 scripts + tests.
-  * **Stage 3 (tester & enhancer)** — `backtesting` 11, `optimizer` 3 scripts + tests, tester & enhancer mirrors.
-  * **Stage 4 (lakehouse)** — `storage` 4, `universes` 10, `mutual_funds` 4 scripts + tests.
-  * **Stage 5 (screeners)** — `screening` 8 scripts + chain recipes + research doc.
-  * **Stage 6 (derivatives & StockSharp)** — `options` 8, `stocksharp` 5 scripts + tests.
-  * **Stage 7 (AI research & production)** — `ai_research` 11, `production` 6 scripts + tests.
-  * **Stage 8 (docs, index, suite sweep)** —
-    * 13 topic READMEs complete (including `examples/options/README.md`); master index created at `examples/README.md`.
-    * Concept docs ported to `docs/reference/` (`options_microstructure.md`, `roadmap-chaining.md`, `refactor-plan.md`).
-    * Full test suite parity reached: 137 test modules (103 unit, 5 integration, 2 snapshot goldens).
-    * `test_pitfalls_sections.py` enforces docstrings across all 94 topic scripts and 15 flat scripts.
-    * Decoupling tests (`test_polyrepo_decoupling.py`) pass.
-    * Sweep gate clean: zero imports or active identifiers of `honba` across `examples/`, `tantra_examples/`, `tests/`.
-    * `docs/roadmap/roadmap.md` milestones closed; `docs/migration-guide.md` updated; `docs/plans/0002-honba-examples-staged-port.md` marked Implemented.
-    * All verification gates green: `pytest -q` (922 passed, 70 skipped, 0 failures), `ruff check .` clean, `ruff format --check .` clean, `mypy tantra_examples` (234 files) clean, `make check` green.
+* **Honba staged port (plan 0002)** — **ALL 9 STAGES COMPLETE (Stages 0–8)**; recorded Implemented in `docs/plans/README.md` (commit `bbfa692`). Plan doc cleaned up per gap-tracking §4.
+* **Docs (this change)**: former `docs/roadmap/` (`roadmap.md` + `migration-verification.md`) dismantled into `docs/design/` (`architecture.md`, `implementation-record.md`, `code-migration-map.md`), `docs/gaps/` (README + 0001–0008 source-verified), and `docs/plans/README.md`; `docs/reference/` concept docs unchanged.
+* Full verification gates were green at port close: `pytest -q` (922 passed, 70 skipped), `ruff check .`, `ruff format --check .`, `mypy tantra_examples` (234 files), `make check`.
 
 ## Decisions & Discoveries
-* **Pytest import mode & test structure**: Adding `pythonpath = ["."]` in `pyproject.toml` and empty `__init__.py` in `tests/`, `tests/unit/`, and `tests/integration/` allows running `pytest -q` directly from the repo root and resolves module name collisions between unit and integration test directories.
-* **Sharpe ratio scale invariance precision**: In `test_metrics_property.py`, `sharpe_ratio` property test uses `pytest.approx(scaled, rel=1e-5, abs=1e-6)` to accommodate standard float64 machine epsilon noise when scaling large-magnitude values (~100,000).
-* **Pitfalls contract**: Flat foundational scripts (15) have 2–3 bullets while topic scripts (94) have 3–6 bullets. `test_pitfalls_sections.py` accommodates both correctly.
-* **Offline catalog seam**: Integration tests that require the multi-GB real Parquet catalog gracefully skip when run in offline environments without data, maintaining offline test determinism.
+* **Pytest import mode & test structure**: `pythonpath = ["."]` in `pyproject.toml` + empty `__init__.py` in `tests/`, `tests/unit/`, `tests/integration/` lets `pytest -q` run from the repo root and resolves module-name collisions between unit and integration tests.
+* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` is a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. `native.py` pins `SCHEMA_VERSION=8`, `API_VERSION="v1"`, `STRATEGY_API_VERSION="1.0.0"`. `pyproject.toml` `[[tool.mypy.overrides]]` disables `override` for `_kernel.indicators.*`, `_kernel.declarative`, `_kernel.portfolio_strategy.*`.
+* **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` + `pipeline/io.py` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
+* **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
+* **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.
+* **Offline catalog seam**: integration tests that require the multi-GB real Parquet catalog skip when run offline (`VYAAPAAR_DATA_DIR` synthetic fixture seam, gap 0003).
 
 ## Immediate Next Step
-* All 9 stages of the `honba-examples` port are complete and fully verified.
-* `docs/migration-guide.md` decimated: migration steps moved to `docs/design/code-migration-map.md`; verification commands moved to `docs/roadmap/migration-verification.md`; original `migration-guide.md` removed.
-* Commit Stage 8 to git and create PR / merge branch.
+* All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.
+* Next open work is gap-driven (all 0001–0008 owned by other repos): close a gap when its owning surface ships, then delete the mirror/stub and retarget consumers.
 
 ## Operating Invariants
 * Zero floats in financial math (documented exceptions: BS internals example 13; grafted `metrics.py` stats; kernel-mirror float domain, gap 0006). Deterministic offline runs; tests live in `tests/` only.

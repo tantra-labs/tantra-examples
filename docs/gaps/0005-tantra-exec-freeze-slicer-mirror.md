@@ -10,12 +10,16 @@ wheel's `Sizer` type cannot slice an order against a freeze limit.
 
 ## What stands in
 `tantra_examples/options/__init__.py`'s `freeze_limit_qty()` / `slice_order()`
-/ `verify_slices()` (already landed in Stage 1) stand in for the real crate.
-`examples/options/07_large_qty_options_slicer.py` and
-`examples/stocksharp/02_twap_vwap.py` (the latter lands in a separate
-subagent's task, same gap) both probe for an optional `tantra_te_slicer`
-package and fall back to this same local mirror when it's absent (which it
-always is today).
+/ `verify_slices()` (plus `option_sell_stt`, `fno_turnover`, `GreekRiskBounds`)
+stand in for the real crate.
+
+* `examples/options/07_large_qty_options_slicer.py` probes for an optional
+  `tantra_te_slicer` package (`_te_slicer_available` / `_slice_with_te_slicer`) and
+  falls back to the same local mirror when it's absent (which it always is today);
+  the script carries a `# stand-in for docs/gaps/0005-...md` citation.
+* `examples/stocksharp/02_twap_vwap.py` imports the local mirror directly
+  (`from tantra_examples.options import freeze_limit_qty, verify_slices` and
+  `slice_order as _ref_slice_order`) to check every child slice against the limit.
 
 ## How to close
 Once `tantra-exec`/`tantra-ffi` ship a real slicer surface, delete the local

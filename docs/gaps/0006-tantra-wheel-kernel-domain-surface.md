@@ -12,33 +12,47 @@ service plumbing, strategy manifest/wire contracts, or the compiled-extension at
 kernel-verbatim harness code reads through `honba._native` in the owning engine.
 
 ## What stands in (mirror)
-`tantra_examples/_kernel/` — verbatim kernel modules (honba-tamashii `strategies/`,
-`domain/`, `screener/`) retargeted to `_kernel.*` imports:
-`base` (Strategy, Parameter), `config` (StrategyConfig), `loader` (find_catalog /
-load_catalog_strategy / CatalogError), `manifest` (StrategyManifest, ParameterSpec…),
-`wire/` (envelope + `SCHEMA_VERSION` check), `bar`, `tick`, `instrument`, `order`,
-`order_state`, `position`, `portfolio`, `trade`, `money`, `coverage`, `store`
-(ParquetBarStore), `service`, `evaluator`, `calendar`, `entities`, `testing`,
-`native` (the extension-attribute stand-in).
+`tantra_examples/_kernel/` — the kernel mirror, **166 files**:
 
-**Extended in Stage 2** (still this gap — same owning wheel surface):
-* `indicators/` (87 files): `_base` (`Indicator`, `@indicator` registry),
-  `_util`, `_rolling`, `bank` (`IndicatorBank`), and the family packages
+**Root modules (33)**: `bar`, `base` (Strategy, Parameter), `calendar`, `config`
+(StrategyConfig), `context`, `coverage`, `declarative` (DeclarativeStrategy,
+TargetWeightStrategy, Entry), `entities` (domain + wire re-exports), `evaluator`,
+`execution` (intent→event execution FSM with the legacy `ExecutionPort` event
+projection), `greeks` (Black-Scholes + option Greeks), `instrument`, `loader`
+(find_catalog / load_catalog_strategy / CatalogError), `log`, `manifest` (StrategyManifest,
+ParameterSpec…), `money`, `native` (extension-attribute stand-in), `option`, `order`,
+`order_state`, `portfolio`, `ports`, `position`, `risk`, `runner` (StrategyRunner +
+risk/warm-up gates), `service`, `session` (see gap 0008), `sizing` (`whole_shares`),
+`store` (ParquetBarStore + `find_data_root`), `testing` (replay), `tick`, `trade`.
+
+**Subpackages**:
+* `adapters/` (13 files) — gap 0007.
+* `ai/` (6 files) — gap 0002.
+* `backtest/` (5 files) — `simulated`, `impact`, `l2_sim`, `opening_auction`.
+* `cli/` (1 file) — gap 0004.
+* `data/` (1 file) — gap 0003.
+* `indicators/` (**87 files**) — `_base` (`Indicator`, `@indicator` registry), `_util`,
+  `_rolling`, `_india`, `bank` (`IndicatorBank`), and the family packages
   `moving_average` (incl. `averages.make_ma`), `trend`, `momentum`, `volatility`,
   `volume`, `support_resistance`, `breadth`, `statistical`.
-* `declarative.py` (`DeclarativeStrategy`, `TargetWeightStrategy`, `Entry`),
-  `sizing.py` (`whole_shares`), `execution.py` (intent→event execution FSM with the
-  legacy `ExecutionPort` event projection).
-* `portfolio_strategy/` (10 files): tamashii `strategies/portfolio` renamed so it does
+* `markets/india/` (3 files) — gap 0004.
+* `portfolio_strategy/` (**10 files**) — tamashii `strategies/portfolio` renamed so it does
   not collide with the already-mirrored `_kernel/portfolio.py` domain module
-  (`strategy`, `factory`, `universe`, `weighting`, `schedule`, …).
-* `_kernel/entities.py` binds **both** domain and wire re-exports (wire last, mirroring
-  tamashii `entities/__init__`), so code needing the FSM `OrderEvent` imports
-  `_kernel.order_state` directly (e.g. `_kernel/execution.py`) — not `entities`.
-* mypy: `[[tool.mypy.overrides]]` in `pyproject.toml` disables the `override` error
-  code for `_kernel.indicators.*`, `_kernel.declarative`,
-  `_kernel.portfolio_strategy.*` — the registry's typed `update` specializations
-  conflict with the base `Indicator` protocol by design.
+  (`strategy`, `factory`, `universe`, `weighting`, `schedule`, `selection`, `scoring`,
+  `stats`, `view`, …).
+* `screener/` (2 files) — gap 0002/0003.
+* `wire/` (4 files) — `base`, `wire`, `screener`, `__init__` (envelope + `SCHEMA_VERSION`
+  check).
+
+`_kernel/entities.py` binds **both** domain and wire re-exports (wire last, mirroring
+tamashii `entities/__init__`), so code needing the FSM `OrderEvent` imports
+`_kernel.order_state` directly (e.g. `_kernel/execution.py`) — not `entities`.
+
+mypy: `[[tool.mypy.overrides]]` in `pyproject.toml` disables the `override` error
+code for `_kernel.indicators.*`, `_kernel.declarative`,
+`_kernel.portfolio_strategy.*` — the registry's typed `update` specializations
+conflict with the base `Indicator` protocol by design.
+
 Each mirrored file carries a `# mirror: kernel-verbatim port (gap 0006|0007)` citation
 line after its docstring, a per-file `# ruff: noqa: …` accommodation header
 (`E501` where kernel formatting is byte-verbatim, `UP036` for the tomllib guard,
@@ -57,8 +71,8 @@ exactly as the kernel had them.
 `decision_guard.py`, `ewr/simulation.py`, `replay_report.py`, `catalog.py`, `sip.py`,
 `sip_plan.py`, `screening/nl_support.py`, `synthetic.py` (kernel Bar fixtures — the
 harness world uses float kernel bars while the fresh-example Decimal world is
-`data.py`), `universe_lists.py` (`find_data_root`), and the `options/*` best-effort
-`tantra.client.get_instrument` try-import (directionally also gap 0004).
+`data.py`), `universe_lists.py` (`find_data_root`), `settlement.py`, and the `options/*`
+best-effort `tantra.client.get_instrument` try-import (directionally also gap 0004).
 
 ## How to close
 Ship the domain layer through `tantra-ffi` (kernel types, strategy contract manifests,

@@ -20,7 +20,7 @@ the static protocol shape the engine mirrors read against:
 * `CostModel` (Protocol): `apply(trade) -> Trade`.
 * `BacktestResult` (Protocol): `strategy_name`, `metrics`, `equity_curve`.
 * `Tantra`: a session-factory stub. `Tantra.backtest(...)` raises
-  `NotImplementedError` unconditionally — loud failure by design (D7), matching
+  `NotImplementedError` unconditionally — loud failure by design, matching
   the wheel-missing state, rather than a silent synthetic fallback.
 
 This keeps the walk-forward/Monte-Carlo/plateau engines fully type-checkable and

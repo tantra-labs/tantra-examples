@@ -19,7 +19,8 @@ retargeted to `_kernel.*` imports (13 modules): `base` (lifecycle façade +
 `MarketDataAdapter`/`ExecutionAdapter` role protocols, ADR 0010), `models`, `errors`,
 `capabilities`, `registry` (entry-point group constant renamed `tantra.adapters`),
 `contract` (async conformance suite), `testing` (`FakeAdapter`), `session`, `rate_limit`,
-`secrets`, `boundary`, `order_events`.
+`secrets`, `boundary`, `order_events`. Each file carries
+`# mirror: kernel-verbatim port (gap 0007)`.
 
 **Excluded**: `rest.py` and `gateway.py` — both import `honba.client` (the HTTP/native
 API client, part of the gap 0004 wheel surface), which no `tantra` equivalent provides
@@ -32,11 +33,10 @@ source repo intends the boundary to work. `examples/basic/README.md` links the s
 `../../../tantra-adapters/examples/` checkout.
 
 ## Why
-Stage 2 of the staged port (`docs/plans/0002-honba-examples-staged-port.md`) ports the
-`basic` (5) and `candles` (4) topics, whose whole subject is the adapter façade: registry
-resolution, capability refusals-as-data, intents → reports → fills over `FakeAdapter`,
-idempotent repeats, and the capability conformance contract. The contract suite is itself
-asserted by ported tests, so a behavioral stand-in is required, not a stub.
+The `basic` (5) and `candles` (4) topics — whose whole subject is the adapter façade:
+registry resolution, capability refusals-as-data, intents → reports → fills over
+`FakeAdapter`, idempotent repeats, and the capability conformance contract — need a
+behavioral stand-in, not a stub. The contract suite is itself asserted by ported tests.
 
 ## How to close
 Ship the adapters framework through `tantra-ffi` (`tantra.adapters`) — or a dedicated
