@@ -1,11 +1,11 @@
-"""Unit: the swing-trading "A+ setup" screener (``vyapaar_examples.screening.swing``)."""
+"""Unit: the swing-trading "A+ setup" screener (``tantra_examples.screening.swing``)."""
 
 from __future__ import annotations
 
 import datetime as dt
 
 from tests.unit.conftest import SCREEN_ASOF
-from vyapaar_examples.screening import screen_swing_setups
+from tantra_examples.screening import screen_swing_setups
 
 STALE_LAST = SCREEN_ASOF - dt.timedelta(days=40)
 

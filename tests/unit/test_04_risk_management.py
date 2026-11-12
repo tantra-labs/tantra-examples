@@ -61,7 +61,7 @@ def test_main_happy_path_returns_zero(example, capsys):
 def _bars(closes):
     import datetime as dt
 
-    from vyapaar_examples.synthetic import bar, weekdays
+    from tantra_examples.synthetic import bar, weekdays
 
     days = weekdays(dt.date(2026, 1, 1), len(closes))
     prev = closes[0]
@@ -73,7 +73,7 @@ def _bars(closes):
 
 
 def _replay(example, closes, **kw):
-    from vyapaar_examples._kernel.testing import replay
+    from tantra_examples._kernel.testing import replay
 
     strat = example.RiskManagedSma(**kw)
     return strat, replay(strat, _bars(closes))

@@ -1,7 +1,7 @@
 # 05 Strategies – reference strategies on synthetic data
 
 Every example here runs with ``_kernel.testing.replay`` — no adapter,
-no Parquet store, no network. The bars are synthetic (``vyapaar_examples/synthetic.py``),
+no Parquet store, no network. The bars are synthetic (``tantra_examples/synthetic.py``),
 the results are deterministic, and the same strategy class can later be plugged
 into a real backtest or live runner unchanged.
 
@@ -36,14 +36,14 @@ does, such as fill timing (signal bar versus fill bar), parameter overfitting, s
 rules that are stubs or unwired, as-of dates and survivorship in the pipeline recipes, and why
 synthetic data says nothing about performance. Read it before trusting a number. For the
 general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## The common pattern
 
 ```python
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma, Rsi, Atr
-from vyapaar_examples._kernel.testing import replay
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma, Rsi, Atr
+from tantra_examples._kernel.testing import replay
 
 
 class MyStrategy(Strategy):
@@ -103,8 +103,8 @@ pytest tests/unit -q -k "first_strategy or with_indicators or position_sizing or
 
 The same ``Strategy`` subclass works with:
 - ``_kernel.testing.replay`` (these examples)
-- ``vyapaar.session.BacktestSession`` (event-driven backtest with Parquet data)
-- ``vyapaar.engine`` + adapter (paper/live)
+- ``tantra.session.BacktestSession`` (event-driven backtest with Parquet data)
+- ``tantra.engine`` + adapter (paper/live)
 
 The runner handles context binding, intent draining, fill application — the
 strategy only sees ``self.ctx`` and emits intents.

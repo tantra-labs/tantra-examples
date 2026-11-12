@@ -37,8 +37,8 @@ import datetime as dt
 import sys
 from typing import Any
 
-from vyapaar_examples.amfi import AmfiNavLoader
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.amfi import AmfiNavLoader
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 

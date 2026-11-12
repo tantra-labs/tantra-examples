@@ -7,10 +7,10 @@ import json
 
 import pytest
 
-from vyapaar_examples.artifact import write_json_report
-from vyapaar_examples.screening.dispatch import symbol_stub
-from vyapaar_examples.screening.paths import resolve_eval_window
-from vyapaar_examples.sip import allocation_weights
+from tantra_examples.artifact import write_json_report
+from tantra_examples.screening.dispatch import symbol_stub
+from tantra_examples.screening.paths import resolve_eval_window
+from tantra_examples.sip import allocation_weights
 
 CANDS = [
     {"symbol": "A", "pct_from_high": -1.0, "mb_score": 30.0},

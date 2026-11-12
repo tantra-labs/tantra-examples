@@ -21,7 +21,7 @@ def _load(name: str):
 def test_uptime_is_seconds_since_start_not_the_unix_clock() -> None:
     mod = _load("04_monitoring")
     line = next(
-        ln for ln in mod.generate_metrics().splitlines() if ln.startswith("vyapaar_uptime_seconds")
+        ln for ln in mod.generate_metrics().splitlines() if ln.startswith("tantra_uptime_seconds")
     )
     assert 0 <= int(line.split()[1]) < 3600  # the unix epoch clock is ~1.7e9
 
@@ -38,7 +38,7 @@ def test_valid_strategy_name_still_writes_the_files(tmp_path) -> None:
     mod = _load("05_deployment")
     out = mod.run(strategy_name="sma_crossover-2", output=tmp_path / "out")
     assert out["status"] == "written"
-    assert (tmp_path / "out" / "vyapaar-sma_crossover-2.service").is_file()
+    assert (tmp_path / "out" / "tantra-sma_crossover-2.service").is_file()
 
 
 def test_dockerfile_cmd_points_at_the_config_the_script_writes(tmp_path) -> None:

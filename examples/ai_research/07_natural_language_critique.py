@@ -1,6 +1,6 @@
 """ai_research/07_natural_language_critique: design placeholder for an LLM backtest critique.
 
-See README for details. ``vyapaar.ai.verification.critic`` is a stub today (gap 0002),
+See README for details. ``tantra.ai.verification.critic`` is a stub today (gap 0002),
 so this file runs nothing. The Pitfalls below are the traps a critique step must defend
 against, not behaviour you can run.
 

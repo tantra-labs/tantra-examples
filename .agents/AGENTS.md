@@ -1,4 +1,4 @@
-# `vyapaar-examples` Agent Guidelines & Architecture Invariants
+# `tantra-examples` Agent Guidelines & Architecture Invariants
 
 **Subsystem**: Examples (Numbered Learning Path)
 **Language**: Python
@@ -7,7 +7,7 @@
 ---
 
 ## 1. Role & Architectural Hints
-* `vyapaar-examples` provides the official educational journey:
+* `tantra-examples` provides the official educational journey:
   - Step-by-step numbered scripts demonstrating data loading, indicator creation, order lifecycle, bracket orders, partial fills, and multi-symbol portfolios.
   - Every example script must remain runnable and covered by a corresponding test in `tests/unit/`.
 * **Idea Inheritance**:

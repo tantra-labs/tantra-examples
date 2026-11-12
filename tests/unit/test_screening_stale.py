@@ -7,8 +7,8 @@ import datetime as dt
 import pytest
 
 from tests.unit.conftest import SCREEN_ASOF
-from vyapaar_examples.screening import graham, momentum, value
-from vyapaar_examples.screening.dispatch import run_screener
+from tantra_examples.screening import graham, momentum, value
+from tantra_examples.screening.dispatch import run_screener
 
 STALE_LAST = SCREEN_ASOF - dt.timedelta(days=40)
 
@@ -90,7 +90,7 @@ def test_run_screener_passes_max_stale_days(catalog_dir, add_series, no_fund) ->
 def test_pipeline_screeners_expose_and_pass_max_stale_days(
     catalog_dir, add_series, no_fund
 ) -> None:
-    from vyapaar_examples.pipeline import DividendYieldScreener, MultibaggerScreener, ValueScreener
+    from tantra_examples.pipeline import DividendYieldScreener, MultibaggerScreener, ValueScreener
 
     for cls in (MultibaggerScreener, ValueScreener, DividendYieldScreener):
         spec = cls.describe()["params"]["max_stale_days"]

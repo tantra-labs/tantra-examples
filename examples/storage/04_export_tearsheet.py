@@ -2,14 +2,14 @@
 
 A research artifact has two audiences: a machine (a validation pipeline, an LLM
 agent) and a human. The run below is fully synthetic - the bars come from
-``vyapaar_examples/synthetic.py``, not from a Parquet store - so the example needs no
+``tantra_examples/synthetic.py``, not from a Parquet store - so the example needs no
 market data, no network and no clock. A minimal ``Strategy`` buys one position
 on the first test-window session and exits the session before the last; fills
 land at the next session's open and ``run_portfolio_backtest`` does the
 accounting.
 
 ``--out-dir`` receives two files: ``tearsheet.json`` (schema
-``vyapaar-examples/tearsheet/v1`` wrapping the run's ``to_dict()`` plus the
+``tantra-examples/tearsheet/v1`` wrapping the run's ``to_dict()`` plus the
 ``canonical_hash`` of that payload, so a consumer can verify the document it
 re-read) and ``tearsheet.md``, a short human summary of the same numbers. Both
 are byte-identical between two runs over the same inputs.
@@ -44,15 +44,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples.backtest import BacktestRun, canonical_hash, run_portfolio_backtest
-from vyapaar_examples.base import ts_to_date
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples.backtest import BacktestRun, canonical_hash, run_portfolio_backtest
+from tantra_examples.base import ts_to_date
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
+from tantra_examples.synthetic import bar, weekdays
 
-SCHEMA = "vyapaar-examples/tearsheet/v1"
+SCHEMA = "tantra-examples/tearsheet/v1"
 DEFAULT_OUT_DIR = Path(__file__).resolve().parents[2] / "output" / "04_export_tearsheet"
 
 SYMBOL = "DEMO"

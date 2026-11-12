@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from decimal import Decimal
 
-from vyapaar_examples import Backtest, Bar, SampleInstruments, synthetic_bars
+from tantra_examples import Backtest, Bar, SampleInstruments, synthetic_bars
 
 ENTRY_PERIOD = 20
 EXIT_PERIOD = 10

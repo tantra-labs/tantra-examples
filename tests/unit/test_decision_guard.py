@@ -6,9 +6,9 @@ import math
 
 import pytest
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.order import OrderIntent
-from vyapaar_examples.decision_guard import DecisionKind, guard_llm_decision, is_protective_exit
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.order import OrderIntent
+from tantra_examples.decision_guard import DecisionKind, guard_llm_decision, is_protective_exit
 
 SYM = InstrumentId("NIFTY", "NSE")
 BUY = OrderIntent.market_buy(SYM, 100.0)

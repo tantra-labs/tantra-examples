@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.coverage import DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.synthetic import weekdays
+from tantra_examples._kernel.coverage import DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.synthetic import weekdays
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "storage" / "01_parquet_catalog.py"
 DAYS = weekdays(dt.date(2025, 12, 29), 5)  # one week that crosses the year partition

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.options import freeze_limit_qty, slice_order, verify_slices
+from tantra_examples.options import freeze_limit_qty, slice_order, verify_slices
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "options" / "07_large_qty_options_slicer.py"
@@ -54,7 +54,7 @@ def test_verify_slices_rejects_over_limit() -> None:
 def test_run_verification(example) -> None:
     result = example.run(total_quantity=5000, freeze_limit=1800)
     assert result["config"]["freeze_limit"] == 1800
-    assert result["config"]["slicer"] == "vyapaar_examples.options"
+    assert result["config"]["slicer"] == "tantra_examples.options"
     verification = result["verification"]
     assert verification["all_within_limit"] is True
     assert verification["max_slice"] == 1800

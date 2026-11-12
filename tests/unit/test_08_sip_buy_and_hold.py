@@ -9,12 +9,12 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.coverage import DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore, find_data_root
-from vyapaar_examples.base import REPO_ROOT
-from vyapaar_examples.synthetic import bar as synth_bar
-from vyapaar_examples.synthetic import weekdays as weekdays_func
+from tantra_examples._kernel.coverage import DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore, find_data_root
+from tantra_examples.base import REPO_ROOT
+from tantra_examples.synthetic import bar as synth_bar
+from tantra_examples.synthetic import weekdays as weekdays_func
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "backtesting" / "08_sip_buy_and_hold.py"
 
@@ -33,8 +33,8 @@ def _default_catalog() -> None:
     """Skip when the ``ALPHAETF.NSE`` 1D catalog isn't present locally.
 
     ``main()``'s default run reads the real data root (no synthetic ``bars=``
-    override); that root is the absent ``vyapaar-data`` checkout here
-    (docs/gaps/0003-vyapaar-data-nav-loaders.md).
+    override); that root is the absent ``tantra-data`` checkout here
+    (docs/gaps/0003-tantra-data-nav-loaders.md).
     """
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(
@@ -44,7 +44,7 @@ def _default_catalog() -> None:
     if not bars:
         pytest.skip(
             "ALPHAETF.NSE 1D catalog not available locally "
-            "(docs/gaps/0003-vyapaar-data-nav-loaders.md)"
+            "(docs/gaps/0003-tantra-data-nav-loaders.md)"
         )
 
 

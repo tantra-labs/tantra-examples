@@ -1,4 +1,4 @@
-# `vyapaar-examples` — TDD & Engineering Roadmap
+# `tantra-examples` — TDD & Engineering Roadmap
 
 ## Milestone 1: Remaining `honba-examples` Port (P0)
 - [x] Fix `pyproject.toml` (remove invalid `rust_decimal` dependency).
@@ -16,5 +16,5 @@
 - [x] Ported per-example unit tests (103 source modules), `tests/integration/`
       (5), `tests/snapshots/` goldens, and the `Pitfalls::` docstring-contract
       test scoped over topic dirs + flat scripts; `pytest -q`, `ruff check .`,
-      `ruff format --check .`, `mypy vyapaar_examples` all green without the
+      `ruff format --check .`, `mypy tantra_examples` all green without the
       optional extras installed.

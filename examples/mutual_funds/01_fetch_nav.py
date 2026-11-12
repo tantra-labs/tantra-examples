@@ -1,6 +1,6 @@
 """mutual_funds/01_fetch_nav: Load and explore AMFI NAV history.
 
-Uses `vyapaar_examples.amfi.AmfiNavLoader` to read NAV series for a scheme from the
+Uses `tantra_examples.amfi.AmfiNavLoader` to read NAV series for a scheme from the
 local Parquet store and print them as stored (no resampling; gaps are not reported).
 Teaches the NAV-as-bar model (`open=high=low=close=nav`, zero volume) the other mutual-fund
 examples build on. There is no `Strategy` here — runs are offline and deterministic
@@ -35,9 +35,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.amfi import AmfiNavLoader
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples.amfi import AmfiNavLoader
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
 
 __all__ = ["main", "run"]
 

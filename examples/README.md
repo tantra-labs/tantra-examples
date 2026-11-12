@@ -1,6 +1,6 @@
 # Examples Index
 
-Runnable learning-path examples for Vyapaar. Every numbered script is
+Runnable learning-path examples for Tantra. Every numbered script is
 offline and deterministic by default — the `fake` adapter plus synthetic bars — and each one
 teaches a single concept end to end.
 
@@ -83,7 +83,7 @@ Bar ingestion, folding, and multi-timeframe aggregation.
 |---|---|---|
 | 01 | `01_historical_candles.py` | `historical_bars` over a half-open `[start, end)` |
 | 02 | `02_realtime_candles.py` | Build OHLC frames from pushed quotes |
-| 03 | `03_custom_aggregation.py` | The OHLC fold (`vyapaar_examples/bars.py`) |
+| 03 | `03_custom_aggregation.py` | The OHLC fold (`tantra_examples/bars.py`) |
 | 04 | `04_multi_timeframe.py` | One fetch, many resolutions, alignment invariants |
 
 Run them:
@@ -314,7 +314,7 @@ python examples/options/08_iron_condor_hedging.py --spot 24000 --wings 200 --dte
 
 ## `stocksharp/` — Ported StockSharp Reference Strategies
 
-Canonical algorithmic strategies ported from StockSharp to the Vyapaar SDK.
+Canonical algorithmic strategies ported from StockSharp to the Tantra SDK.
 
 | # | File | Strategy |
 |---|---|---|

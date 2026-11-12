@@ -6,9 +6,9 @@ import datetime as dt
 import json
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples.replay_report import replay_report
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples._kernel.base import Strategy
+from tantra_examples.replay_report import replay_report
+from tantra_examples.synthetic import bar, weekdays
 
 
 class _Buyer(Strategy):

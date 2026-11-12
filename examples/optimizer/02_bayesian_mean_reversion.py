@@ -1,7 +1,7 @@
 """optimizer/02_bayesian_mean_reversion: Bayesian (TPE) optimization of a mean-reversion strategy.
 
 Optimizes the parameters of an RSI-based mean-reversion strategy using
-Tree-structured Parzen Estimators (TPE) via ``vyapaar_ya_enhancer.BayesianOptimizer``.
+Tree-structured Parzen Estimators (TPE) via ``tantra_ya_enhancer.BayesianOptimizer``.
 TPE models the posterior distribution of good vs bad parameters and samples
 promising regions, requiring far fewer evaluations than grid or random search.
 
@@ -24,7 +24,7 @@ Pitfalls::
       are rounded during evaluation. For purely categorical parameters,
       use a different optimizer.
     - The strategy uses synthetic bars by default. Real data requires the
-      vyapaar-data lakehouse.
+      tantra-data lakehouse.
 """
 
 from __future__ import annotations
@@ -34,10 +34,10 @@ import sys
 from datetime import UTC
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Rsi
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.synthetic import oscillating_bars
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Rsi
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]
 
@@ -93,8 +93,8 @@ class RsiMeanReversion(Strategy):
 
 def _evaluate(bars_list: list, params: dict[str, Any]) -> dict[str, Any]:
     """Run backtest and return metrics."""
-    from vyapaar_examples._kernel.testing import replay
-    from vyapaar_examples.metrics import curve_metrics
+    from tantra_examples._kernel.testing import replay
+    from tantra_examples.metrics import curve_metrics
 
     strat = RsiMeanReversion(**params)
     result = replay(strat, bars_list)
@@ -143,7 +143,7 @@ class SimpleTPEOptimizer:
     """Simplified TPE optimizer for demonstration.
 
     This is a pure-Python implementation showing the TPE structure.
-    Production code should use the Rust ``vyapaar_ya_enhancer.BayesianOptimizer``.
+    Production code should use the Rust ``tantra_ya_enhancer.BayesianOptimizer``.
     """
 
     def __init__(
@@ -267,7 +267,7 @@ def run(
         eval_result = _evaluate(bars_list, params)
         all_results.append(eval_result)
 
-    from vyapaar_examples.optimizer import ParetoPoint, extract_pareto_frontier, plot_pareto
+    from tantra_examples.optimizer import ParetoPoint, extract_pareto_frontier, plot_pareto
 
     pareto = extract_pareto_frontier(all_results)
 

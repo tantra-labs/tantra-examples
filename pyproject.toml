@@ -3,17 +3,17 @@ requires = ["setuptools>=68.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "vyapaar-examples"
+name = "tantra-examples"
 version = "0.1.0"
 description = "Deterministic, offline-runnable reference learning path for Indian equities, NFO options microstructure, factor models, walk-forward optimization (WFO), and the autonomous AI research loop."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
-    "vyapaar>=0.1.0",
-    "vyapaar-adapters>=0.1.0",
-    "vyapaar-data>=0.1.0",
-    "vyapaar-strategies>=0.1.0",
+    "tantra>=0.1.0",
+    "tantra-adapters>=0.1.0",
+    "tantra-data>=0.1.0",
+    "tantra-strategies>=0.1.0",
     "polars>=1.0.0",
     "pydantic>=2.0.0",
     "httpx>=0.27.0",
@@ -45,7 +45,7 @@ screening = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["vyapaar_examples*"]
+include = ["tantra_examples*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -74,8 +74,8 @@ exclude = [".venv", "site", "build"]
 # specializations conflict with the base ``Indicator`` protocol by design.
 [[tool.mypy.overrides]]
 module = [
-    "vyapaar_examples._kernel.indicators.*",
-    "vyapaar_examples._kernel.declarative",
-    "vyapaar_examples._kernel.portfolio_strategy.*",
+    "tantra_examples._kernel.indicators.*",
+    "tantra_examples._kernel.declarative",
+    "tantra_examples._kernel.portfolio_strategy.*",
 ]
 disable_error_code = ["override"]

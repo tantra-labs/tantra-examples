@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.ai_replay import JournalEntry, verify_journal
+from tantra_examples.ai_replay import JournalEntry, verify_journal
 
 _PATH = (
     Path(__file__).resolve().parents[2]
@@ -54,7 +54,7 @@ def test_replay_verifies_every_decision(example, tmp_path: Path) -> None:
 
 
 def test_tampered_prompt_is_detected(example, tmp_path: Path) -> None:
-    from vyapaar_examples.ai_replay import JournalEntry, PromptCache
+    from tantra_examples.ai_replay import JournalEntry, PromptCache
 
     cache = PromptCache()
     entries: list[JournalEntry] = []

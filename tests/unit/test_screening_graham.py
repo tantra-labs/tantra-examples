@@ -7,7 +7,7 @@ import datetime as dt
 import pytest
 
 from tests.unit.conftest import SCREEN_ASOF
-from vyapaar_examples.screening import graham
+from tantra_examples.screening import graham
 
 FY = dt.date(2023, 12, 31)
 

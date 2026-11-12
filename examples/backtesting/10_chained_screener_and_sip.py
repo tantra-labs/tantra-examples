@@ -87,25 +87,25 @@ from typing import Any
 
 from rich.console import Console
 
-from vyapaar_examples.artifact import write_json_report
-from vyapaar_examples.base import VyapaarExample
+from tantra_examples.artifact import write_json_report
+from tantra_examples.base import TantraExample
 
-# Ensure vyapaar-examples root is on path
-from vyapaar_examples.display_style import OutputFormat  # gap 0004: display surface mirror
-from vyapaar_examples.pipeline.io import parse_symbols, read_symbols
-from vyapaar_examples.screening import (
+# Ensure tantra-examples root is on path
+from tantra_examples.display_style import OutputFormat  # gap 0004: display surface mirror
+from tantra_examples.pipeline.io import parse_symbols, read_symbols
+from tantra_examples.screening import (
     find_catalog_path,
     get_latest_market_date,
 )
-from vyapaar_examples.screening.cli_args import add_chain_args
-from vyapaar_examples.screening.dispatch import run_screener, symbol_stub
-from vyapaar_examples.screening.paths import resolve_eval_window
-from vyapaar_examples.screening.render import (
+from tantra_examples.screening.cli_args import add_chain_args
+from tantra_examples.screening.dispatch import run_screener, symbol_stub
+from tantra_examples.screening.paths import resolve_eval_window
+from tantra_examples.screening.render import (
     render_backtest_table,
     render_horizon_notice,
     render_screener_table,
 )
-from vyapaar_examples.sip import (
+from tantra_examples.sip import (
     SipPortfolioStrategy,
     allocation_weights,
     simulate_portfolio_sip,
@@ -118,10 +118,10 @@ console = Console()
 err_console = Console(stderr=True)
 
 
-class ChainedScreenerSipExample(VyapaarExample):
+class ChainedScreenerSipExample(TantraExample):
     """Chained In-Sample Screener and Out-of-Sample Forward SIP Backtest.
 
-    Inherits from VyapaarExample to provide standardized CLI configuration:
+    Inherits from TantraExample to provide standardized CLI configuration:
     - `--capital` / `--initial-capital`: Initial capital deployed on asof date
     - `--universe`, `--exchange`, `--timeframe`
     - `--start` / `--asof`: In-sample screening evaluation date
@@ -138,7 +138,7 @@ class ChainedScreenerSipExample(VyapaarExample):
     warmup_days: int = 0
     date_range_args: bool = True
 
-    # Custom attributes defined as class attributes so VyapaarExample.parse_args sets them
+    # Custom attributes defined as class attributes so TantraExample.parse_args sets them
     strategy: str = "multibagger"
     graham_mode: str = "defensive"
     asof_str: str | None = None
@@ -156,7 +156,7 @@ class ChainedScreenerSipExample(VyapaarExample):
     out: Path | None = None
 
     def add_custom_args(self, parser: argparse.ArgumentParser) -> None:
-        """Add screener and SIP specific options alongside VyapaarExample base args."""
+        """Add screener and SIP specific options alongside TantraExample base args."""
         add_chain_args(
             parser,
             strategy=self.strategy,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from vyapaar_examples import artifact
+from tantra_examples import artifact
 
 
 class DummyBar:

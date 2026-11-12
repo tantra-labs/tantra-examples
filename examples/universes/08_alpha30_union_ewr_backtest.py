@@ -30,7 +30,7 @@ Pitfalls::
 
     - Observe and trade the same close: the pool is valued at a session's close and the
       rebalance fills at that same close. That is the "observe and trade the close" bias, so
-      results look better than the next-open fills of 07. Use 07 for a Vyapaar-native number.
+      results look better than the next-open fills of 07. Use 07 for a Tantra-native number.
     - Which Alpha 30 list: by default the basket is the engine list (the one 07 trades), so 07 and
       08 are comparable; --alpha30-list seed switches to the older seed list (four names differ).
       Names with no bars are dropped with a [Data] message and the others are rebalanced as if
@@ -49,9 +49,9 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.base import VyapaarExample
-from vyapaar_examples.ewr import (
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.base import TantraExample
+from tantra_examples.ewr import (
     DEFAULT_INITIAL_MARGIN,
     DEFAULT_LEVERAGE,
     DEFAULT_MAINTENANCE_MARGIN,
@@ -71,8 +71,8 @@ from vyapaar_examples.ewr import (
     simulate,
     trade_changes,
 )
-from vyapaar_examples.settlement import resolve_settlement_days
-from vyapaar_examples.universe_lists import (
+from tantra_examples.settlement import resolve_settlement_days
+from tantra_examples.universe_lists import (
     ALPHA30_ENGINE,
     ALPHA30_VARIANTS,
     DEFAULT_ALPHA30_VARIANT,
@@ -108,7 +108,7 @@ __all__ = [
 BASKET: tuple[str, ...] = ALPHA30_ENGINE
 
 
-class Alpha30EWRExample(VyapaarExample):
+class Alpha30EWRExample(TantraExample):
     """Equal-weight rebalance over the Alpha-30 universe."""
 
     universe_name: str = "nifty200_alpha_30"
@@ -229,7 +229,7 @@ class Alpha30EWRExample(VyapaarExample):
     @staticmethod
     def engine_settlement_days(exchange: str, as_of: dt.date | None = None) -> int:
         """Settlement days for the exchange on ``as_of``, from the core market pack."""
-        from vyapaar_examples.settlement import settlement_days_for
+        from tantra_examples.settlement import settlement_days_for
 
         return settlement_days_for(exchange, as_of=as_of)
 

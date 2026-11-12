@@ -7,7 +7,7 @@ decision can be reproduced without calling the model again.
 
 Offline by default: decisions are generated deterministically from a seed, so
 the same seed always yields the same journal. A real provider
-(``vyapaar_examples._kernel.ai.llm.provider.LlmPort``) can be wired in behind an explicit flag.
+(``tantra_examples._kernel.ai.llm.provider.LlmPort``) can be wired in behind an explicit flag.
 
 Run::
 
@@ -38,7 +38,7 @@ import random
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.ai_replay import JournalEntry, PromptCache, prompt_digest, verify_journal
+from tantra_examples.ai_replay import JournalEntry, PromptCache, prompt_digest, verify_journal
 
 DEFAULT_DECISIONS = 10
 DEFAULT_SEED = 0

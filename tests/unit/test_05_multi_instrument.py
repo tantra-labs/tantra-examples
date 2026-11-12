@@ -58,7 +58,7 @@ def test_main_happy_path_returns_zero(example, capsys):
 
 
 def _replay(example, bars=100, **kw):
-    from vyapaar_examples._kernel.testing import replay
+    from tantra_examples._kernel.testing import replay
 
     symbols = ("RELIANCE", "TCS", "INFY", "HDFCBANK")
     bars_list = example.basket_bars(bars, symbols)

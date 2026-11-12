@@ -36,12 +36,12 @@ import sys
 from datetime import UTC
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.testing import replay
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.metrics import curve_metrics
-from vyapaar_examples.synthetic import oscillating_bars
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.testing import replay
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.metrics import curve_metrics
+from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]
 

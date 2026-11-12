@@ -42,8 +42,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.screener_cli import ScreenerCLIExample
-from vyapaar_examples.screening import screen_value_and_dividend
+from tantra_examples.screener_cli import ScreenerCLIExample
+from tantra_examples.screening import screen_value_and_dividend
 
 __all__ = ["Value52wLowScreenerExample", "main"]
 
@@ -174,7 +174,7 @@ class Value52wLowScreenerExample(ScreenerCLIExample):
     def render_table(self, candidates: list[dict[str, Any]], asof: dt.date) -> None:
         # Shared with the chained screener+SIP flow (backtesting/10_chained_screener_and_sip.py)
         # so the same strategy's candidates render identically through either entry point.
-        from vyapaar_examples.screening.render import render_screener_table
+        from tantra_examples.screening.render import render_screener_table
 
         render_screener_table(candidates, asof, "value", self.train_years)
 

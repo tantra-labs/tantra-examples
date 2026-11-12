@@ -2,7 +2,7 @@
 
 Synthetic, deterministic daily bars for the Alpha-30 universe are written to a
 temporary Parquet store; no network and no real market data. Needs the sibling
-``vyapaar-strategies`` checkout (or ``$VYAAPAAR_STRATEGIES_DIR``) for the strategy.
+``tantra-strategies`` checkout (or ``$VYAAPAAR_STRATEGIES_DIR``) for the strategy.
 """
 
 from __future__ import annotations
@@ -16,11 +16,11 @@ from types import ModuleType
 
 import pytest
 
-from vyapaar_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from vyapaar_examples._kernel.loader import CatalogError, find_catalog
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.synthetic import bar, weekdays
-from vyapaar_examples.universe_lists import resolve_universe
+from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra_examples._kernel.loader import CatalogError, find_catalog
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.synthetic import bar, weekdays
+from tantra_examples.universe_lists import resolve_universe
 
 SCRIPT = Path(__file__).resolve().parents[2] / "examples" / "universes" / "07_alpha30_backtest.py"
 DAYS = weekdays(dt.date(2026, 5, 4), 45)  # ~9 weeks of sessions

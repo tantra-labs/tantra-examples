@@ -16,7 +16,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from vyapaar_examples import (
+from tantra_examples import (
     Backtest,
     SampleInstruments,
     ScriptedFakeLlm,
@@ -61,7 +61,7 @@ def main() -> dict[str, object]:
 
 
 def _make_dip_signal(threshold: Decimal) -> Any:
-    from vyapaar_examples import SMA
+    from tantra_examples import SMA
 
     sma = SMA(20)
 

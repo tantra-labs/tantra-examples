@@ -1,11 +1,11 @@
 """02_import_nse_bhavcopy: parse an exchange EOD CSV into Bars and hand them to the Parquet store.
 
-The ingest edge is deliberately thin: ``vyapaar_examples.bhavcopy.parse_bhavcopy_csv``
+The ingest edge is deliberately thin: ``tantra_examples.bhavcopy.parse_bhavcopy_csv``
 sniffs the header dialect of an exchange's end-of-day CSV and returns
 ``dict[str, Bar]`` - offline and pure, no network, no store. This example embeds
 one small fixture per dialect it accepts (UDiFF, Sec Bhavdata, legacy bhavcopy),
 reports what came out of each, and then round-trips the UDiFF result set through
-a ``ParquetBarStore`` under ``output/`` (never the vyapaar data root).
+a ``ParquetBarStore`` under ``output/`` (never the tantra data root).
 
 What the parser does, asserted here:
 
@@ -53,14 +53,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.base import ts_to_date
-from vyapaar_examples.bhavcopy import parse_bhavcopy_csv
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.base import ts_to_date
+from tantra_examples.bhavcopy import parse_bhavcopy_csv
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
 
 EXCHANGE = "NSE"
 TIMEFRAME = "1D"

@@ -1,6 +1,6 @@
 """12 — Portfolio allocation: mean-variance and risk parity.
 
-Mirrors ``vyapaar-ledger-allocation``'s Phase 1 engine: an exact-Decimal
+Mirrors ``tantra-ledger-allocation``'s Phase 1 engine: an exact-Decimal
 Markowitz tangency portfolio and an equal-risk-contribution risk-parity
 allocation over a synthetic three-name universe, with an optional per-name
 weight bound projected by iterative clip-and-renormalize. Every number is a
@@ -22,8 +22,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
 
-from vyapaar_examples import Bar, SampleInstruments, synthetic_bars
-from vyapaar_examples.quant import covariance_matrix, mean, returns, solve_linear_system
+from tantra_examples import Bar, SampleInstruments, synthetic_bars
+from tantra_examples.quant import covariance_matrix, mean, returns, solve_linear_system
 
 EPS = Decimal("1e-9")
 ANNUALIZATION = Decimal(252)
@@ -90,7 +90,7 @@ def risk_parity(covariance: list[list[Decimal]]) -> list[Decimal]:
 def apply_bounds(weights: list[Decimal], bounds: list[tuple[Decimal, Decimal]]) -> list[Decimal]:
     """Iterative clip-and-renormalize into per-name boxes, keeping ``Σw = 1``.
 
-    Mirrors ``vyapaar-ledger-allocation``'s documented Phase-1 projection:
+    Mirrors ``tantra-ledger-allocation``'s documented Phase-1 projection:
     clip each weight to its ``[min, max]`` box, then re-scale the weights that
     are still strictly inside their bounds so the portfolio re-sums to 1.
     """

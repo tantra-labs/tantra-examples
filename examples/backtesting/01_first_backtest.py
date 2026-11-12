@@ -3,8 +3,8 @@
 Uses ``_kernel.session.BacktestSession`` (the same runner that powers live) with
 a tiny ``DataProvider`` that returns synthetic bars. The strategy emits market
 orders; here ``replay(..., fill_delay=1)`` fills them at the next bar's open, the same timing as
-Vyapaar's ``next_open`` model for daily sessions (``_kernel.backtest.simulated.NextOpenExecution``,
-which adds costs and settlement; ``vyapaar_examples.backtest.run_portfolio_backtest`` wraps it for
+Tantra's ``next_open`` model for daily sessions (``_kernel.backtest.simulated.NextOpenExecution``,
+which adds costs and settlement; ``tantra_examples.backtest.run_portfolio_backtest`` wraps it for
 multi-instrument runs). The report names its data source (``lakehouse`` or ``synthetic``).
 
 Run::
@@ -36,10 +36,10 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
 
 __all__ = ["main", "run"]
 
@@ -80,7 +80,7 @@ def run(
     symbol: str = "RELIANCE",
     synthetic: bool = False,
 ) -> dict[str, Any]:
-    from vyapaar_examples.synthetic import get_bars_with_source, trending_bars
+    from tantra_examples.synthetic import get_bars_with_source, trending_bars
 
     if synthetic:
         bars_list, data_source = trending_bars(symbol, bars), "synthetic"
@@ -92,7 +92,7 @@ def run(
     # Note: BacktestSession requires a real DataProvider; for this learning-path example
     # we use the _kernel.testing.replay harness instead. fill_delay=1 fills each order at
     # the next bar's open (the default 0 would fill at the signal bar's own close).
-    from vyapaar_examples._kernel.testing import replay
+    from tantra_examples._kernel.testing import replay
 
     result = replay(strat, bars_list, fill_delay=1)
 

@@ -26,7 +26,7 @@ windows and partitions, last-write-wins appends with no point-in-time history, a
 row_count and FINAL status overstate what is held, unadjusted bhavcopy prices, one bar per symbol,
 NAV publication timing, and tearsheet metrics annualised from a handful of synthetic sessions. Read
 it before trusting a number. For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## Running them
 
@@ -50,7 +50,7 @@ stamped on `end`.
 
 ## The ingest edge
 
-`vyapaar_examples.bhavcopy.parse_bhavcopy_csv` and `vyapaar_examples.amfi.parse_navall` are
+`tantra_examples.bhavcopy.parse_bhavcopy_csv` and `tantra_examples.amfi.parse_navall` are
 pure and offline: the examples embed small fixtures instead of downloading, report what each
 dialect produced, and surface malformed input as *data* in the report rather than repairing
 or crashing. NAV rows become flat bars (`open == high == low == close == NAV`, zero volume)
@@ -60,6 +60,6 @@ filed under the `AMFI` exchange.
 
 04 runs the inline `BuyFirstSellLast` strategy on synthetic weekday bars — it buys the first
 test-window session and exits the session before the last, with next-open fills and T+2
-settlement — then writes `tearsheet.json` (schema `vyapaar-examples/tearsheet/v1` with a
+settlement — then writes `tearsheet.json` (schema `tantra-examples/tearsheet/v1` with a
 `canonical_hash` over the payload) and a short human-readable `tearsheet.md`. Both files are
 byte-identical between runs over the same inputs.

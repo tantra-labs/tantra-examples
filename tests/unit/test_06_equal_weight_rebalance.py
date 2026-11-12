@@ -61,7 +61,7 @@ def test_deterministic_across_two_runs(example):
 def test_strategy_is_a_composed_portfolio_strategy(example):
     # Was: the TargetWeightStrategy subclass declared only ``universe``. Now no subclass exists;
     # the strategy is PortfolioStrategy composed from parts.
-    from vyapaar_examples._kernel.portfolio_strategy import (
+    from tantra_examples._kernel.portfolio_strategy import (
         EqualWeight,
         EveryNDays,
         NamedUniverse,

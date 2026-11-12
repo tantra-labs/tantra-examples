@@ -2,7 +2,7 @@
 
 Universe resolution, no strategy: ``resolve_universe()`` is the single entry-point
 for any named universe and returns a ``list[InstrumentId]``. Runs offline and
-deterministically against the universe map bundled with Vyapaar — no adapter, no
+deterministically against the universe map bundled with Tantra — no adapter, no
 network.
 
 Run::
@@ -25,9 +25,9 @@ Pitfalls::
 
 from __future__ import annotations
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.display_style import SYMBOL, Column, render_kv, render_table
-from vyapaar_examples.universe_lists import resolve_universe
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.display_style import SYMBOL, Column, render_kv, render_table
+from tantra_examples.universe_lists import resolve_universe
 
 UNIVERSE_NAME = "nifty50"
 EXCHANGE = "NSE"

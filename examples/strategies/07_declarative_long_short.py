@@ -54,9 +54,9 @@ import datetime as dt
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.context import LedgerContext
-from vyapaar_examples._kernel.declarative import DeclarativeStrategy, Entry
-from vyapaar_examples._kernel.entities import (
+from tantra_examples._kernel.context import LedgerContext
+from tantra_examples._kernel.declarative import DeclarativeStrategy, Entry
+from tantra_examples._kernel.entities import (
     Bar,
     InstrumentId,
     OrderIntent,
@@ -64,12 +64,12 @@ from vyapaar_examples._kernel.entities import (
     OrderType,
     Trade,
 )
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.testing import ReplayResult
-from vyapaar_examples.cli import run_example
-from vyapaar_examples.jsonable import jsonable
-from vyapaar_examples.synthetic import bar
-from vyapaar_examples.synthetic import weekdays as weekdays_func
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.testing import ReplayResult
+from tantra_examples.cli import run_example
+from tantra_examples.jsonable import jsonable
+from tantra_examples.synthetic import bar
+from tantra_examples.synthetic import weekdays as weekdays_func
 
 __all__ = ["main", "run"]
 

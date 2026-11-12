@@ -4,7 +4,7 @@ Composable backtest engine for the screening → backtest runtime plane (roadmap
 ``backtesting/11_portfolio_rebalancer``).  It ingests a symbol stream from ``stdin``
 (``--format symbols/json``), ``--symbols`` or its own screener (``--strategy``; ``all`` is the
 union of the multibagger, value and dividend screens, ``--top`` names each), then simulates a
-periodic **equal-weight rebalance** with :func:`vyapaar_examples.ewr.simulate`: day 0 is the first
+periodic **equal-weight rebalance** with :func:`tantra_examples.ewr.simulate`: day 0 is the first
 session after ``--asof``, every ``--rebalance-days`` calendar days the basket is trimmed or topped
 up in whole shares, a flat ``--fee`` is charged per side, and sell proceeds fund the buys ``T+N``
 sessions later (N from the core market pack as of the start date). Fills are at session closes.
@@ -75,24 +75,24 @@ from typing import Any
 
 from rich.console import Console
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.cli import add_out_arg
-from vyapaar_examples.display_style import (  # gap 0004: display surface mirror
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.cli import add_out_arg
+from tantra_examples.display_style import (  # gap 0004: display surface mirror
     SYMBOL,
     Column,
     OutputFormat,
     pnl_style_fn,
     render_table,
 )
-from vyapaar_examples.ewr import FEE_RATE, REBALANCE_DAYS, SimResult, simulate
-from vyapaar_examples.pipeline import SipBacktestHarness
-from vyapaar_examples.pipeline.base import Pipeline, as_date
-from vyapaar_examples.pipeline.io import read_symbols
-from vyapaar_examples.screener_cli import ScreenerCLIExample  # noqa: F401
-from vyapaar_examples.screening import find_catalog_path, get_latest_market_date
-from vyapaar_examples.settlement import resolve_settlement_days
-from vyapaar_examples.sip import calculate_xirr, sip_data_notes
+from tantra_examples.ewr import FEE_RATE, REBALANCE_DAYS, SimResult, simulate
+from tantra_examples.pipeline import SipBacktestHarness
+from tantra_examples.pipeline.base import Pipeline, as_date
+from tantra_examples.pipeline.io import read_symbols
+from tantra_examples.screener_cli import ScreenerCLIExample  # noqa: F401
+from tantra_examples.screening import find_catalog_path, get_latest_market_date
+from tantra_examples.settlement import resolve_settlement_days
+from tantra_examples.sip import calculate_xirr, sip_data_notes
 
 __all__ = ["PortfolioRebalancerExample", "load_bars", "main", "union_screens"]
 
@@ -248,7 +248,7 @@ class PortfolioRebalancerExample:
 
     def _screen(self, asof: str | None) -> tuple[list[str], list[dict[str, Any]]]:
         """Run the chosen screener(s); ``all`` is the union of the three, ``--top`` names each."""
-        from vyapaar_examples.pipeline.screeners import (
+        from tantra_examples.pipeline.screeners import (
             DividendYieldScreener,
             MultibaggerScreener,
             ValueScreener,
@@ -316,7 +316,7 @@ class PortfolioRebalancerExample:
     def _rebalance(
         self, syms: list[str], candidates: list[dict[str, Any]], asof: dt.date, end: dt.date
     ) -> dict[str, Any]:
-        """Periodic equal-weight rebalance with ``vyapaar_examples.ewr.simulate``.
+        """Periodic equal-weight rebalance with ``tantra_examples.ewr.simulate``.
 
         The first session strictly after ``asof`` is day 0, so the screen's own close is never
         traded. Fills are at session closes with a flat per-side fee and a T+N sell-to-buy lag.

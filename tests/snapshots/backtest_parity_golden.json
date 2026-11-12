@@ -20,5 +20,5 @@
     "n_intents": 1
   },
   "tolerance": 1e-6,
-  "note": "Phase 8 test-parity golden vector. Pins the deterministic Python backtest (vyapaar_examples.backtest.run_portfolio_backtest, next-open fills, NSE cost model). The intent is that the Python backtest matches the compiled Rust backtest (vyapaar-runtime-backtest) within 1e-6; until the Rust golden vector is wired in, this snapshot makes the target executable and offline."
+  "note": "Phase 8 test-parity golden vector. Pins the deterministic Python backtest (tantra_examples.backtest.run_portfolio_backtest, next-open fills, NSE cost model). The intent is that the Python backtest matches the compiled Rust backtest (tantra-runtime-backtest) within 1e-6; until the Rust golden vector is wired in, this snapshot makes the target executable and offline."
 }

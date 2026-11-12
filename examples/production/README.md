@@ -25,14 +25,14 @@ paper fills that are not live fills, risk-limit arguments that are echoed but no
 scripts that are templates, secrets on the command line, duplicate order submission and restart
 reconciliation, IST market hours, simulated metrics that cannot alert, and config and image drift in
 the generated deployment files. Read it before trusting a number. For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## The production pattern
 
 ```python
-from vyapaar_examples._kernel.session import Session, SessionConfig
-from vyapaar_examples._kernel.adapters.registry import AdapterRegistry
-from vyapaar_examples._kernel.base import Strategy
+from tantra_examples._kernel.session import Session, SessionConfig
+from tantra_examples._kernel.adapters.registry import AdapterRegistry
+from tantra_examples._kernel.base import Strategy
 
 # 1. Configure session (paper or live)
 config = SessionConfig(
@@ -65,7 +65,7 @@ python examples/production/03_multi_account.py --accounts config/accounts.yaml
 python examples/production/04_monitoring.py --port 9090
 
 # Deployment config generation
-python examples/production/05_deployment.py --output /etc/vyapaar/
+python examples/production/05_deployment.py --output /etc/tantra/
 
 # Multi-broker dispatch parity
 python examples/production/06_multi_broker_dispatch.py --brokers zerodha,angelone,upstox

@@ -1,12 +1,12 @@
-"""vyapaar_examples.ewr.simulate: missing-data reporting and the margin caveat."""
+"""tantra_examples.ewr.simulate: missing-data reporting and the margin caveat."""
 
 from __future__ import annotations
 
 import datetime as dt
 
-from vyapaar_examples.ewr import simulate
-from vyapaar_examples.ewr.model import SimResult
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples.ewr import simulate
+from tantra_examples.ewr.model import SimResult
+from tantra_examples.synthetic import bar, weekdays
 
 START = dt.date(2026, 1, 5)
 

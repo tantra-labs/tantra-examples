@@ -1,11 +1,11 @@
-"""Unit tests for vyapaar_examples.cli."""
+"""Unit tests for tantra_examples.cli."""
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser, run_example
+from tantra_examples.cli import add_out_arg, emit_json, make_parser, run_example
 
 
 def test_make_parser_uses_first_paragraph() -> None:

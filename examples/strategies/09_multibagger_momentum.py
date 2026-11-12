@@ -1,6 +1,6 @@
 """strategies/09_multibagger_momentum: pipeline recipe — multibagger screener → quality → SIP.
 
-Composition via :mod:`vyapaar_examples.pipeline` (``>>``/``|``):
+Composition via :mod:`tantra_examples.pipeline` (``>>``/``|``):
 
   MultibaggerScreener (Stage 2 momentum + capital efficiency)
     → FundamentalQualityFilter (ROCE / Debt-Eq / margin)
@@ -46,8 +46,8 @@ import json
 import sys
 from typing import Any
 
-from vyapaar_examples.cli import make_parser
-from vyapaar_examples.pipeline import (
+from tantra_examples.cli import make_parser
+from tantra_examples.pipeline import (
     FixedSipSizer,
     FundamentalQualityFilter,
     MultibaggerScreener,

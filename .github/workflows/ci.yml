@@ -21,6 +21,6 @@ jobs:
       - name: Lint (ruff)
         run: ruff check . && ruff format --check .
       - name: Type check (mypy)
-        run: mypy vyapaar_examples
+        run: mypy tantra_examples
       - name: Tests (pytest)
         run: pytest -q

@@ -1,6 +1,6 @@
 """14 — Time-series forecasting with the Theta method.
 
-Mirrors ``vyapaar-agent-forecast``'s default ``ThetaForecaster``: fit a linear
+Mirrors ``tantra-agent-forecast``'s default ``ThetaForecaster``: fit a linear
 trend, build the θ=2 line, smooth it with simple exponential smoothing, fit a
 drift line on the second half of the series, and combine the two for an
 ``h``-step forecast with a symmetric prediction interval. Everything except the
@@ -19,8 +19,8 @@ import math
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
-from vyapaar_examples import SampleInstruments, synthetic_bars
-from vyapaar_examples.quant import ols, std_dev
+from tantra_examples import SampleInstruments, synthetic_bars
+from tantra_examples.quant import ols, std_dev
 
 DECIMAL_8 = Decimal("0.00000001")
 ALPHA = Decimal("0.5")

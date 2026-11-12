@@ -1,7 +1,7 @@
 """backtesting/02_cost_modeling: India equity delivery costs in the backtest.
 
 Demonstrates the per-leg cost breakdown (brokerage, STT, exchange, SEBI, IPFT,
-stamp duty, GST) that Vyapaar's cost schedule applies to every fill. The same
+stamp duty, GST) that Tantra's cost schedule applies to every fill. The same
 cost function is used in live trading through the adapter layer.
 
 Run::
@@ -11,7 +11,7 @@ Run::
 Pitfalls::
 
     - Schedule, not history: the cost functions take (side, quantity, price) and no date, so the
-      numbers are the rates bundled with the installed Vyapaar, not those in force on a past trade
+      numbers are the rates bundled with the installed Tantra, not those in force on a past trade
       date. Charges change; a multi-year backtest needs the rate that applied at each fill.
     - Delivery only: these are the equity delivery legs. Intraday, F&O and ETF trades have different
       STT and stamp rules, so reusing them for a faster strategy misstates cost.
@@ -31,13 +31,13 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.markets.india.costs import (
+from tantra_examples._kernel.markets.india.costs import (
     nse_equity_delivery_breakdown,
     nse_equity_delivery_fill_cost,
 )
-from vyapaar_examples._kernel.order import OrderSide
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples._kernel.order import OrderSide
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
 
 __all__ = ["main", "run"]
 

@@ -6,7 +6,7 @@ code, scheme name, NAV, date. The import here is fully offline: two embedded pub
 stand in for the download, one scheme arrives with a missing NAV (``-``) and a third file
 arrives with a structurally damaged line. The two failures are not the same: a missing value
 is skipped and reported with its line, code and reason, while structural damage is refused
-by ``vyapaar_examples.amfi.parse_navall`` and reported as data rather than repaired.
+by ``tantra_examples.amfi.parse_navall`` and reported as data rather than repaired.
 
 Parsed rows become NAV bars (``open == high == low == close == NAV``, volume zero), are
 appended per scheme under the ``AMFI`` exchange - the publisher is the venue for a series
@@ -42,13 +42,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.adapters.errors import AdapterNotFound
-from vyapaar_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.amfi import EXCHANGE, NavRow, NavSkip, nav_bars, parse_navall
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples._kernel.adapters.errors import AdapterNotFound
+from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.amfi import EXCHANGE, NavRow, NavSkip, nav_bars, parse_navall
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
 
 NAVALL_FIRST_TXT = """Applic Date: 02-Jun-2025
 

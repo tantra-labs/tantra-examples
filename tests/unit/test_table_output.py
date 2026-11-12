@@ -1,4 +1,4 @@
-"""The universe and backtest examples print their tables through ``vyapaar_examples.display_style``.
+"""The universe and backtest examples print their tables through ``tantra_examples.display_style``.
 
 Each test runs the script's output function on synthetic data and checks the rendered text
 carries the table headers and the expected values (no ANSI: pytest's capture is not a TTY).

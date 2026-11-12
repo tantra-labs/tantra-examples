@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.backtest import canonical_hash
-from vyapaar_examples.synthetic import weekdays
+from tantra_examples.backtest import canonical_hash
+from tantra_examples.synthetic import weekdays
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "storage" / "04_export_tearsheet.py"
 DAYS = weekdays(dt.date(2026, 6, 1), 10)
@@ -37,7 +37,7 @@ def doc(exported):
 
 
 def test_json_carries_the_schema_the_metrics_and_the_equity_curve(exported, doc):
-    assert doc["schema"] == "vyapaar-examples/tearsheet/v1"
+    assert doc["schema"] == "tantra-examples/tearsheet/v1"
     metrics = doc["run"]["metrics"]
     for name in (
         "final_value",

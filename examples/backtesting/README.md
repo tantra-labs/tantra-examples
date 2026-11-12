@@ -1,6 +1,6 @@
 # 06 Backtesting – end-to-end runs
 
-Every example here uses Vyapaar's event-driven backtest harness with synthetic data or
+Every example here uses Tantra's event-driven backtest harness with synthetic data or
 the local Parquet catalog.
 
 ## At a glance
@@ -17,7 +17,7 @@ the local Parquet catalog.
 | 08 | `08_sip_buy_and_hold.py`         | —              | Systematic investment plan (SIP): monthly/weekly buy-and-hold, XIRR, DD    |
 | 09 | `09_forward_sip_backtest.py`     | —              | Forward SIP backtester (reads ``--symbols`` or a stdin pipe); alias of ``10_chained_screener_and_sip`` |
 | 10 | `10_chained_screener_and_sip.py` | —              | Chained screener (momentum, value, dividend) & forward SIP out-of-sample backtest |
-| 11 | `11_portfolio_rebalancer.py`     | —              | Equal-weight periodic rebalance (screener-agnostic, ``--symbols``/`stdin`-aware; thin over ``vyapaar_examples.pipeline``) |
+| 11 | `11_portfolio_rebalancer.py`     | —              | Equal-weight periodic rebalance (screener-agnostic, ``--symbols``/`stdin`-aware; thin over ``tantra_examples.pipeline``) |
 
 
 
@@ -28,15 +28,15 @@ Every numbered script in this directory has a `Pitfalls::` section in its module
 does, such as fill timing (signal bar versus fill bar), as-of dates and survivorship in the
 screens, parameter-sweep overfitting, costs, and why synthetic data says nothing about
 performance. Read it before trusting a number. For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## The common pattern
 
 ```python
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.testing import replay
-from vyapaar_examples.metrics import curve_metrics
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.testing import replay
+from tantra_examples.metrics import curve_metrics
 
 
 class MyStrategy(Strategy):
@@ -61,7 +61,7 @@ class MyStrategy(Strategy):
 
 
 # Run with synthetic bars
-from vyapaar_examples.synthetic import bar as synth_bar, weekdays
+from tantra_examples.synthetic import bar as synth_bar, weekdays
 
 bars = [
     synth_bar("RELIANCE", d, 2500.0 + i * 0.5)
@@ -91,7 +91,7 @@ pytest tests/unit -q -k "first_backtest or cost_modeling or latency_modeling or 
 
 ## Key concepts demonstrated
 
-1. **Synthetic data** — `vyapaar_examples/synthetic.py` provides deterministic bar generators; same bars = same results
+1. **Synthetic data** — `tantra_examples/synthetic.py` provides deterministic bar generators; same bars = same results
 2. **Cost model** — `_kernel.markets.india.costs.nse_equity_delivery_*` applies the full per-leg breakdown
 3. **Fill models** — `fill_delay` in `replay()` controls bar_close (0), next_open (1), next_close (2), etc.
 4. **Walk-forward** — Optimize on train window, validate on test window, roll forward
@@ -105,6 +105,6 @@ pytest tests/unit -q -k "first_backtest or cost_modeling or latency_modeling or 
 The same `Strategy` subclass works with:
 - `_kernel.testing.replay` (these examples — bar-close fills, no settlement)
 - `_kernel.session.BacktestSession` (event-driven with Parquet data, next-open fills, T+N settlement)
-- `vyapaar.engine` + adapter (paper/live)
+- `tantra.engine` + adapter (paper/live)
 
 The harness handles context binding, intent draining, fill application, settlement — the strategy only sees `self.ctx` and emits intents.

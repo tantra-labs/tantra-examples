@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from tests.unit.conftest import SCREEN_ASOF
-from vyapaar_examples.screening import value
+from tantra_examples.screening import value
 
 
 @pytest.fixture(autouse=True)

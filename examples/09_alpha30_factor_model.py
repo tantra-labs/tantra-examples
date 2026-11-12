@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
-from vyapaar_examples import SampleInstruments, Trade, compute_metrics, synthetic_bars
+from tantra_examples import SampleInstruments, Trade, compute_metrics, synthetic_bars
 
 ALPHA30_STOCKS: tuple[str, ...] = (
     "NSE:RELIANCE-EQ",

@@ -1,7 +1,7 @@
-# `vyapaar-examples` — DDD Architecture & Reference Learning Path
+# `tantra-examples` — DDD Architecture & Reference Learning Path
 
 ## 1. Bounded Context & Responsibility
-`vyapaar-examples` (Tier 6D, ported from `honba-examples`) provides deterministic, offline-runnable educational scripts demonstrating Indian equities, NSE/NFO options microstructure, factor models, walk-forward optimization (WFO), Deflated Sharpe Ratio (DSR), and the autonomous AI research loop.
+`tantra-examples` (Tier 6D, ported from `honba-examples`) provides deterministic, offline-runnable educational scripts demonstrating Indian equities, NSE/NFO options microstructure, factor models, walk-forward optimization (WFO), Deflated Sharpe Ratio (DSR), and the autonomous AI research loop.
 
 ## 2. Architectural Invariants
 * **Offline & Deterministic by Default**: Every example runs out-of-the-box with synthetic/fixture data and `ScriptedFakeLlm` without requiring live broker credentials.

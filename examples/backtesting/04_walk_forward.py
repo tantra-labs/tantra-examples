@@ -1,7 +1,7 @@
 """backtesting/04_walk_forward: Walk-forward analysis with out-of-sample gates.
 
-Upgraded to use ``vyapaar_examples.optimizer.algo_analytics.walk_forward`` (rolling
-expanding/rolling windows, full Vyapaar backtest with next-open fills, NSE
+Upgraded to use ``tantra_examples.optimizer.algo_analytics.walk_forward`` (rolling
+expanding/rolling windows, full Tantra backtest with next-open fills, NSE
 delivery costs, T+1 settlement) for real data. For synthetic data, uses the same
 fold geometry with ``_kernel.testing.replay`` for fast deterministic runs.
 Requires Walk-Forward Efficiency (WFE) ≥ 0.60 as a reported gate
@@ -15,7 +15,7 @@ Run::
 
 Pitfalls::
 
-    - The walk_forward function runs *two* full Vyapaar.backtest sessions per fold
+    - The walk_forward function runs *two* full Tantra.backtest sessions per fold
       (train window, then test window) with the caller's backtest settings.
       This is slow but correct: no shared state between folds.
     - Data range must cover ``train_months + n_folds * test_months`` from
@@ -29,7 +29,7 @@ Pitfalls::
     - Each fold gets a fresh strategy instance (deep-copied for instances;
       classes/paths re-resolved). State from one fold's training *never* leaks
       into the next fold's test window.
-    - Falls back to synthetic bars if the vyapaar-data lakehouse is unavailable.
+    - Falls back to synthetic bars if the tantra-data lakehouse is unavailable.
 """
 
 from __future__ import annotations
@@ -40,22 +40,22 @@ import sys
 from copy import deepcopy
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.testing import replay
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.metrics import curve_metrics
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.testing import replay
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.metrics import curve_metrics
 
 # gap 0001: algo_analytics engine mirror
-from vyapaar_examples.optimizer.algo_analytics.folds import Window, plan_folds
-from vyapaar_examples.optimizer.algo_analytics.walk_forward import (
+from tantra_examples.optimizer.algo_analytics.folds import Window, plan_folds
+from tantra_examples.optimizer.algo_analytics.walk_forward import (
     Fold,
     FoldStats,
     WalkForwardGates,
     WalkForwardResult,
     walk_forward,
 )
-from vyapaar_examples.synthetic import oscillating_bars
+from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]
 
@@ -244,7 +244,7 @@ def run(
             window,  # type: ignore
         )
     else:
-        # Use real data via vyapaar_examples.optimizer.algo_analytics.walk_forward
+        # Use real data via tantra_examples.optimizer.algo_analytics.walk_forward
         result = walk_forward(
             strategy,
             symbol=symbol,

@@ -1,4 +1,4 @@
-"""vyapaar_examples.amfi: NAVAll.txt parsed into rows and stamped as daily NAV bars."""
+"""tantra_examples.amfi: NAVAll.txt parsed into rows and stamped as daily NAV bars."""
 
 from __future__ import annotations
 
@@ -7,10 +7,10 @@ import datetime as dt
 
 import pytest
 
-from vyapaar_examples import amfi
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.amfi import NavRow, nav_bars, parse_navall
-from vyapaar_examples.synthetic import session_ts
+from tantra_examples import amfi
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.amfi import NavRow, nav_bars, parse_navall
+from tantra_examples.synthetic import session_ts
 
 NAVALL = """Applic Date: 02-Jun-2025
 

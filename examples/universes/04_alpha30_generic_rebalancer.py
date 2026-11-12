@@ -44,11 +44,11 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from typing import Any
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.sizing import whole_shares
-from vyapaar_examples.universe_lists import resolve_universe
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.sizing import whole_shares
+from tantra_examples.universe_lists import resolve_universe
 
 try:
     import alpha30_constituents

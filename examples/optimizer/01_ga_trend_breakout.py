@@ -20,7 +20,7 @@ Pitfalls::
       neighbours. The Pareto frontier visualises this.
     - The strategy uses synthetic deterministic bars by default. For real data,
       pass ``--symbol RELIANCE --start 2020-01-01 --end 2024-12-31`` (requires
-      vyapaar-data lakehouse).
+      tantra-data lakehouse).
     - The GA operates on strategy *instances*. Each evaluation gets a fresh copy
       so state cannot leak between individuals, but the same bars are reused.
 """
@@ -32,16 +32,16 @@ import sys
 from datetime import UTC
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Atr, Rsi, Sma
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.optimizer import (
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Atr, Rsi, Sma
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.optimizer import (
     ParetoPoint,
     extract_pareto_frontier,
     plot_pareto,
     sharpe_sortino_dd,
 )
-from vyapaar_examples.synthetic import oscillating_bars
+from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]
 
@@ -110,8 +110,8 @@ class SmaTrendFollowing(Strategy):
 
 def _evaluate(bars_list: list, params: dict[str, Any]) -> dict[str, Any]:
     """Run backtest and return metrics."""
-    from vyapaar_examples._kernel.testing import replay
-    from vyapaar_examples.metrics import curve_metrics
+    from tantra_examples._kernel.testing import replay
+    from tantra_examples.metrics import curve_metrics
 
     strat = SmaTrendFollowing(**params)
     result = replay(strat, bars_list)

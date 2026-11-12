@@ -1,6 +1,6 @@
-# Refactor plan for `vyapaar-examples`
+# Refactor plan for `tantra-examples`
 
-> **Status:** Completed during staged port. Plumbing extracted into `vyapaar_examples/`, lesson logic intact, R1/TDD followed.
+> **Status:** Completed during staged port. Plumbing extracted into `tantra_examples/`, lesson logic intact, R1/TDD followed.
 
 ## 0. Principles & constraints
 
@@ -11,8 +11,8 @@
 
 ## 1. Shared Helpers
 
-- `vyapaar_examples/settlement.py`: `resolve_settlement_days` precedence handling.
-- `vyapaar_examples/catalog.py`: `load_named` strategy catalog loader.
-- `vyapaar_examples/artifact.py`: `bars_digest`, `resolve_window`, `write_json_report`.
-- `vyapaar_examples/synthetic.py`: shared test fixtures and bar generators.
-- `vyapaar_examples/backtest.py`: simulated fills, costs, latency, analytics.
+- `tantra_examples/settlement.py`: `resolve_settlement_days` precedence handling.
+- `tantra_examples/catalog.py`: `load_named` strategy catalog loader.
+- `tantra_examples/artifact.py`: `bars_digest`, `resolve_window`, `write_json_report`.
+- `tantra_examples/synthetic.py`: shared test fixtures and bar generators.
+- `tantra_examples/backtest.py`: simulated fills, costs, latency, analytics.

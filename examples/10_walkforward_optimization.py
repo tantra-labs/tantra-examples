@@ -16,7 +16,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
-from vyapaar_examples import (
+from tantra_examples import (
     Backtest,
     SampleInstruments,
     synthetic_bars,
@@ -33,7 +33,7 @@ def _sharpe_objective(bars: list[Any], params: dict[str, Any]) -> float:
 
 
 def _make_sma_signal(lookback: int) -> Any:
-    from vyapaar_examples import SMA
+    from tantra_examples import SMA
 
     sma = SMA(lookback)
 

@@ -7,8 +7,8 @@ import datetime as dt
 import pytest
 
 from tests.unit.conftest import SCREEN_ASOF
-from vyapaar_examples.pipeline import FundamentalQualityFilter
-from vyapaar_examples.screening import graham, momentum, value
+from tantra_examples.pipeline import FundamentalQualityFilter
+from tantra_examples.screening import graham, momentum, value
 
 FY = dt.date(2023, 12, 31)
 

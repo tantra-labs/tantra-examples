@@ -93,7 +93,7 @@ def _run(example, catalog_dir: Path, fundamentals: bool, asof: dt.date = SCREEN_
 def test_fundamentals_overlay_keeps_only_strong_candidates(
     example, catalog_dir: Path, add_series, fundamentals_db: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from vyapaar_examples.screening import momentum
+    from tantra_examples.screening import momentum
 
     monkeypatch.setattr(momentum, "find_duckdb_path", lambda: fundamentals_db)
     nse_dir = catalog_dir
@@ -114,7 +114,7 @@ def test_fundamentals_overlay_keeps_only_strong_candidates(
 def test_fundamentals_flag_records_in_payload(
     example, catalog_dir: Path, add_series, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from vyapaar_examples.screening import momentum
+    from tantra_examples.screening import momentum
 
     monkeypatch.setattr(momentum, "find_duckdb_path", lambda: None)
     _rising_bars(catalog_dir, "GOOD", asof=SCREEN_ASOF)
@@ -135,7 +135,7 @@ def test_cli_fundamentals_flag_parses(example) -> None:
 def test_main_happy_path_returns_zero(
     example, capsys, tmp_path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    from vyapaar_examples.screening import momentum
+    from tantra_examples.screening import momentum
 
     monkeypatch.setattr(momentum, "find_duckdb_path", lambda: None)
     _rising_bars(tmp_path / "cat" / "1D" / "NSE", "GOOD")

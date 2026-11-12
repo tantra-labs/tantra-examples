@@ -1,4 +1,4 @@
-"""vyapaar_examples.bars: UTC bucketing and OHLC aggregation rules."""
+"""tantra_examples.bars: UTC bucketing and OHLC aggregation rules."""
 
 from __future__ import annotations
 
@@ -6,10 +6,10 @@ import datetime as dt
 
 import pytest
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.bars import SUPPORTED_TIMEFRAMES, aggregate, bucket_start, timeframe_seconds
-from vyapaar_examples.synthetic import bar, session_ts, weekdays
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.bars import SUPPORTED_TIMEFRAMES, aggregate, bucket_start, timeframe_seconds
+from tantra_examples.synthetic import bar, session_ts, weekdays
 
 A = InstrumentId("AAA", "NSE")
 B = InstrumentId("BBB", "NSE")

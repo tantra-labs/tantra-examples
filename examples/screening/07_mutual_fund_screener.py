@@ -49,9 +49,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.screener_cli import ScreenerCLIExample, rich_console
-from vyapaar_examples.screening import screen_mutual_funds
-from vyapaar_examples.screening.render import render_mutual_fund_table
+from tantra_examples.screener_cli import ScreenerCLIExample, rich_console
+from tantra_examples.screening import screen_mutual_funds
+from tantra_examples.screening.render import render_mutual_fund_table
 
 __all__ = ["MutualFundScreenerExample", "main"]
 

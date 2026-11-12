@@ -5,7 +5,7 @@ kind, currency), optionally narrows it with a search query, and prints a summary
 adapter is ``fake``: deterministic and offline, so the example runs anywhere. Point it at a
 real broker with ``--adapter dhan --config client_id=... --config access_token=...``.
 
-Everything past the adapter boundary is a Vyapaar ``Instrument``; no broker wire format shows up
+Everything past the adapter boundary is a Tantra ``Instrument``; no broker wire format shows up
 here. Output is structured JSON for machine data-exchange, or a rich table in interactive terminals.
 
 Run::
@@ -37,9 +37,9 @@ import sys
 from collections import Counter
 from typing import Any
 
-from vyapaar_examples._kernel.adapters.registry import default_registry
-from vyapaar_examples._kernel.adapters.testing import FakeAdapter
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples._kernel.adapters.registry import default_registry
+from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 
 def _registry():
@@ -123,7 +123,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if is_table:
-        from vyapaar_examples.display_style import (  # gap 0004: display surface mirror
+        from tantra_examples.display_style import (  # gap 0004: display surface mirror
             SYMBOL,
             Column,
             render_kv,

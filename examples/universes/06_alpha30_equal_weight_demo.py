@@ -2,11 +2,11 @@
 
 The strategy class is ``Alpha30EqualWeightRebalance``: an Alpha-30 specialization of
 ``UniverseEqualWeightRebalance`` (from 04_alpha30_generic_rebalancer.py), rebalanced
-every 15 trading days. Membership is resolved through the Vyapaar universe API and
+every 15 trading days. Membership is resolved through the Tantra universe API and
 re-fetched on every rebalance (as of the bar date) so index joiners / leavers are applied
 when a real history is registered:
 
-    from vyapaar_examples.universe_lists import resolve_universe
+    from tantra_examples.universe_lists import resolve_universe
     ids = resolve_universe("nifty200_alpha_30", exchange="NSE", as_of=bar_date)
 
 The ``__main__`` block resolves membership as a smoke test, so the example runs
@@ -24,7 +24,7 @@ Pitfalls::
     - Inherits 04's remaining traps: the initial rebalance can size off partial data, prices up to
       max_price_age_days old are used, and the day counter is driven by any instrument's bars.
     - Not a backtest: __main__ prints how many names resolve and nothing more, so run 07 for a
-      Vyapaar-native result. Do not read a performance story into the class from this file.
+      Tantra-native result. Do not read a performance story into the class from this file.
 """
 
 from __future__ import annotations
@@ -32,8 +32,8 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.universe_lists import resolve_universe
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.universe_lists import resolve_universe
 
 _path_04 = Path(__file__).resolve().parent / "04_alpha30_generic_rebalancer.py"
 _spec = importlib.util.spec_from_file_location("ex04_generic", _path_04)

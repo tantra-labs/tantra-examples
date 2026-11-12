@@ -1,4 +1,4 @@
-# `vyapaar-examples` — Inter-Agent Handoff
+# `tantra-examples` — Inter-Agent Handoff
 
 ## Phase / Slice Status
 * **Honba staged port (`docs/plans/0002-honba-examples-staged-port.md`)** — **ALL 9 STAGES COMPLETE (Stages 0–8)**:
@@ -16,9 +16,9 @@
     * Full test suite parity reached: 137 test modules (103 unit, 5 integration, 2 snapshot goldens).
     * `test_pitfalls_sections.py` enforces docstrings across all 94 topic scripts and 15 flat scripts.
     * Decoupling tests (`test_polyrepo_decoupling.py`) pass.
-    * Sweep gate clean: zero imports or active identifiers of `honba` across `examples/`, `vyapaar_examples/`, `tests/`.
+    * Sweep gate clean: zero imports or active identifiers of `honba` across `examples/`, `tantra_examples/`, `tests/`.
     * `docs/roadmap/roadmap.md` milestones closed; `docs/migration-guide.md` updated; `docs/plans/0002-honba-examples-staged-port.md` marked Implemented.
-    * All verification gates green: `pytest -q` (922 passed, 70 skipped, 0 failures), `ruff check .` clean, `ruff format --check .` clean, `mypy vyapaar_examples` (234 files) clean, `make check` green.
+    * All verification gates green: `pytest -q` (922 passed, 70 skipped, 0 failures), `ruff check .` clean, `ruff format --check .` clean, `mypy tantra_examples` (234 files) clean, `make check` green.
 
 ## Decisions & Discoveries
 * **Pytest import mode & test structure**: Adding `pythonpath = ["."]` in `pyproject.toml` and empty `__init__.py` in `tests/`, `tests/unit/`, and `tests/integration/` allows running `pytest -q` directly from the repo root and resolves module name collisions between unit and integration test directories.
@@ -33,4 +33,4 @@
 
 ## Operating Invariants
 * Zero floats in financial math (documented exceptions: BS internals example 13; grafted `metrics.py` stats; kernel-mirror float domain, gap 0006). Deterministic offline runs; tests live in `tests/` only.
-* Canonical verification: `pytest -q && ruff check . && ruff format --check . && mypy vyapaar_examples && make check`.
+* Canonical verification: `pytest -q && ruff check . && ruff format --check . && mypy tantra_examples && make check`.

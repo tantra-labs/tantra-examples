@@ -49,8 +49,8 @@ import sys
 from pathlib import Path
 from typing import Any, override
 
-from vyapaar_examples.screener_cli import ScreenerCLIExample
-from vyapaar_examples.screening import screen_swing_setups
+from tantra_examples.screener_cli import ScreenerCLIExample
+from tantra_examples.screening import screen_swing_setups
 
 __all__ = ["SwingApSetupScreenerExample", "main"]
 
@@ -196,7 +196,7 @@ class SwingApSetupScreenerExample(ScreenerCLIExample):
 
     @override
     def render_table(self, candidates: list[dict[str, Any]], asof: dt.date) -> None:
-        from vyapaar_examples.display_style import (
+        from tantra_examples.display_style import (
             SCORE,
             SECONDARY,
             SURGE,

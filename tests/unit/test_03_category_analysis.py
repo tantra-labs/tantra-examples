@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.amfi import NavPoint
+from tantra_examples.amfi import NavPoint
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "mutual_funds" / "03_category_analysis.py"

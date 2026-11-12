@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.screener_cli import ScreenerCLIExample
-from vyapaar_examples.screening.paths import find_catalog_path
+from tantra_examples.screener_cli import ScreenerCLIExample
+from tantra_examples.screening.paths import find_catalog_path
 
 _ROOT = Path(__file__).resolve().parents[2] / "examples"
 
@@ -66,16 +66,16 @@ def mf_script():
 
 @pytest.fixture
 def _real_catalog() -> Path:
-    """The real 1D NSE catalog, or skip (docs/gaps/0003-vyapaar-data-nav-loaders.md).
+    """The real 1D NSE catalog, or skip (docs/gaps/0003-tantra-data-nav-loaders.md).
 
     These tests exercise the real catalog-resolution path rather than a synthetic
-    fixture, so they need the actual ``vyapaar-data`` catalog checkout, absent in
+    fixture, so they need the actual ``tantra-data`` catalog checkout, absent in
     this workspace.
     """
     try:
         return find_catalog_path()
     except FileNotFoundError as exc:
-        pytest.skip(f"1D NSE catalog not available (gap 0003-vyapaar-data-nav-loaders): {exc}")
+        pytest.skip(f"1D NSE catalog not available (gap 0003-tantra-data-nav-loaders): {exc}")
 
 
 _CANDIDATES = [
@@ -189,7 +189,7 @@ def test_screener_stream_feeds_backtester_parser():
 
 def test_mutual_fund_screener_execution(mf_script, capsys):
     pytest.importorskip(
-        "vyapaar_data", reason="mutual-fund screener needs the [mutual-funds] extra"
+        "tantra_data", reason="mutual-fund screener needs the [mutual-funds] extra"
     )
     example = mf_script.MutualFundScreenerExample()
     example.stream_format = "symbols"

@@ -14,7 +14,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from vyapaar_examples import RSI, SMA, SampleInstruments, synthetic_bars
+from tantra_examples import RSI, SMA, SampleInstruments, synthetic_bars
 
 
 def main() -> dict[str, object]:

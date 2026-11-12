@@ -5,7 +5,7 @@ local `KnowledgePack` (metric catalog, grammar, presets) to run the ask pipeline
 question → system prompt → LLM → filter text → parse/validate (repair loop) → `AskResult`.
 
 No network, no API keys, no real LLM — the `ScriptedFakeLlm` feeds a scripted response
-that the test suite also uses. The live CLI (`vyapaar screener ask`) defaults to the same
+that the test suite also uses. The live CLI (`tantra screener ask`) defaults to the same
 fake LLM; swapping in a real provider (`LlmPort` impl) is the only change for production.
 
 Run::
@@ -42,11 +42,11 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.ai.ask import AskResult, build_system_prompt, translate_query
-from vyapaar_examples._kernel.ai.knowledge import KnowledgePack, build_knowledge_pack
-from vyapaar_examples._kernel.ai.llm.provider import LlmPort, ScriptedFakeLlm
-from vyapaar_examples._kernel.screener.catalog import MetricCatalog, load_catalog
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples._kernel.ai.ask import AskResult, build_system_prompt, translate_query
+from tantra_examples._kernel.ai.knowledge import KnowledgePack, build_knowledge_pack
+from tantra_examples._kernel.ai.llm.provider import LlmPort, ScriptedFakeLlm
+from tantra_examples._kernel.screener.catalog import MetricCatalog, load_catalog
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["DEFAULT_FILTER", "DEFAULT_QUERY", "EmptyFilterError", "main", "run"]
 

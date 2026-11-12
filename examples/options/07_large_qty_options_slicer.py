@@ -5,8 +5,8 @@ verify it is sliced into child orders each <= the instrument's freeze limit
 (SEBI single-order freeze quantity, planned at 1,800 NIFTY contracts). The
 freeze limit is read from the instrument master, never hard-coded.
 
-Prefers ``vyapaar_te_slicer`` (``vyapaar-exec`` repo) when installed; otherwise
-uses the deterministic reference slicer in ``vyapaar_examples.options`` with
+Prefers ``tantra_te_slicer`` (``tantra-exec`` repo) when installed; otherwise
+uses the deterministic reference slicer in ``tantra_examples.options`` with
 the same contract (every slice <= the limit). Both are exercised below so the
 script is offline and deterministic in either case. Runs are a verification
 harness, not a backtest — no prices, no fills, no market impact.
@@ -22,9 +22,9 @@ Pitfalls::
     - Freeze limits are per order, per exchange and per instrument: an order
       above the limit is rejected by the exchange unless the OMS/slicer splits
       it first; slicing is execution hygiene, not a trade-sizing recommendation.
-    - ``vyapaar_te_slicer`` is not installed in this checkout, so the local
+    - ``tantra_te_slicer`` is not installed in this checkout, so the local
       reference slicer runs instead (identical contract: slices <= freeze
-      limit). Swap in ``vyapaar_te_slicer.slice_order`` when the real package
+      limit). Swap in ``tantra_te_slicer.slice_order`` when the real package
       is installed — its output must pass the same ``verify_slices`` check.
     - Slicing spreads the parent across time and prices: children fill at
       different levels with different impact, so average fill != mid at the
@@ -41,20 +41,20 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.options import freeze_limit_qty, slice_order, verify_slices
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.options import freeze_limit_qty, slice_order, verify_slices
 
 __all__ = ["main", "run"]
 
-TE_SLICER_MODULE = "vyapaar_te_slicer"
+TE_SLICER_MODULE = "tantra_te_slicer"
 DEFAULT_TOTAL_QTY = 5000  # NIFTY contracts in the plan
 PLANNED_FREEZE_LIMIT = 1800  # planned NIFTY options freeze limit, contracts
 
 
 def _te_slicer_available() -> bool:
-    """True when the vyapaar-exec slicer package can be imported.
+    """True when the tantra-exec slicer package can be imported.
 
-    # stand-in for docs/gaps/0005-vyapaar-exec-freeze-slicer-mirror.md: no real
+    # stand-in for docs/gaps/0005-tantra-exec-freeze-slicer-mirror.md: no real
     # freeze-slicer package installed, always falls back to the local mirror
     """
     try:
@@ -65,16 +65,16 @@ def _te_slicer_available() -> bool:
 
 
 def _slice_with_te_slicer(total_quantity: int, freeze_limit: int) -> tuple[list[int], str]:
-    """Slice via ``vyapaar_te_slicer`` if importable; fall back otherwise."""
+    """Slice via ``tantra_te_slicer`` if importable; fall back otherwise."""
     try:
         slicer = __import__(TE_SLICER_MODULE)
         slice_order_te = getattr(slicer, "slice_order", None)
         if slice_order_te is None:
-            raise ImportError("vyapaar_te_slicer has no slice_order")
+            raise ImportError("tantra_te_slicer has no slice_order")
         slices = [int(s) for s in slice_order_te(total_quantity, freeze_limit)]
-        return slices, "vyapaar_te_slicer"
+        return slices, "tantra_te_slicer"
     except (ImportError, AttributeError, OSError, ValueError, TypeError):  # offline / no slicer
-        return slice_order(total_quantity, freeze_limit), "vyapaar_examples.options"
+        return slice_order(total_quantity, freeze_limit), "tantra_examples.options"
 
 
 def run(

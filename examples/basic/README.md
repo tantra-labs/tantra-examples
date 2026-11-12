@@ -30,7 +30,7 @@ broker unless VYAAPAAR_EXAMPLES_ALLOW_LIVE_ORDERS=1), instrument-master stalenes
 rounding, subscription limits and reconnection, order idempotency and cancel and fill races, and
 positions versus holdings and product types. Read it before trusting a number. For the general
 treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## Running them
 
@@ -50,4 +50,4 @@ Adapters are discovered through the registry (`available_adapters`, `resolve_ada
 `connect()` returns a session; capabilities are pure data, so an unsupported request
 (streaming mode, holdings, depth) is refused *before* any I/O, and the refusal can be
 reported as data rather than a traceback. See also the dedicated
-[adapter examples](../../../vyapaar-adapters/examples/) for each broker.
+[adapter examples](../../../tantra-adapters/examples/) for each broker.

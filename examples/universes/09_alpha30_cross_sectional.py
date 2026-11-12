@@ -20,9 +20,9 @@ Two entry points:
   rebalances, :func:`main` with ``--start``/``--end``/``--out-dir`` writes
   ``run.json``.
 
-Rebalance sizing mirrors ``vyapaar_examples.ewr`` conventions (shared cash pool,
+Rebalance sizing mirrors ``tantra_examples.ewr`` conventions (shared cash pool,
 whole shares, per-side fee, sells before buys) and emits the same trade-record
-shape, with the default fee from ``vyapaar_examples.ewr.model.FEE_RATE``.
+shape, with the default fee from ``tantra_examples.ewr.model.FEE_RATE``.
 
 This is the hand-rolled, universe-scanning counterpart of 07/08: 07 backtests the
 catalog ``equal_weight`` strategy at next-open fills, 08 simulates a fixed basket at
@@ -41,7 +41,7 @@ Pitfalls::
     - Observe and trade the close: factor scores are computed through the rebalance
       session's close and the basket is rebalanced at that same close (the same
       "observe and trade the close" bias as 08), so results flatter next-open fills.
-      Use 07 for a Vyapaar-native next-open number.
+      Use 07 for a Tantra-native next-open number.
     - Survivorship: with a catalog, only symbols that have parquet bars are scored;
       symbols with fewer than --min-history-bars are never eligible, and the resolved
       universe is today's membership scanned over the whole window.
@@ -64,16 +64,16 @@ import statistics
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.artifact import write_run_json
-from vyapaar_examples.base import VyapaarExample, ts_to_date
-from vyapaar_examples.display_style import Column, render_kv, render_table
-from vyapaar_examples.ewr.model import FEE_RATE
-from vyapaar_examples.metrics import curve_metrics, exposure_metrics
-from vyapaar_examples.synthetic import oscillating_bars
-from vyapaar_examples.universe_lists import ALPHA30_ENGINE
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.artifact import write_run_json
+from tantra_examples.base import TantraExample, ts_to_date
+from tantra_examples.display_style import Column, render_kv, render_table
+from tantra_examples.ewr.model import FEE_RATE
+from tantra_examples.metrics import curve_metrics, exposure_metrics
+from tantra_examples.synthetic import oscillating_bars
+from tantra_examples.universe_lists import ALPHA30_ENGINE
 
-SCHEMA = "vyapaar-examples/09-alpha30-cross-sectional/v1"
+SCHEMA = "tantra-examples/09-alpha30-cross-sectional/v1"
 MOMENTUM_BARS = 252  # ~12 months of sessions; lookback adapts to available history
 VOL_BARS = 60  # realised-volatility window for the vol penalty
 DEFAULT_BARS = 252
@@ -229,7 +229,7 @@ def _simulate(
     min_history_bars: int,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]], dict[str, int], float]:
     """Long the top-decile factor basket, equal weight at the close, every
-    ``rebalance_days`` sessions. Mirrors ``vyapaar_examples.ewr`` conventions: a shared
+    ``rebalance_days`` sessions. Mirrors ``tantra_examples.ewr`` conventions: a shared
     cash pool, whole shares, per-side fee on traded notional, sells before buys, and
     ewr-shaped trade records (``symbol``, ``side``, ``qty``, ``price``, ``notional``,
     ``fee``)."""
@@ -690,7 +690,7 @@ def run_cross_sectional(
     }
 
 
-class Alpha30CrossSectionalExample(VyapaarExample):
+class Alpha30CrossSectionalExample(TantraExample):
     """Catalog-backed CLI for the cross-sectional Alpha-30 factor model."""
 
     universe_name: str = "nifty50"

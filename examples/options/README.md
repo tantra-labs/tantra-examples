@@ -1,10 +1,10 @@
 # 08 Options – chain, Greeks, and strategy backtests
 
-Options examples use Vyapaar's option chain (`OptionChain`, `OptionContract`) and
-Greeks engine (`vyapaar_examples.quant` / `vyapaar_examples.options`). They hand-roll their legs directly —
+Options examples use Tantra's option chain (`OptionChain`, `OptionContract`) and
+Greeks engine (`tantra_examples.quant` / `tantra_examples.options`). They hand-roll their legs directly —
 there is no `Strategy` subclass. All runs are offline and deterministic, on
 synthetic or recorded chain data by default; no network or wall clock is involved.
-Catalog equivalents live in `vyapaar-strategies/options/*`.
+Catalog equivalents live in `tantra-strategies/options/*`.
 
 ## At a glance
 
@@ -35,7 +35,7 @@ it before trusting a number. For the general treatment see `docs/reference/optio
 ## Option chain structure
 
 ```python
-from vyapaar_examples.options import OptionChain, OptionContract, OptionKind, OptionStyle
+from tantra_examples.options import OptionChain, OptionContract, OptionKind, OptionStyle
 
 chain: OptionChain  # underlying: InstrumentId, expiry: dt.date, contracts: list[OptionContract]
 contract: (
@@ -67,7 +67,7 @@ pytest tests/unit -q -k "option or greeks or straddle or iron_condor or nifty_92
 
 ## From here to production
 
-- Use `vyapaar_adapters.base.OptionChainProvider` for live chain streaming
+- Use `tantra_adapters.base.OptionChainProvider` for live chain streaming
 - Add IV surface modeling for smile/skew
 - Schedule strategies with `ExpiryCalendar`
 - Risk: assignment risk on ITM short legs, pin risk at expiry

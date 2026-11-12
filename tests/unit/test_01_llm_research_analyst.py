@@ -58,7 +58,7 @@ def test_fake_llm_receives_the_query_and_records_history(example):
     assert len(call["messages"]) == 2
     assert call["messages"][0]["role"] == "system"
     content = call["messages"][0]["content"]
-    assert "Vyapaar filter syntax" in content or "Honba filter syntax" in content
+    assert "Tantra filter syntax" in content or "Honba filter syntax" in content
     assert call["messages"][1] == {
         "role": "user",
         "content": "Translate this screener query: my question",

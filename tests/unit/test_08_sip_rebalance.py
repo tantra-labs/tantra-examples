@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples.synthetic import bar, weekdays
 
 _PATH = (
     Path(__file__).resolve().parents[2]
@@ -166,7 +166,7 @@ def test_cli_sip_arguments(ex) -> None:
 
 def test_time_weighted_return_handles_cash_inflow() -> None:
     """Cash inflow on a session does not create a fake positive return spike."""
-    from vyapaar_examples.metrics import curve_metrics
+    from tantra_examples.metrics import curve_metrics
 
     # Scenario: 100k equity on day 1.
     # On day 2, 50k cash is injected, but asset prices did not move.

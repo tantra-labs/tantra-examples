@@ -8,12 +8,12 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from vyapaar_examples.pipeline import (
+from tantra_examples.pipeline import (
     DividendYieldScreener,
     FundamentalQualityFilter,
     ValueScreener,
 )
-from vyapaar_examples.pipeline.reporting import REPORTABLE, add_report_columns
+from tantra_examples.pipeline.reporting import REPORTABLE, add_report_columns
 
 ASOF = dt.date(2024, 6, 30)
 
@@ -93,7 +93,7 @@ def test_unreportable_column_lists_the_reportable_ones(fund_db: Path) -> None:
 def test_missing_database_or_close_is_an_error(
     fund_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr("vyapaar_examples.pipeline.reporting.find_duckdb_path", lambda: None)
+    monkeypatch.setattr("tantra_examples.pipeline.reporting.find_duckdb_path", lambda: None)
     with pytest.raises(ValueError, match=r"fundamentals\.duckdb not found"):
         add_report_columns(_cands(), ["market_cap"], ASOF)
     with pytest.raises(ValueError, match="no 'close'"):
@@ -105,7 +105,7 @@ def test_missing_database_or_close_is_an_error(
 def test_filter_reports_without_filtering_on_the_column(
     fund_db: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setattr("vyapaar_examples.pipeline.reporting.find_duckdb_path", lambda: fund_db)
+    monkeypatch.setattr("tantra_examples.pipeline.reporting.find_duckdb_path", lambda: fund_db)
     ctx = {
         "candidates": [
             {"symbol": "AAA", "close": 200.0, "roce_pct": 18.0, "debt_to_equity": 0.4},

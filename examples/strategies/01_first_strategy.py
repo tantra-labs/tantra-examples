@@ -6,7 +6,7 @@ implement ``on_bar``. The strategy emits market orders through ``self.buy``/
 context, calls ``on_start`` → streams bars → ``on_stop``.
 
 This example runs a fast SMA(10) vs slow SMA(30) crossover on a synthetic
-100-bar series (see ``vyapaar_examples/synthetic.py``) using the testing harness
+100-bar series (see ``tantra_examples/synthetic.py``) using the testing harness
 ``_kernel.testing.replay`` — no adapter, no Parquet store, no network.
 
 Run::
@@ -40,11 +40,11 @@ import argparse
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples.cli import run_example
-from vyapaar_examples.replay_report import replay_report
-from vyapaar_examples.synthetic import trending_bars
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples.cli import run_example
+from tantra_examples.replay_report import replay_report
+from tantra_examples.synthetic import trending_bars
 
 __all__ = ["main", "run"]
 

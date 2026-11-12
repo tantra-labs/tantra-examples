@@ -7,11 +7,11 @@ from typing import Any
 
 import pytest
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.money import Currency, Money
-from vyapaar_examples.backtest import run_portfolio_backtest
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.money import Currency, Money
+from tantra_examples.backtest import run_portfolio_backtest
+from tantra_examples.synthetic import bar, weekdays
 
 DAYS = weekdays(dt.date(2026, 6, 1), 7)  # Mon 1 .. Mon 8 June 2026 (7 trading days)
 SYMS = ("AAA", "BBB")

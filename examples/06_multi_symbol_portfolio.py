@@ -16,7 +16,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from decimal import Decimal
 
-from vyapaar_examples import Bar, SampleInstruments, synthetic_bars
+from tantra_examples import Bar, SampleInstruments, synthetic_bars
 
 INSTRUMENTS = [SampleInstruments.NIFTY50, SampleInstruments.BANKNIFTY, SampleInstruments.RELIANCE]
 

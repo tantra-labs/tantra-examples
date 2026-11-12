@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from vyapaar_examples import settlement
+from tantra_examples import settlement
 
 
 class DummyMarket:

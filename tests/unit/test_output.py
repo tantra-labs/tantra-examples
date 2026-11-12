@@ -1,4 +1,4 @@
-"""vyapaar_examples.output: example-oriented presets over vyapaar.display.
+"""tantra_examples.output: example-oriented presets over tantra.display.
 
 Fixed width, no colour, synthetic data. Snapshot: tests/snapshots/output_report.txt
 (rewrite with VYAAPAAR_BLESS=1 after an intended layout change).
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples import output as ex_out
+from tantra_examples import output as ex_out
 
 SNAP = Path(__file__).resolve().parents[1] / "snapshots"
 
@@ -213,8 +213,8 @@ def test_full_report_matches_snapshot() -> None:
 
 
 def test_base_example_exposes_the_shared_output_flags() -> None:
-    from vyapaar_examples.base import VyapaarExample
+    from tantra_examples.base import TantraExample
 
-    ex = VyapaarExample()
+    ex = TantraExample()
     ex.parse_args(["--format", "csv", "--width", "100"])
     assert ex.output.fmt is ex_out.OutputFormat.CSV and ex.output.width == 100

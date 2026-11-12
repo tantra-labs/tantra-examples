@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.bars import aggregate, bucket_start
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples.bars import aggregate, bucket_start
+from tantra_examples.synthetic import bar, weekdays
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "candles" / "04_multi_timeframe.py"
 _NS_PER_SECOND = 1_000_000_000
@@ -54,7 +54,7 @@ def _groups(rows, timeframe):
 
 
 def _fold(members):
-    """The OHLCV rule, written here independently of ``vyapaar_examples.bars``."""
+    """The OHLCV rule, written here independently of ``tantra_examples.bars``."""
     return (
         members[0]["open"],
         max(row["high"] for row in members),

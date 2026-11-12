@@ -1,11 +1,11 @@
-# 09 AI Research – the research loop on top of Vyapaar
+# 09 AI Research – the research loop on top of Tantra
 
-The AI-research examples show the research loop layered on Vyapaar: natural-language
+The AI-research examples show the research loop layered on Tantra: natural-language
 query → validated filter, autonomous backtesting, NL→strategy verification,
 reinforcement learning, and the MCP tool gateway. There is no trading strategy
 here. Six steps are runnable offline and deterministic (`ScriptedFakeLlm`, no
 network, no API keys); the other four are documented design placeholders whose
-modules exist in `vyapaar-agent` as stubs waiting for future roadmap phases (gap 0002).
+modules exist in `tantra-agent` as stubs waiting for future roadmap phases (gap 0002).
 
 ## At a glance
 
@@ -36,21 +36,21 @@ returned by a tool is untrusted; model output is parsed by a grammar and never e
 generated strategies is a multiple-testing problem (count every trial, keep a holdout); RL needs a
 time split, costs in the reward and many seeds; and the fake backends here prove plumbing, not a
 model. For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
-## What actually exists in `vyapaar_examples._kernel.ai` today (offline)
+## What actually exists in `tantra_examples._kernel.ai` today (offline)
 
 | Module                                      | Symbols                                          | Runs offline? |
 |---------------------------------------------|--------------------------------------------------|---------------|
-| `vyapaar_examples._kernel.ai.llm.provider`   | `LlmPort`, `ScriptedFakeLlm`                     | ✅             |
-| `vyapaar_examples._kernel.ai.knowledge`      | `KnowledgePack`, `build_knowledge_pack`          | ✅             |
-| `vyapaar_examples._kernel.ai.ask`            | `translate_query`, `AskResult`, `build_system_prompt` | ✅             |
+| `tantra_examples._kernel.ai.llm.provider`   | `LlmPort`, `ScriptedFakeLlm`                     | ✅             |
+| `tantra_examples._kernel.ai.knowledge`      | `KnowledgePack`, `build_knowledge_pack`          | ✅             |
+| `tantra_examples._kernel.ai.ask`            | `translate_query`, `AskResult`, `build_system_prompt` | ✅             |
 | `schema/mcp/mcp_tools.json`                  | MCP read-only tool catalog                       | ✅             |
-| `vyapaar-agent` (gap 0002)                   | **Design only** (loop.py, hypothesis.py, evaluator.py, journal.py) | ❌ |
-| `vyapaar-agent` (gap 0002)                   | **Design only** (critic.py, nl_to_strategy.py, regime_report.py) | ❌ |
-| `vyapaar-agent` (gap 0002)                   | **Design only** (environment.py, agent.py, policies.py, trainer.py) | ❌ |
+| `tantra-agent` (gap 0002)                   | **Design only** (loop.py, hypothesis.py, evaluator.py, journal.py) | ❌ |
+| `tantra-agent` (gap 0002)                   | **Design only** (critic.py, nl_to_strategy.py, regime_report.py) | ❌ |
+| `tantra-agent` (gap 0002)                   | **Design only** (environment.py, agent.py, policies.py, trainer.py) | ❌ |
 
-The CLI's `vyapaar screener ask` defaults to `ScriptedFakeLlm` — swap a real
+The CLI's `tantra screener ask` defaults to `ScriptedFakeLlm` — swap a real
 provider (`LlmPort` impl) only when you have `openai`/`anthropic`/`litellm`
 installed and an API key set.
 
@@ -68,5 +68,5 @@ pytest tests/unit -q -k "llm_research or mcp_integration or typed_llm or claude_
 
 ## Architecture references
 
-- `docs/gaps/0002-vyapaar-wheel-ai-provider-surface.md` — AI provider and agent loop surface gap.
+- `docs/gaps/0002-tantra-wheel-ai-provider-surface.md` — AI provider and agent loop surface gap.
 - `.agents/AGENTS.md` §5.5 — NoFX idea inheritance: untrusted AI principle, closed decision grammar, cryptographic replayability.

@@ -29,9 +29,9 @@ Pitfalls::
 
 from __future__ import annotations
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.display_style import SYMBOL, Column, render_kv, render_table
-from vyapaar_examples.universe_lists import UNIVERSES, resolve_universe
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.display_style import SYMBOL, Column, render_kv, render_table
+from tantra_examples.universe_lists import UNIVERSES, resolve_universe
 
 # ---------------------------------------------------------------------------
 # Define your custom basket

@@ -1,9 +1,9 @@
 """backtesting/07_run_via_client: InprocTransport vs HttpTransport, run_id, assumptions.
 
-Demonstrates the Vyapaar run service (ADR 0017, E4-S3): a backtest is a first-class server
+Demonstrates the Tantra run service (ADR 0017, E4-S3): a backtest is a first-class server
 object with a run_id, status lifecycle, and assumptions including not_modelled.
 This example runs the same strategy via the in-process transport and an HTTP transport
-to a running `vyapaar serve` and asserts parity of fills, run_id traceability, and
+to a running `tantra serve` and asserts parity of fills, run_id traceability, and
 assumptions presence.
 
 Run::
@@ -11,7 +11,7 @@ Run::
     # In-process only (no server needed)
     python examples/backtesting/07_run_via_client.py --data-dir data/catalog --inproc
 
-    # Via HTTP to a running `vyapaar serve` (requires the binary)
+    # Via HTTP to a running `tantra serve` (requires the binary)
     python examples/backtesting/07_run_via_client.py --data-dir data/catalog --url http://127.0.0.1:8080
 
     # Both, asserting parity
@@ -33,8 +33,8 @@ Pitfalls::
       unadjusted data.
     - The seed (42) only pins stochastic components; it is not a robustness check. Vary the window
       and the instrument before concluding anything.
-    - No local run service: the wheel does not ship `vyapaar.client` or a `vyapaar serve` binary
-      yet (docs/gaps/0004-vyapaar-wheel-display-universes-client.md). Both --inproc and --http
+    - No local run service: the wheel does not ship `tantra.client` or a `tantra serve` binary
+      yet (docs/gaps/0004-tantra-wheel-display-universes-client.md). Both --inproc and --http
       degrade to a clear error instead of raising an ImportError at import time.
 """
 
@@ -48,18 +48,18 @@ from typing import TYPE_CHECKING, Any
 import httpx
 
 if TYPE_CHECKING:
-    from vyapaar.client import BacktestResult, Client
+    from tantra.client import BacktestResult, Client
 else:
     try:
-        # gap 0004: vyapaar.client wheel surface missing; degrade gracefully (D7).
-        from vyapaar.client import BacktestResult, Client
+        # gap 0004: tantra.client wheel surface missing; degrade gracefully (D7).
+        from tantra.client import BacktestResult, Client
     except ImportError:
         BacktestResult = Any
         Client = None
 
 _MISSING_CLIENT_MSG = (
-    "vyapaar.client is not available yet "
-    "(docs/gaps/0004-vyapaar-wheel-display-universes-client.md); "
+    "tantra.client is not available yet "
+    "(docs/gaps/0004-tantra-wheel-display-universes-client.md); "
     "this example cannot run until the wheel ships the run-service client."
 )
 
@@ -153,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--url",
         default="http://127.0.0.1:8000",
-        help="Base URL of running vyapaar serve",
+        help="Base URL of running tantra serve",
     )
     parser.add_argument(
         "--inproc",

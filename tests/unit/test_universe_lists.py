@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.universe_lists import (
+from tantra_examples.universe_lists import (
     ALPHA30_ENGINE,
     ALPHA30_SEED,
     Constituent,

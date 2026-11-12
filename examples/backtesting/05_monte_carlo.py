@@ -1,6 +1,6 @@
 """backtesting/05_monte_carlo: Staggered start-date Monte Carlo (stateful strategy luck).
 
-Upgraded to use ``vyapaar_examples.optimizer.algo_analytics.monte_carlo`` which reruns the same
+Upgraded to use ``tantra_examples.optimizer.algo_analytics.monte_carlo`` which reruns the same
 strategy over staggered start-date offsets and gates the dispersion of final
 equity and max drawdown. For synthetic data, uses the same offset geometry with
 ``_kernel.testing.replay`` for fast deterministic runs.
@@ -19,7 +19,7 @@ Pitfalls::
       lucky initialization date (path-dependent strategies like trailing stops,
       regime flags, rebalancing calendars).
     - Each offset shifts the whole backtest window forward by that many days
-      and runs a full ``Vyapaar.backtest`` session (fresh strategy instance).
+      and runs a full ``Tantra.backtest`` session (fresh strategy instance).
       The end date moves with the start so the window length is constant.
     - Gates: coefficient of variation of final equity ≤ 0.25, max-drawdown-%
       spread ≤ 10 percentage points. A strategy that passes is robust to
@@ -29,7 +29,7 @@ Pitfalls::
     - Requires at least 2 offsets for a meaningful CV. Default (0, 5, 10, 20, 30)
       gives 5 runs; increase ``--paths`` to repeat the whole set with different
       random seeds (not implemented here; the offsets are deterministic).
-    - Falls back to synthetic bars if the vyapaar-data lakehouse is unavailable.
+    - Falls back to synthetic bars if the tantra-data lakehouse is unavailable.
 """
 
 from __future__ import annotations
@@ -39,18 +39,18 @@ import sys
 from copy import deepcopy
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.testing import replay
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.metrics import curve_metrics
-from vyapaar_examples.optimizer.algo_analytics.monte_carlo import (
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.testing import replay
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.metrics import curve_metrics
+from tantra_examples.optimizer.algo_analytics.monte_carlo import (
     StartDateConfig,
     StartDateResult,
     monte_carlo,
     offsets_to_ranges,
 )
-from vyapaar_examples.synthetic import oscillating_bars
+from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]
 
@@ -192,7 +192,7 @@ def run(
     if use_synthetic:
         result = _run_synthetic_monte_carlo(strategy, symbol, start, end, offsets)
     else:
-        # Use real data via vyapaar_examples.optimizer.algo_analytics.monte_carlo
+        # Use real data via tantra_examples.optimizer.algo_analytics.monte_carlo
         result = monte_carlo(
             strategy,
             symbol=symbol,

@@ -7,7 +7,7 @@ import math
 
 import pytest
 
-from vyapaar_examples.metrics import SESSIONS_PER_YEAR, curve_metrics, exposure_metrics
+from tantra_examples.metrics import SESSIONS_PER_YEAR, curve_metrics, exposure_metrics
 
 CURVE = [
     {"date": "2026-01-01", "value": 100.0, "cash": 10.0},

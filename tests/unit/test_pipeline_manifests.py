@@ -1,4 +1,4 @@
-"""Unit: pipeline ``describe()`` follows the vyapaar-strategies step schema."""
+"""Unit: pipeline ``describe()`` follows the tantra-strategies step schema."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import json
 
 import pytest
 
-from vyapaar_examples.pipeline import (
+from tantra_examples.pipeline import (
     BreakoutSignal,
     DividendYieldScreener,
     EqualWeightSizer,
@@ -36,13 +36,13 @@ STEPS = [
 
 
 def _schema_tools():
-    from vyapaar_examples._kernel.loader import CatalogError
-    from vyapaar_examples.catalog import load_catalog_tool
+    from tantra_examples._kernel.loader import CatalogError
+    from tantra_examples.catalog import load_catalog_tool
 
     try:
         return load_catalog_tool("validate_chain")
     except CatalogError as exc:
-        pytest.skip(f"vyapaar-strategies catalog not available: {exc}")
+        pytest.skip(f"tantra-strategies catalog not available: {exc}")
 
 
 @pytest.mark.parametrize("cls", STEPS, ids=lambda c: c.__name__)
@@ -111,7 +111,7 @@ def test_sip_backtest_consumes_weights() -> None:
 
 
 def test_manifest_helper_accepts_a_list_of_shapes() -> None:
-    from vyapaar_examples.pipeline.manifest import manifest
+    from tantra_examples.pipeline.manifest import manifest
 
     m = manifest("execute.x", "X", "x", {}, ["weights", "universe"], "orders")
     assert m["consumes"]["shape"] == ["weights", "universe"]

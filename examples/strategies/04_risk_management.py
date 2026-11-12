@@ -35,12 +35,12 @@ import argparse
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.order import OrderSide
-from vyapaar_examples.cli import run_example
-from vyapaar_examples.replay_report import replay_report
-from vyapaar_examples.synthetic import trending_bars
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.order import OrderSide
+from tantra_examples.cli import run_example
+from tantra_examples.replay_report import replay_report
+from tantra_examples.synthetic import trending_bars
 
 __all__ = ["main", "run"]
 

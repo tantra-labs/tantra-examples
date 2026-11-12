@@ -80,7 +80,7 @@ def add_series(catalog_dir: Path) -> Callable[..., None]:
 def data_env(catalog_dir: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Point ``VYAAPAAR_DATA_DIR`` at the synthetic data root (offline screeners).
 
-    Seam for the absent vyapaar-data checkout (gap 0003): the tmp root has the
+    Seam for the absent tantra-data checkout (gap 0003): the tmp root has the
     production shape ``<root>/catalog/1D/NSE`` plus ``fundamentals.duckdb`` when the
     ``fund_db``/``fund`` fixtures also ran (they share the same ``tmp_path``).
     """

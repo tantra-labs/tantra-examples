@@ -1,11 +1,11 @@
-"""vyapaar_examples.synthetic.trending_bars: deterministic weekday-only ramp of daily bars."""
+"""tantra_examples.synthetic.trending_bars: deterministic weekday-only ramp of daily bars."""
 
 from __future__ import annotations
 
 import datetime as dt
 from itertools import pairwise
 
-from vyapaar_examples.synthetic import bar, trending_bars, weekdays
+from tantra_examples.synthetic import bar, trending_bars, weekdays
 
 
 def test_trending_bars_matches_manual_construction() -> None:
@@ -22,7 +22,7 @@ def test_trending_bars_parameters() -> None:
 
 
 def test_oscillating_bars_are_deterministic_and_oscillate() -> None:
-    from vyapaar_examples.synthetic import oscillating_bars
+    from tantra_examples.synthetic import oscillating_bars
 
     first = oscillating_bars("RELIANCE", 120)
     assert first == oscillating_bars("RELIANCE", 120)
@@ -36,7 +36,7 @@ def test_oscillating_bars_are_deterministic_and_oscillate() -> None:
 
 
 def test_oscillating_bars_parameters_and_ohlc_validity() -> None:
-    from vyapaar_examples.synthetic import oscillating_bars
+    from tantra_examples.synthetic import oscillating_bars
 
     bars = oscillating_bars("TCS", 80, base=100.0, amplitude=10.0, period=20, drift=0.0)
     assert max(b.close for b in bars) <= 110.0 + 1e-6
@@ -45,7 +45,7 @@ def test_oscillating_bars_parameters_and_ohlc_validity() -> None:
 
 
 def test_get_bars_with_source_labels_where_the_bars_came_from(monkeypatch) -> None:
-    import vyapaar_examples.synthetic as syn
+    import tantra_examples.synthetic as syn
 
     monkeypatch.setattr(syn, "load_real_bars", lambda *a, **k: [])
     bars, source = syn.get_bars_with_source("RELIANCE", count=12)
@@ -59,7 +59,7 @@ def test_get_bars_with_source_labels_where_the_bars_came_from(monkeypatch) -> No
 
 
 def test_oscillating_bars_noise_is_seeded_and_deterministic() -> None:
-    from vyapaar_examples.synthetic import oscillating_bars
+    from tantra_examples.synthetic import oscillating_bars
 
     clean = oscillating_bars("RELIANCE", 60)
     noisy = oscillating_bars("RELIANCE", 60, noise=10.0, seed=3)

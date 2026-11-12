@@ -1,16 +1,16 @@
-# Vyapaar Examples (`vyapaar-examples`)
+# Tantra Examples (`tantra-examples`)
 
 **Bounded Context**: Reference Learning Path (Tier 6D)
 
-`vyapaar-examples` is the canonical educational journey for the Vyapaar Labs
+`tantra-examples` is the canonical educational journey for the Tantra Labs
 ecosystem: numbered, deterministic, offline-runnable scripts covering Indian
 equities, NSE/NFO options microstructure, factor models, walk-forward
 optimization (WFO), and the autonomous AI research loop.
 
 Examples **12–15** are the Fincept/Quantcept gap-closing set: one runnable
-script per engine shipped in that initiative — `vyapaar-ledger-allocation`
-(mean-variance & risk parity), `vyapaar-market-pricing` (Black-Scholes, Greeks,
-implied volatility), `vyapaar-agent-forecast` (Theta), and `vyapaar-agent-panel`
+script per engine shipped in that initiative — `tantra-ledger-allocation`
+(mean-variance & risk parity), `tantra-market-pricing` (Black-Scholes, Greeks,
+implied volatility), `tantra-agent-forecast` (Theta), and `tantra-agent-panel`
 (Fama-MacBeth). Each mirrors its Rust engine's public semantics in exact
 `Decimal` so it stays deterministic and offline.
 
@@ -29,8 +29,8 @@ implied volatility), `vyapaar-agent-forecast` (Theta), and `vyapaar-agent-panel`
 ## Layout (4-Zone Clean Package)
 
 ```
-vyapaar-examples/
-├── vyapaar_examples/   # Zone 1: shared harness (data, metrics, backtest, WFO, fake LLM)
+tantra-examples/
+├── tantra_examples/   # Zone 1: shared harness (data, metrics, backtest, WFO, fake LLM)
 ├── examples/           # Zone 2: numbered runnable scripts (01_.., 02_.., ...)
 ├── tests/              # Zone 3: per-example regression tests (tests/unit/)
 └── docs/               # Zone 4: architecture & migration guides

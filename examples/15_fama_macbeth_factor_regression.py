@@ -1,6 +1,6 @@
 """15 — Factor regressions: Fama-MacBeth two-pass.
 
-Mirrors ``vyapaar-agent-panel``'s Fama-MacBeth procedure: first-pass
+Mirrors ``tantra-agent-panel``'s Fama-MacBeth procedure: first-pass
 time-series betas of each asset on the factor returns, second-pass
 cross-sectional risk premia per period, and t-stats from the time-series
 standard errors of the per-period premia. All arithmetic is exact ``Decimal``
@@ -21,7 +21,7 @@ import random
 from dataclasses import dataclass
 from decimal import Decimal
 
-from vyapaar_examples.quant import mean, ols, std_dev
+from tantra_examples.quant import mean, ols, std_dev
 
 
 @dataclass(frozen=True, slots=True)

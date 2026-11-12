@@ -34,7 +34,7 @@ The same strategy as plain params (what a ``config.toml`` ``[params]`` table hol
 
     PortfolioStrategy.from_params(params)   # == build_portfolio_strategy(params)
 
-The catalog strategy ``../vyapaar-strategies/portfolio/rebalancing/equal_weight/`` is exactly
+The catalog strategy ``../tantra-strategies/portfolio/rebalancing/equal_weight/`` is exactly
 that config bound to a thin ``PortfolioStrategy`` subclass; an integration test checks that
 this code-composed version and the catalog one produce identical fills, positions and cash.
 
@@ -46,7 +46,7 @@ Other strategies from the same parts: ``--weighting inverse_vol`` (lower-volatil
 more weight) and ``--schedule monthly:first_session`` (rebalance on the first session of each
 month). Those flags go through ``build_portfolio_strategy``, i.e. the params form above.
 
-Synthetic bars (see ``vyapaar_examples/synthetic.py``) for all 30 members are replayed by a small
+Synthetic bars (see ``tantra_examples/synthetic.py``) for all 30 members are replayed by a small
 harness (``_kernel.testing.replay`` fills every order at the price of the bar that
 emitted it, which is wrong for a portfolio, so each order here fills at the last close of its
 own instrument): no adapter, no Parquet store, no network. The report holds the number of
@@ -88,20 +88,20 @@ import math
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.context import LedgerContext
-from vyapaar_examples._kernel.entities import Bar, InstrumentId, Trade
-from vyapaar_examples._kernel.portfolio_strategy import (
+from tantra_examples._kernel.context import LedgerContext
+from tantra_examples._kernel.entities import Bar, InstrumentId, Trade
+from tantra_examples._kernel.portfolio_strategy import (
     EqualWeight,
     EveryNDays,
     NamedUniverse,
     PortfolioStrategy,
     build_portfolio_strategy,
 )
-from vyapaar_examples._kernel.testing import ReplayResult
-from vyapaar_examples.cli import run_example
-from vyapaar_examples.jsonable import jsonable
-from vyapaar_examples.synthetic import bar
-from vyapaar_examples.synthetic import weekdays as weekdays_func
+from tantra_examples._kernel.testing import ReplayResult
+from tantra_examples.cli import run_example
+from tantra_examples.jsonable import jsonable
+from tantra_examples.synthetic import bar
+from tantra_examples.synthetic import weekdays as weekdays_func
 
 __all__ = ["build_strategy", "build_variant", "main", "run"]
 

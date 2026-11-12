@@ -33,13 +33,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.metrics import fills_equity_curve
-from vyapaar_examples.synthetic import bar as synth_bar
-from vyapaar_examples.synthetic import weekdays as weekdays_func
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.metrics import fills_equity_curve
+from tantra_examples.synthetic import bar as synth_bar
+from tantra_examples.synthetic import weekdays as weekdays_func
 
 __all__ = ["main", "run"]
 
@@ -82,7 +82,7 @@ def _run_one_account(
         synth_bar(symbol, d, 2500.0 + i * 0.5) for i, d in enumerate(weekdays_func(start, bars))
     ]
 
-    from vyapaar_examples._kernel.testing import replay
+    from tantra_examples._kernel.testing import replay
 
     strat = SmaMulti(fast=fast, slow=slow, symbol=symbol)
     result = replay(strat, bars_list, fill_delay=1)

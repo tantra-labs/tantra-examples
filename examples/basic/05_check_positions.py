@@ -49,16 +49,16 @@ import asyncio
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.adapters.capabilities import Capability
-from vyapaar_examples._kernel.adapters.errors import AdapterNotFound
-from vyapaar_examples._kernel.adapters.models import Product
-from vyapaar_examples._kernel.adapters.registry import default_registry
-from vyapaar_examples._kernel.adapters.testing import FakeAdapter
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.order import OrderIntent
-from vyapaar_examples._kernel.position import Position
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser, require_paper_adapter
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples._kernel.adapters.capabilities import Capability
+from tantra_examples._kernel.adapters.errors import AdapterNotFound
+from tantra_examples._kernel.adapters.models import Product
+from tantra_examples._kernel.adapters.registry import default_registry
+from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.order import OrderIntent
+from tantra_examples._kernel.position import Position
+from tantra_examples.cli import add_out_arg, emit_json, make_parser, require_paper_adapter
+from tantra_examples.jsonable import jsonable
 
 #: The two instruments the fake adapter serves; a real run picks its own.
 _RELIANCE = InstrumentId("RELIANCE", "NSE")
@@ -190,7 +190,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if is_table:
-        from vyapaar_examples.display_style import (  # gap 0004: display surface mirror
+        from tantra_examples.display_style import (  # gap 0004: display surface mirror
             SYMBOL,
             Column,
             pnl_style_fn,

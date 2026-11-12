@@ -2,7 +2,7 @@
 
 Universe resolution, no strategy: Bank Nifty goes through the identical
 ``resolve_universe()`` call — only the name changes, so the pattern works for any
-named universe registered with Vyapaar. Bank Nifty is not registered in the core and no
+named universe registered with Tantra. Bank Nifty is not registered in the core and no
 member list ships in this workspace, so the script reports that and exits unless a
 catalog history exists (see Pitfalls).
 
@@ -26,9 +26,9 @@ Pitfalls::
 
 from __future__ import annotations
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.display_style import SYMBOL, Column, render_kv, render_table
-from vyapaar_examples.universe_lists import UniverseUnavailable, banknifty_members
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.display_style import SYMBOL, Column, render_kv, render_table
+from tantra_examples.universe_lists import UniverseUnavailable, banknifty_members
 
 UNIVERSE_NAME = "banknifty"
 EXCHANGE = "NSE"

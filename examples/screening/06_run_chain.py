@@ -2,7 +2,7 @@
 
 Each ``[[steps]]`` entry names a step by manifest id (``uses = "screen.value"``) and may set
 ``with`` (param overrides) and ``report`` (extra columns to show, such as ``market_cap``, which
-the step does not filter on). The chain is checked against the vyapaar-strategies step schema
+the step does not filter on). The chain is checked against the tantra-strategies step schema
 before anything runs; ``--describe`` prints the manifest of every available step.
 
 Usage:
@@ -48,9 +48,9 @@ from pathlib import Path
 from typing import Any
 
 # mirror accommodation (gap 0006): kernel-mirrored loader, no wheel equivalent yet
-from vyapaar_examples._kernel.loader import CatalogError
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.pipeline.chain import (
+from tantra_examples._kernel.loader import CatalogError
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.pipeline.chain import (
     ChainError,
     describe_all,
     load_chain,
@@ -94,7 +94,7 @@ def _print_rows(payload: dict[str, Any], fmt: str) -> None:
         for row in rows:
             writer.writerow({k: ("" if row.get(k) is None else row.get(k)) for k in columns})
     else:
-        from vyapaar_examples.display_style import SYMBOL, Column, render_table
+        from tantra_examples.display_style import SYMBOL, Column, render_table
 
         keys = list(rows[0]) if rows else ["symbol"]
         columns = [Column(k, style=SYMBOL if k == "symbol" else None) for k in keys]

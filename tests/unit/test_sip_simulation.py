@@ -1,4 +1,4 @@
-"""vyapaar_examples.sip.simulate_portfolio_sip on a tiny synthetic NSE catalog."""
+"""tantra_examples.sip.simulate_portfolio_sip on a tiny synthetic NSE catalog."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import datetime as dt
 
 import pytest
 
-from vyapaar_examples.sip import simulate_portfolio_sip, sip_data_notes
+from tantra_examples.sip import simulate_portfolio_sip, sip_data_notes
 
 ASOF = dt.date(2024, 6, 26)  # a Wednesday: the screen's last close
 NEXT_SESSION = dt.date(2024, 6, 27)
@@ -129,8 +129,8 @@ def test_backtest_table_and_pipeline_summary_print_the_notes(catalog):
 
     from rich.console import Console
 
-    from vyapaar_examples.pipeline.base import PipelineResult
-    from vyapaar_examples.screening.render import render_backtest_table
+    from tantra_examples.pipeline.base import PipelineResult
+    from tantra_examples.screening.render import render_backtest_table
 
     catalog_dir, _ = catalog
     res = _run(catalog_dir, ["ALIVE", "GONE", "NODATA"])

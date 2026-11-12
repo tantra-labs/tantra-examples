@@ -2,7 +2,7 @@
 
 Simulates recurring buy-and-hold investing (monthly or weekly SIP) on an equity
 or ETF (default: ``ALPHAETF:NSE``), with optional initial lump-sum corpus and
-transaction fee modeling. Supports automated data gap fetching via Vyapaar's
+transaction fee modeling. Supports automated data gap fetching via Tantra's
 ``DataService``, time-weighted returns, max drawdown, and exact annualized XIRR.
 
 Run::
@@ -41,15 +41,15 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.coverage import DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore, find_data_root
-from vyapaar_examples.base import REPO_ROOT
-from vyapaar_examples.cli import make_parser
-from vyapaar_examples.metrics import curve_metrics
-from vyapaar_examples.sip_plan import calculate_xirr, ensure_instrument_data, sip_target_dates
-from vyapaar_examples.sip_report import add_sip_args, emit_sip_report
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.coverage import DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore, find_data_root
+from tantra_examples.base import REPO_ROOT
+from tantra_examples.cli import make_parser
+from tantra_examples.metrics import curve_metrics
+from tantra_examples.sip_plan import calculate_xirr, ensure_instrument_data, sip_target_dates
+from tantra_examples.sip_report import add_sip_args, emit_sip_report
 
 __all__ = ["calculate_xirr", "ensure_instrument_data", "main", "run"]
 

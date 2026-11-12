@@ -60,7 +60,7 @@ def test_main_happy_path_returns_zero(example, capsys):
 
 @pytest.fixture
 def synthetic_only(monkeypatch):
-    import vyapaar_examples.synthetic as syn
+    import tantra_examples.synthetic as syn
 
     monkeypatch.setattr(syn, "load_real_bars", lambda *a, **k: [])
 
@@ -89,7 +89,7 @@ def test_report_says_which_data_source_was_used(example, synthetic_only):
 
 
 def test_synthetic_flag_ignores_real_bars(example, monkeypatch):
-    import vyapaar_examples.synthetic as syn
+    import tantra_examples.synthetic as syn
 
     monkeypatch.setattr(
         syn, "load_real_bars", lambda *a, **k: syn.trending_bars("RELIANCE", 60, base=50.0)

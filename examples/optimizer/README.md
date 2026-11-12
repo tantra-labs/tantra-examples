@@ -1,6 +1,6 @@
 # Optimizer Examples
 
-Parameter search and overfitting diagnostics for Vyapaar strategies.
+Parameter search and overfitting diagnostics for Tantra strategies.
 
 ## Overview
 
@@ -112,7 +112,7 @@ python examples/backtesting/04_walk_forward.py \
 - **Multiple testing bias**: The best in-sample result is always biased upward. DSR corrects for this.
 - **No free lunch**: Optimization on synthetic data demonstrates structure, not profitability.
 - **State leakage**: Each evaluation gets a fresh strategy instance — no state leaks between trials.
-- **Real data**: Add `--symbol RELIANCE --start 2020-01-01 --end 2024-12-31` to use lakehouse data (requires `vyapaar-data`).
+- **Real data**: Add `--symbol RELIANCE --start 2020-01-01 --end 2024-12-31` to use lakehouse data (requires `tantra-data`).
 
 ## See Also
 

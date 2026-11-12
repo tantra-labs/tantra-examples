@@ -10,15 +10,15 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples.base import VyapaarExample
-from vyapaar_examples.screening import (
+from tantra_examples._kernel.base import Strategy
+from tantra_examples.base import TantraExample
+from tantra_examples.screening import (
     find_catalog_path,
     get_latest_market_date,
     screen_multibaggers,
     screen_value_and_dividend,
 )
-from vyapaar_examples.sip import calculate_xirr, simulate_portfolio_sip
+from tantra_examples.sip import calculate_xirr, simulate_portfolio_sip
 
 _PATH = (
     Path(__file__).resolve().parents[2]
@@ -39,20 +39,20 @@ def example():
 
 @pytest.fixture
 def _real_catalog() -> Path:
-    """The real 1D NSE catalog, or skip (docs/gaps/0003-vyapaar-data-nav-loaders.md).
+    """The real 1D NSE catalog, or skip (docs/gaps/0003-tantra-data-nav-loaders.md).
 
     These tests check real screening/fundamentals behaviour (point-in-time
     sparsity of 2023 data, real symbols) rather than synthetic fixtures, so they
-    need the actual ``vyapaar-data`` catalog checkout, absent in this workspace.
+    need the actual ``tantra-data`` catalog checkout, absent in this workspace.
     """
     try:
         return find_catalog_path()
     except FileNotFoundError as exc:
-        pytest.skip(f"1D NSE catalog not available (gap 0003-vyapaar-data-nav-loaders): {exc}")
+        pytest.skip(f"1D NSE catalog not available (gap 0003-tantra-data-nav-loaders): {exc}")
 
 
 def test_inheritance(example):
-    assert issubclass(example.ChainedScreenerSipExample, VyapaarExample)
+    assert issubclass(example.ChainedScreenerSipExample, TantraExample)
     assert issubclass(example.SipPortfolioStrategy, Strategy)
 
 

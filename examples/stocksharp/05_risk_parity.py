@@ -46,16 +46,16 @@ import sys
 from datetime import date
 from typing import Any
 
-from vyapaar_examples._kernel.context import LedgerContext
-from vyapaar_examples._kernel.entities import Bar, InstrumentId, Trade
-from vyapaar_examples._kernel.portfolio_strategy import (
+from tantra_examples._kernel.context import LedgerContext
+from tantra_examples._kernel.entities import Bar, InstrumentId, Trade
+from tantra_examples._kernel.portfolio_strategy import (
     EveryNDays,
     InverseVolatility,
     PortfolioStrategy,
     StaticUniverse,
 )
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.synthetic import session_ts, weekdays
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.synthetic import session_ts, weekdays
 
 __all__ = ["main", "run"]
 

@@ -1,6 +1,6 @@
 """13 — Options pricing: Black-Scholes, Greeks, implied volatility.
 
-Mirrors ``vyapaar-market-pricing``'s ``BlackScholesModel``: closed-form fair
+Mirrors ``tantra-market-pricing``'s ``BlackScholesModel``: closed-form fair
 value, the five Greeks, and implied volatility by root-finding over the pricing
 formula, for a synthetic NFO NIFTY option.
 
@@ -21,7 +21,7 @@ import math
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
-from vyapaar_examples import SampleInstruments
+from tantra_examples import SampleInstruments
 
 INSTRUMENT = SampleInstruments.NIFTY50
 SYMBOL = "NFO:NIFTY"

@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.pipeline.base import Step
+from tantra_examples.pipeline.base import Step
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "backtesting" / "11_portfolio_rebalancer.py"
@@ -107,7 +107,7 @@ def test_allocation_without_screener_fields_falls_back_to_equal_rebalance(
 
 
 def test_strategy_all_unions_all_three_screeners(example, capsys, data_root, monkeypatch):
-    from vyapaar_examples.pipeline import screeners
+    from tantra_examples.pipeline import screeners
 
     calls: list[str] = []
 

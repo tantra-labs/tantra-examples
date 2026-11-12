@@ -73,7 +73,7 @@ delisted names never appear (a last bar more than `--max-stale-days`, default 10
 past winners (a "multibagger" is defined by its future return) are hindsight; top-N lists from a
 handful of names are unstable; and the screen reads the `--asof` close while the chained backtest
 buys at that day's open. For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## Point-in-Time Valuation (Period End Plus Lag)
 
@@ -285,7 +285,7 @@ python examples/screening/08_swing_ap_setup_screener.py --asof 2024-06-01 --min-
 
 ## Chains from a file (`06_run_chain.py`)
 
-`06_run_chain.py` runs the pipeline steps (`vyapaar_examples.pipeline`) from a TOML file. Each
+`06_run_chain.py` runs the pipeline steps (`tantra_examples.pipeline`) from a TOML file. Each
 `[[steps]]` entry names a step by manifest id and may set `with` (param overrides) and `report`
 (extra columns to show). A step LOOKS AT what its params filter on; `report` columns are only
 appended, never filtered on.
@@ -316,7 +316,7 @@ uses = "size.equal_weight"
 Step ids: `screen.multibagger`, `screen.value`, `screen.dividend_yield`,
 `filter.fundamental_quality`, `filter.market_regime`, `filter.liquidity`, `size.fixed_sip`,
 `size.equal_weight`, `size.inverse_volatility`, `execute.sip_backtest`. The Graham and net-net
-screeners (04, 05) are not pipeline steps yet. Chains may also name vyapaar-strategies catalog ids
+screeners (04, 05) are not pipeline steps yet. Chains may also name tantra-strategies catalog ids
 such as `execute.equal_weight` (an `execute` step accepts `weights` or a bare `universe`); they
 validate, but `06_run_chain.py` refuses to run them ("validated but not runnable in this pipeline
 yet").
@@ -330,8 +330,8 @@ with ROCE >= 20% and debt-to-equity <= 0.5:
 python examples/screening/06_run_chain.py --chain examples/screening/chains/fundamentals.toml --format symbols
 ```
 
-Before running, the chain is checked by vyapaar-strategies' `tools/validate_chain.py` (found via
-`$VYAAPAAR_STRATEGIES_DIR` or the sibling `vyapaar-strategies` checkout): shapes and columns must
+Before running, the chain is checked by tantra-strategies' `tools/validate_chain.py` (found via
+`$VYAAPAAR_STRATEGIES_DIR` or the sibling `tantra-strategies` checkout): shapes and columns must
 chain, kinds must run in order, `with` values must respect each param's type and bounds, and
 `report` columns must be among the step's `emits.reportable`.
 
@@ -379,7 +379,7 @@ python examples/screening/02_value_52w_low_screener.py --asof 2025-03-01 --max-p
 
 ## Data Requirements
 
-Point-in-time valuation comes from the 1D Parquet catalog (`vyapaar-data/data/catalog/1D/NSE/`)
+Point-in-time valuation comes from the 1D Parquet catalog (`tantra-data/data/catalog/1D/NSE/`)
 plus the fundamentals lakehouse:
 
 - `financial_ratios` — EPS, ROCE, debt/equity, operating margin, free cash flow, book equity.
@@ -387,4 +387,4 @@ plus the fundamentals lakehouse:
 - Derived fields: `P/E = close / EPS`, `P/B = close / (equity / shares)`,
   `yield = abs(dividends) / shares / close`, `Graham Value = sqrt(22.5 * EPS * BVPS)`.
 
-Requires `fundamentals.duckdb` at `vyapaar-data/data/fundamentals.duckdb`.
+Requires `fundamentals.duckdb` at `tantra-data/data/fundamentals.duckdb`.

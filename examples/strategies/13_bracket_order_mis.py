@@ -34,13 +34,13 @@ import datetime as dt
 import sys
 from typing import Any, ClassVar, override
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.order import OrderSide
-from vyapaar_examples._kernel.trade import Trade
-from vyapaar_examples.cli import run_example
-from vyapaar_examples.replay_report import replay_report
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.order import OrderSide
+from tantra_examples._kernel.trade import Trade
+from tantra_examples.cli import run_example
+from tantra_examples.replay_report import replay_report
 
 __all__ = ["BracketOrderMis", "intraday_mis_bars", "main", "run"]
 

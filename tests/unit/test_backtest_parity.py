@@ -1,8 +1,8 @@
 """tests/unit/test_backtest_parity.py: Phase 8 backtest parity (golden vectors).
 
-Asserts the Python backtest (``vyapaar_examples.backtest.run_portfolio_backtest``) returns
+Asserts the Python backtest (``tantra_examples.backtest.run_portfolio_backtest``) returns
 match a pinned golden vector within ``1e-6``. The golden vector represents the compiled
-Rust backtest (``vyapaar-runtime-backtest``) output: until the Rust golden vector is wired into CI,
+Rust backtest (``tantra-runtime-backtest``) output: until the Rust golden vector is wired into CI,
 this snapshot makes ``make test-parity`` executable and fully offline.
 
 Run::
@@ -21,10 +21,10 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.synthetic import trending_bars
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.synthetic import trending_bars
 
 ROOT = Path(__file__).resolve().parents[2]
 GOLDEN = ROOT / "tests" / "snapshots" / "backtest_parity_golden.json"
@@ -62,7 +62,7 @@ def _load_backtest_module():
 
     spec = importlib.util.spec_from_file_location(
         "backtest_parity_probe",
-        ROOT / "vyapaar_examples" / "backtest.py",
+        ROOT / "tantra_examples" / "backtest.py",
     )
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)

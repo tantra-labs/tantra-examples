@@ -21,7 +21,7 @@ Pitfalls::
     - The server binds 0.0.0.0 with no authentication, which exposes P&L to the network. Bind a
       loopback or internal address, or firewall the port. It also stops after --duration seconds.
     - Drift needs a real definition: broker positions against the internal ledger in quantity, with
-      a tolerance and a re-check after every restart. vyapaar_uptime_seconds is seconds since this
+      a tolerance and a re-check after every restart. tantra_uptime_seconds is seconds since this
       process started; use UTC for timestamps and convert to IST only for display.
 """
 
@@ -34,7 +34,7 @@ import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import Any
 
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 
@@ -73,30 +73,30 @@ def generate_metrics() -> str:
 
     # Adapter latency (simulated)
     adapter_latency = random.uniform(10, 200)  # ms
-    lines.append(f'vyapaar_adapter_latency_ms{{adapter="dhan"}} {adapter_latency:.2f}')
+    lines.append(f'tantra_adapter_latency_ms{{adapter="dhan"}} {adapter_latency:.2f}')
 
     # Order throughput
     orders_sent = random.randint(0, 50)
     orders_filled = random.randint(0, orders_sent)
     orders_rejected = orders_sent - orders_filled
-    lines.append(f"vyapaar_orders_sent_total {orders_sent}")
-    lines.append(f"vyapaar_orders_filled_total {orders_filled}")
-    lines.append(f"vyapaar_orders_rejected_total {orders_rejected}")
+    lines.append(f"tantra_orders_sent_total {orders_sent}")
+    lines.append(f"tantra_orders_filled_total {orders_filled}")
+    lines.append(f"tantra_orders_rejected_total {orders_rejected}")
 
     # Position drift (bps)
     drift_bps = random.uniform(-50, 50)
-    lines.append(f"vyapaar_position_drift_bps {drift_bps:.2f}")
+    lines.append(f"tantra_position_drift_bps {drift_bps:.2f}")
 
     # P&L
     pnl = random.uniform(-10000, 10000)
-    lines.append(f"vyapaar_pnl_rupees {pnl:.2f}")
+    lines.append(f"tantra_pnl_rupees {pnl:.2f}")
 
     # Capital utilization
     utilization = random.uniform(0.3, 0.9)
-    lines.append(f"vyapaar_capital_utilization_pct {utilization:.2f}")
+    lines.append(f"tantra_capital_utilization_pct {utilization:.2f}")
 
     # Session uptime
-    lines.append(f"vyapaar_uptime_seconds {int(time.monotonic() - _STARTED)}")
+    lines.append(f"tantra_uptime_seconds {int(time.monotonic() - _STARTED)}")
 
     return "\n".join(lines) + "\n"
 

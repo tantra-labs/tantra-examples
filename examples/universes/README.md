@@ -3,7 +3,7 @@
 Walk these files in order. Each step builds on the previous one and ends
 with a production-ready catalog strategy.
 
-Every example here resolves members from the universe map bundled with Vyapaar (or
+Every example here resolves members from the universe map bundled with Tantra (or
 from a local seed list), so nothing needs an adapter or the network and the output
 is deterministic. Examples 07–08 read local Parquet bars and run the reference and
 hand-rolled equal-weight backtests.
@@ -15,12 +15,12 @@ Every numbered script in this directory has a `Pitfalls::` section in its module
 universe resolved without `as_of` is today's membership, so any past window is survivorship-biased
 (and Alpha 30 members were picked for past alpha); the shipped Alpha 30 history stamps today's
 names as members since 2005, so `as_of=` does not rescue it; the engine list and the seed list used
-by 08 differ (now one source, `vyapaar_examples/universe_lists.py`; engine list is the default and
+by 08 differ (now one source, `tantra_examples/universe_lists.py`; engine list is the default and
 `--alpha30-list seed` / `--list seed` opt into the seed); 04/06 resolve membership with `as_of=` the bar date, but the shipped Alpha 30 history is today's
 names stamped from 2005, so nothing joins or leaves; and fills at the signal bar's close (08) flatter results compared with the
 next-open fills of 07. `02_banknifty_constituents.py` exits with an explanatory message because `banknifty` is not a
 registered universe and the workspace has no member list (it never invents one). For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## At a glance
 
@@ -32,7 +32,7 @@ registered universe and the workspace has no member list (it never invents one).
 | 04 | `04_alpha30_generic_rebalancer.py` | `UniverseEqualWeightRebalance`                    | Generic equal-weight rebalancer (any universe, any exchange)    |
 | 05 | `05_alpha30_custom_universe.py`    | `UniverseEqualWeightRebalance` (reused)           | Build and register your own InstrumentId list as a universe     |
 | 06 | `06_alpha30_equal_weight_demo.py`  | `Alpha30EqualWeightRebalance`                      | Alpha 30 specialization of generic rebalancer 04                |
-| 07 | `07_alpha30_backtest.py`           | catalog `EqualWeightRebalance` (`equal_weight`)   | Vyapaar-native backtest: next-open fills, date-aware T+N, run.json |
+| 07 | `07_alpha30_backtest.py`           | catalog `EqualWeightRebalance` (`equal_weight`)   | Tantra-native backtest: next-open fills, date-aware T+N, run.json |
 | 08 | `08_alpha30_union_ewr_backtest.py` | `Alpha30EWRExample` (hand-rolled)                 | Hand-rolled equal-weight rebalancer (close fills, flat fee)      |
 | 09 | `09_alpha30_cross_sectional.py`    | Cross-sectional factor model                      | Momentum-minus-volatility factor scores, monthly top-decile      |
 |    |                                     |                                                    | rebalance; zero-copy Arrow reads over the Parquet lakehouse      |
@@ -88,7 +88,7 @@ runnable backtest:
         ↓
 06  Alpha 30 demo               (wires 03 + 04 into a runnable strategy)
         ↓
-07  backtest pipeline           (Vyapaar-native reference backtest)
+07  backtest pipeline           (Tantra-native reference backtest)
 ```
 
 ### 04 — Generic equal-weight rebalancer
@@ -123,11 +123,11 @@ rebalancer specifically for Alpha 30 without duplicating strategy code.
 
 ### 07 — Backtest pipeline
 
-`07_alpha30_backtest.py` is the Vyapaar-native reference backtest of the
+`07_alpha30_backtest.py` is the Tantra-native reference backtest of the
 `equal_weight` catalog strategy (`portfolio/rebalancing/equal_weight`, class
 `EqualWeightRebalance`; Alpha 30 is its `universe` param):
 
-- Strategy loaded from `vyapaar-strategies` by registry name
+- Strategy loaded from `tantra-strategies` by registry name
   (`--strategies-dir`, `$VYAAPAAR_STRATEGIES_DIR`, or the sibling checkout).
 - Universe resolved once from the universe the strategy trades; members with
   no bars in the test window are reported (`--require-full-coverage` fails).
@@ -155,7 +155,7 @@ recorded as `test_end_source` in run.json.
 `08_alpha30_union_ewr_backtest.py` is a self-contained equal-weight rebalance of
 the Alpha-30 basket on a calendar schedule (fills at the session close, flat
 fee, illustrative costs). It has its own small simulator and does not use the
-core next-open port; use 07 for Vyapaar results. `--settlement-days` defaults to
+core next-open port; use 07 for Tantra results. `--settlement-days` defaults to
 the core market pack's cycle as of `--start` (NSE: T+2 before 2023-01-27, T+1
 from then); pass `--settlement-days 2` for the old fixed T+2 and `0` for
 same-session sell and buy.

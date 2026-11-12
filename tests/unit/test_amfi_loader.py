@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.amfi import EXCHANGE, AmfiNavLoader, NavRow, nav_bars
+from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.amfi import EXCHANGE, AmfiNavLoader, NavRow, nav_bars
 
 CODE = "120503"
 DAYS = [dt.date(2025, 6, 2), dt.date(2025, 6, 3), dt.date(2025, 6, 4), dt.date(2025, 6, 5)]

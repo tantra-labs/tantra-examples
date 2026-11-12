@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.options import option_sell_stt
+from tantra_examples.options import option_sell_stt
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "options" / "06_nifty_920_straddle.py"
 

@@ -5,7 +5,7 @@ Resolves a broker adapter by name (``fake`` by default), connects, and reports t
 it opened (user, mode, accounts, expiry) plus the capabilities it declares (exchanges,
 order types, products, features, time-in-force, stream modes) before disconnecting. It is
 adapter mechanics only - no market data and no trading strategy - and everything past the
-boundary is a Vyapaar session or capability value, never a broker wire format. The default
+boundary is a Tantra session or capability value, never a broker wire format. The default
 ``fake`` adapter is deterministic and offline, so the example runs anywhere; point it at a
 real broker with ``--adapter dhan`` and its credentials.
 
@@ -41,13 +41,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.adapters import (
+from tantra_examples._kernel.adapters import (
     AdapterNotFound,
     available_adapters,
     register_adapter,
     resolve_adapter,
 )
-from vyapaar_examples._kernel.adapters.testing import FakeAdapter
+from tantra_examples._kernel.adapters.testing import FakeAdapter
 
 # Ensure reference fake is registered for testing and offline development
 if "fake" not in available_adapters():

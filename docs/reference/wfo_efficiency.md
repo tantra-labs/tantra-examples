@@ -13,7 +13,7 @@ survives out-of-sample:
 WFE = Mean(OOS Sharpe) / Mean(IS Sharpe)
 ```
 
-A WFE ≥ 0.60 is the Vyapaar certification threshold for "the edge is real."
+A WFE ≥ 0.60 is the Tantra certification threshold for "the edge is real."
 
 ---
 
@@ -33,16 +33,16 @@ parameters inevitably fit noise. WFO forces a temporal separation:
 | **Expanding** | Anchored at start, grows each fold | Uses all history; stable params | Regime changes contaminate |
 | **Rolling** | Fixed-length window slides forward | Adapts to regime changes | Less training data per fold |
 
-**Vyapaar default: Expanding** (as documented in the literature).
+**Tantra default: Expanding** (as documented in the literature).
 
 ---
 
-## Vyapaar WFO Implementation
+## Tantra WFO Implementation
 
-### Function: `vyapaar_examples.optimizer.algo_analytics.walk_forward.walk_forward`
+### Function: `tantra_examples.optimizer.algo_analytics.walk_forward.walk_forward`
 
 ```python
-from vyapaar_examples.optimizer.algo_analytics.walk_forward import (
+from tantra_examples.optimizer.algo_analytics.walk_forward import (
     walk_forward,
     WalkForwardGates,
 )  # gap 0001: algo_analytics engine mirror
@@ -58,7 +58,7 @@ result = walk_forward(
     n_folds=8,
     window="expanding",  # or "rolling"
     cash=1_000_000.0,
-    # ... any Vyapaar.backtest kwargs (timeframe, costs, fill, etc.)
+    # ... any Tantra.backtest kwargs (timeframe, costs, fill, etc.)
 )
 ```
 
@@ -73,7 +73,7 @@ Fold 2:  Train [2020-01, 2023-01)  →  Test [2023-01, 2023-07)
 
 - **Fresh strategy instance per fold** (deep-copied for instances; classes/paths
   re-resolved). State from fold *i* training *never* leaks into fold *i* test.
-- **Full Vyapaar.backtest**: Next-open fills, NSE delivery costs, T+1 settlement.
+- **Full Tantra.backtest**: Next-open fills, NSE delivery costs, T+1 settlement.
 - **Same backtest kwargs** for train and test (timeframe, costs, fill model).
 
 ### Output: `WalkForwardResult`
@@ -130,7 +130,7 @@ class Fold:
 
 ## The Three Gates
 
-Vyapaar applies three independent gates to the fold OOS Sharpes:
+Tantra applies three independent gates to the fold OOS Sharpes:
 
 | Gate | Default | Formula | Rationale |
 |------|---------|---------|-----------|
@@ -164,7 +164,7 @@ in-sample optimization captured mostly noise.
 # Synthetic bars (fast, deterministic)
 python examples/backtesting/04_walk_forward.py --synthetic
 
-# Real data from vyapaar-data lakehouse
+# Real data from tantra-data lakehouse
 python examples/backtesting/04_walk_forward.py \
     --symbol RELIANCE \
     --start 2020-01-01 \
@@ -240,10 +240,10 @@ python examples/backtesting/04_walk_forward.py \
 
 ### Common Pitfalls
 
-1. **Data leakage**: Using future data in indicators (e.g., `shift(-1)`). Vyapaar's
+1. **Data leakage**: Using future data in indicators (e.g., `shift(-1)`). Tantra's
    `Strategy.on_bar` receives bars in strict temporal order — no lookahead possible.
 
-2. **State leakage**: Strategy instance carries state from IS to OOS. Vyapaar's
+2. **State leakage**: Strategy instance carries state from IS to OOS. Tantra's
    `walk_forward` deep-copies instances per fold — this cannot happen.
 
 3. **Insufficient trades per fold**: If a fold has < 5 trades, its Sharpe is
@@ -263,10 +263,10 @@ python examples/backtesting/04_walk_forward.py \
 WFO produces the fold-level IS/OOS fitness values needed for PBO:
 
 ```python
-from vyapaar_examples.optimizer.algo_analytics.walk_forward import (
+from tantra_examples.optimizer.algo_analytics.walk_forward import (
     walk_forward,
 )  # gap 0001: algo_analytics engine mirror
-from vyapaar_examples.optimizer import compute_pbo_cscv, compute_dsr
+from tantra_examples.optimizer import compute_pbo_cscv, compute_dsr
 
 wf = walk_forward(strategy, ...)
 
@@ -307,5 +307,5 @@ pytest -q tests/unit/test_04_walk_forward.py
 1. Pardo, R. (2008). *The Evaluation and Optimization of Trading Strategies*. Wiley.
 2. López de Prado, M. (2018). *Advances in Financial Machine Learning*. Wiley.
    Chapter 12: Walk-Forward Analysis.
-3. Vyapaar `vyapaar_examples.optimizer.algo_analytics.walk_forward` module.
-4. Vyapaar `vyapaar-ya-enhancer/src/walk_forward.rs` (Rust implementation).
+3. Tantra `tantra_examples.optimizer.algo_analytics.walk_forward` module.
+4. Tantra `tantra-ya-enhancer/src/walk_forward.rs` (Rust implementation).

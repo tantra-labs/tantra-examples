@@ -10,10 +10,10 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from vyapaar_examples._kernel.coverage import DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore, find_data_root
-from vyapaar_examples.base import REPO_ROOT
+from tantra_examples._kernel.coverage import DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore, find_data_root
+from tantra_examples.base import REPO_ROOT
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "universes" / "09_alpha30_cross_sectional.py"
@@ -34,8 +34,8 @@ def _default_catalog() -> None:
     """Skip when the real NSE 1D catalog isn't present locally.
 
     ``main()``'s catalog-mode run (triggered by ``--start``/``--end``) reads the real data
-    root (no synthetic ``bars=`` override); that root is the absent ``vyapaar-data``
-    checkout here (docs/gaps/0003-vyapaar-data-nav-loaders.md).
+    root (no synthetic ``bars=`` override); that root is the absent ``tantra-data``
+    checkout here (docs/gaps/0003-tantra-data-nav-loaders.md).
     """
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(dt.date(2023, 1, 2), dt.date(2024, 12, 31) + dt.timedelta(days=1))
@@ -43,7 +43,7 @@ def _default_catalog() -> None:
     if not bars:
         pytest.skip(
             "RELIANCE.NSE 1D catalog not available locally "
-            "(docs/gaps/0003-vyapaar-data-nav-loaders.md)"
+            "(docs/gaps/0003-tantra-data-nav-loaders.md)"
         )
 
 

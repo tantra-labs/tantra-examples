@@ -34,8 +34,8 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.optimizer.algo_analytics.deflated_sharpe import (
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.optimizer.algo_analytics.deflated_sharpe import (
     deflated_sharpe,  # gap 0001: algo_analytics engine mirror
 )
 

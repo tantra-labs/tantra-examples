@@ -17,7 +17,7 @@ Pitfalls::
       real model may know what happened after the decision date; test vetoes on dates after its
       training cutoff or replay recorded live decisions.
     - The core invariant bounds quantity, not exposure: validate_llm_decision itself accepts a
-      veto or size-down on an exit. guard_llm_decision (vyapaar_examples/decision_guard.py) adds the
+      veto or size-down on an exit. guard_llm_decision (tantra_examples/decision_guard.py) adds the
       reduce-only rule, but only for intents it can recognise: stop-type orders, or any intent you
       pass reduce_only=True for. A plain market SELL that is really a stop-out is not detected
       unless you flag it. Route risk-reducing orders around the model when in doubt.
@@ -40,16 +40,16 @@ from typing import Any
 from rich.console import Console
 from rich.panel import Panel
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.order import OrderIntent, OrderSide
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.decision_guard import (
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.order import OrderIntent, OrderSide
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.decision_guard import (
     DecisionKind,
     LlmDecision,
     apply_llm_decision,
     guard_llm_decision,
 )
-from vyapaar_examples.display_style import SECONDARY, Column, render_table
+from tantra_examples.display_style import SECONDARY, Column, render_table
 
 __all__ = ["main", "run", "run_typed_llm_decision_demo"]
 
@@ -59,7 +59,7 @@ console = Console()
 def run_typed_llm_decision_demo() -> dict[str, Any]:
     console.print(
         Panel.fit(
-            "[bold cyan]Vyapaar E5-S7: Typed LLM Decisions & Safety Invariants[/bold cyan]\n"
+            "[bold cyan]Tantra E5-S7: Typed LLM Decisions & Safety Invariants[/bold cyan]\n"
             "[dim]Strict veto / size-down enforcement: an AI model can veto or reduce risk, "
             "but never increase exposure.[/dim]",
             border_style="cyan",

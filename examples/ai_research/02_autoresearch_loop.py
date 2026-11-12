@@ -1,8 +1,8 @@
 """ai_research/02_autoresearch_loop: design placeholder for the autonomous research loop.
 
-See README for details. ``vyapaar.ai.autoresearch.*`` are stubs today (gap 0002), so this file runs
+See README for details. ``tantra.ai.autoresearch.*`` are stubs today (gap 0002), so this file runs
 nothing. The Pitfalls below are the traps the loop must be built to defend against (design in
-vyapaar-docs/docs/tutorials/autoresearch-loop.md), not behaviour you can run.
+tantra-docs/docs/tutorials/autoresearch-loop.md), not behaviour you can run.
 
 Pitfalls::
 

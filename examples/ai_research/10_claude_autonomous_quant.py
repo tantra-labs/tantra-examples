@@ -1,6 +1,6 @@
 """ai_research/10_claude_autonomous_quant: MCP quantitative agent workflow.
 
-The agent inspects Vyapaar's capabilities (the static MCP tool schema, the same
+The agent inspects Tantra's capabilities (the static MCP tool schema, the same
 one ``06_mcp_integration.py`` enumerates) and the indicator catalog, formulates
 a mean-reversion hypothesis, runs a backtest, and evaluates it with the
 Deflated Sharpe Ratio.  The loop is offline and deterministic by default
@@ -39,17 +39,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.ai.llm.provider import ScriptedFakeLlm
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Rsi
-from vyapaar_examples._kernel.order import OrderSide
-from vyapaar_examples._kernel.testing import replay
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.decision_guard import DecisionKind, LlmDecision
-from vyapaar_examples.jsonable import jsonable
-from vyapaar_examples.optimizer.algo_analytics import deflated_sharpe
-from vyapaar_examples.synthetic import oscillating_bars
+from tantra_examples._kernel.ai.llm.provider import ScriptedFakeLlm
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Rsi
+from tantra_examples._kernel.order import OrderSide
+from tantra_examples._kernel.testing import replay
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.decision_guard import DecisionKind, LlmDecision
+from tantra_examples.jsonable import jsonable
+from tantra_examples.optimizer.algo_analytics import deflated_sharpe
+from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]
 
@@ -87,8 +87,8 @@ def _schema_path() -> Path | None:
 
     repo_root = Path(__file__).resolve().parents[2]
     candidates = [
-        repo_root.parent / "vyapaar-market" / "schema" / "mcp" / "mcp_tools.json",
-        repo_root.parent / "vyapaar-agent" / "schema" / "mcp" / "mcp_tools.json",
+        repo_root.parent / "tantra-market" / "schema" / "mcp" / "mcp_tools.json",
+        repo_root.parent / "tantra-agent" / "schema" / "mcp" / "mcp_tools.json",
         repo_root / "schema" / "mcp" / "mcp_tools.json",
     ]
     for c in candidates:
@@ -123,7 +123,7 @@ def _mcp_tools() -> list[dict[str, Any]]:
         return [
             {
                 "name": "backtest",
-                "description": "Run a Vyapaar backtest for a strategy over a window",
+                "description": "Run a Tantra backtest for a strategy over a window",
                 "read_only": True,
             },
             {
@@ -156,7 +156,7 @@ def _mcp_tools_static() -> list[dict[str, Any]]:
     return [
         {
             "name": "backtest",
-            "description": "Run a Vyapaar backtest for a strategy over a window",
+            "description": "Run a Tantra backtest for a strategy over a window",
             "read_only": True,
         },
         {

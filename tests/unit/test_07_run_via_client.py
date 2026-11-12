@@ -1,7 +1,7 @@
 """backtesting/07_run_via_client: smoke test for the run-service client example.
 
-``vyapaar.client`` is not on the wheel yet (gap
-``0004-vyapaar-wheel-display-universes-client``), so the example degrades to a clear
+``tantra.client`` is not on the wheel yet (gap
+``0004-tantra-wheel-display-universes-client``), so the example degrades to a clear
 error at ``main()`` time instead of raising ``ImportError`` at import time; this test
 exercises exactly that degrade-gracefully contract (D7).
 """
@@ -40,5 +40,5 @@ def test_main_reports_missing_client_surface(example, capsys):
     code = example.main(["--data-dir", "."])
     assert code == 1
     err = capsys.readouterr().err
-    assert "vyapaar.client" in err
+    assert "tantra.client" in err
     assert "0004" in err

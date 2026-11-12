@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples.synthetic import bar, weekdays
 
 _PATH = (
     Path(__file__).resolve().parents[2]
@@ -143,7 +143,7 @@ def test_simresult_margin_parameters(ex) -> None:
 
 def test_buy_shortfall_supports_margin_buying(ex) -> None:
     """_buy_shortfall allows purchasing with borrowed cash when max_borrow > 0."""
-    from vyapaar_examples.ewr import _buy_shortfall
+    from tantra_examples.ewr import _buy_shortfall
 
     qty: dict[str, int] = {"AAA": 0}
     desired = {"AAA": 100}
@@ -162,7 +162,7 @@ def test_buy_shortfall_supports_margin_buying(ex) -> None:
 
 def test_sell_excess_supports_short_selling(ex) -> None:
     """_sell_excess allows short selling into negative positions when allow_short=True."""
-    from vyapaar_examples.ewr import _sell_excess
+    from tantra_examples.ewr import _sell_excess
 
     qty: dict[str, int] = {"AAA": 0}
     desired = {"AAA": -50}

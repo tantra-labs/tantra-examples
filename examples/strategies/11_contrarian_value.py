@@ -1,6 +1,6 @@
 """strategies/11_contrarian_value: pipeline recipe — contrarian value at the 52-week low.
 
-Composition via :mod:`vyapaar_examples.pipeline` (``>>``/``|``):
+Composition via :mod:`tantra_examples.pipeline` (``>>``/``|``):
 
   ValueScreener (near 52w low, P/E ≤ 20, P/B ≤ 2, ROCE ≥ 12, D/E ≤ 1.0)
     → FundamentalQualityFilter (ROCE / Debt-Eq / margin)
@@ -53,8 +53,8 @@ import json
 import sys
 from typing import Any
 
-from vyapaar_examples.cli import make_parser
-from vyapaar_examples.pipeline import (
+from tantra_examples.cli import make_parser
+from tantra_examples.pipeline import (
     BuyAndHoldSignal,
     FixedSipSizer,
     FundamentalQualityFilter,

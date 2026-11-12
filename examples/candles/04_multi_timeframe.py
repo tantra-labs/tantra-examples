@@ -3,7 +3,7 @@
 A research workflow should read one source of truth and resample it; fetching the same
 window at several resolutions and hoping they agree is how silent data bugs get into a
 backtest. This example pulls ``1m`` bars once, derives ``5m``, ``1h`` and ``1d`` with
-``vyapaar_examples.bars.aggregate``, and reports every view with its bar count, volume and
+``tantra_examples.bars.aggregate``, and reports every view with its bar count, volume and
 span, plus an ``alignment`` block that runs the checks a workflow should run before it
 trusts a resampled series.
 
@@ -49,14 +49,14 @@ import datetime as dt
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.adapters.errors import AdapterNotFound
-from vyapaar_examples._kernel.adapters.registry import default_registry
-from vyapaar_examples._kernel.adapters.testing import FakeAdapter
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.bars import aggregate, bucket_start
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
+from tantra_examples._kernel.adapters.errors import AdapterNotFound
+from tantra_examples._kernel.adapters.registry import default_registry
+from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.bars import aggregate, bucket_start
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
 
 _INSTRUMENT = InstrumentId("RELIANCE", "NSE")
 _SOURCE_TIMEFRAME = "1m"

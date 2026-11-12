@@ -1,7 +1,7 @@
 """options/02_greeks_calculation: Black-Scholes Greeks per contract.
 
 Computes delta, gamma, theta, vega and rho for European options with
-`vyapaar_examples._kernel.greeks.bs_greeks`, and builds the Greeks surface across strikes.
+`tantra_examples._kernel.greeks.bs_greeks`, and builds the Greeks surface across strikes.
 Teaches how each Greek varies with moneyness around an ATM reference. No `Strategy`
 subclass -- runs are offline and deterministic.
 
@@ -33,9 +33,9 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.greeks import bs_greeks
-from vyapaar_examples._kernel.option import OptionKind
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples._kernel.greeks import bs_greeks
+from tantra_examples._kernel.option import OptionKind
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 

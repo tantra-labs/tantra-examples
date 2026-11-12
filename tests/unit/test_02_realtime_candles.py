@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.adapters.errors import AdapterError
-from vyapaar_examples._kernel.tick import QuoteTick
+from tantra_examples._kernel.adapters.errors import AdapterError
+from tantra_examples._kernel.tick import QuoteTick
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "candles" / "02_realtime_candles.py"
 _NS_PER_MINUTE = 60 * 1_000_000_000

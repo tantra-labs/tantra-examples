@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.adapters.errors import AdapterNotFound
+from tantra_examples._kernel.adapters.errors import AdapterNotFound
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "basic" / "01_connect_dhan.py"
 

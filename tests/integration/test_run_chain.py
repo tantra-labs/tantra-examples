@@ -1,7 +1,7 @@
 """Integration: ``screening/chains/quality_value.toml`` and ``screening/06_run_chain.py``.
 
 Uses the same offline catalog and fundamentals store as the other pipeline tests; needs the
-vyapaar-strategies checkout (or ``$VYAAPAAR_STRATEGIES_DIR``) for chain validation and skips
+tantra-strategies checkout (or ``$VYAAPAAR_STRATEGIES_DIR``) for chain validation and skips
 without it.
 """
 
@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.loader import CatalogError
-from vyapaar_examples.pipeline.chain import ChainError, load_chain, run_chain, validate
+from tantra_examples._kernel.loader import CatalogError
+from tantra_examples.pipeline.chain import ChainError, load_chain, run_chain, validate
 
 EX = Path(__file__).resolve().parents[2] / "examples"
 CHAIN = EX / "screening" / "chains" / "quality_value.toml"
@@ -27,7 +27,7 @@ def _need_catalog() -> None:
     try:
         validate([{"uses": "size.equal_weight"}])
     except CatalogError as exc:
-        pytest.skip(f"vyapaar-strategies catalog not available: {exc}")
+        pytest.skip(f"tantra-strategies catalog not available: {exc}")
 
 
 def _script():

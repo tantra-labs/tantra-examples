@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from vyapaar_examples.screening.cli_args import add_nl_screener_args
-from vyapaar_examples.screening.nl_support import (
+from tantra_examples.screening.cli_args import add_nl_screener_args
+from tantra_examples.screening.nl_support import (
     MCAP_UNIT_MULTIPLIER,
     VOLUME_UNIT_MULTIPLIER,
     basket_statistics,

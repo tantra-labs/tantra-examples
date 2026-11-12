@@ -18,7 +18,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples import SampleInstruments, synthetic_bars
+from tantra_examples import SampleInstruments, synthetic_bars
 
 
 def _write_bars_csv(bars: list[Any], path: Path) -> None:

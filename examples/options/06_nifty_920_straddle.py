@@ -9,7 +9,7 @@ and is hand-rolled here — no ``Strategy`` subclass; runs are offline and
 deterministic on a seeded intraday path.
 
 The premium-side STT is modelled on the sell side of each leg using the
-statutory rate from ``vyapaar_examples.options`` (0.0625 % of premium per SEBI /
+statutory rate from ``tantra_examples.options`` (0.0625 % of premium per SEBI /
 NSE circular in force for FY 2025-26; re-verify against the latest circular).
 Buying to close attracts no premium STT; the entry STT is sunk regardless of
 outcome. Index options are European and cash-settled through ICCL on T+1, so
@@ -52,10 +52,10 @@ import random
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.greeks import bs_price
-from vyapaar_examples._kernel.option import OptionKind
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.options import (
+from tantra_examples._kernel.greeks import bs_price
+from tantra_examples._kernel.option import OptionKind
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.options import (
     ICCL_CLEARING_CORPORATION,
     SETTLEMENT_CYCLE_DAYS,
     freeze_limit_qty,

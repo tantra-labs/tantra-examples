@@ -1,11 +1,11 @@
 # 07 Mutual Funds – NAV handling and SIP backtests
 
-Mutual-fund examples use the AMFI NAV feed (`vyapaar_examples.amfi`) and Vyapaar's
+Mutual-fund examples use the AMFI NAV feed (`tantra_examples.amfi`) and Tantra's
 mutual-fund instrument type (`InstrumentKind.MUTUAL_FUND`). They are data and
 analytics workflows, not trading strategies — none defines a `Strategy` subclass.
 All runs are offline and deterministic, reading recorded NAV fixtures from the
 local Parquet store; no network or wall clock is involved. Catalog equivalents
-live in `vyapaar-strategies/mutual_funds/*`.
+live in `tantra-strategies/mutual_funds/*`.
 
 ## At a glance
 
@@ -25,11 +25,11 @@ instalments, Direct versus Regular and IDCW scheme codes, survivorship and categ
 reclassification, trailing-window CAGRs, forward-filled NAVs, and the estimation error of
 mean-variance weights fitted in-sample. Read it before trusting a number. For the general treatment
 see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## The AMFI NAV feed
 
-`vyapaar_examples.amfi.AmfiNavLoader` provides:
+`tantra_examples.amfi.AmfiNavLoader` provides:
 - `load(scheme_code: str, start, end) -> list[NavPoint]` — NAV series from the local Parquet store
 - `load_category(category: str) -> dict[str, list[NavPoint]]` — schemes in a category (loader stub: returns `{}` today)
 - `latest_nav(scheme_code: str) -> NavPoint | None` — most recent NAV (for live SIP)
@@ -50,12 +50,12 @@ pytest tests/unit -q -k "mutual_fund or nav or sip"
 
 1. **NAV as bar-equivalent** — `NavPoint` maps to `Bar` with `open=high=low=close=nav`, `volume=0`
 2. **SIP simulation** — Fixed calendar date (e.g., 7th of each month), buy units = amount/NAV
-3. **XIRR** — Internal rate of return for irregular cash flows (Vyapaar's `vyapaar_examples.metrics.xirr`)
-4. **Category universes** — AMFI categories map to Vyapaar universe names (`equity_large_cap`, etc.)
+3. **XIRR** — Internal rate of return for irregular cash flows (Tantra's `tantra_examples.metrics.xirr`)
+4. **Category universes** — AMFI categories map to Tantra universe names (`equity_large_cap`, etc.)
 5. **Optimization constraints** — Max weight per fund, min allocation, category caps
 
 ## From here to production
 
 - Add transaction costs: exit load, stamp duty (0.005% on redemption), STT (equity-oriented)
-- Use `vyapaar.session.BacktestSession` with `InstrumentKind.MUTUAL_FUND` for event-driven runs
-- Schedule rebalancing with `vyapaar.strategies.scheduling.RebalanceCalendar`
+- Use `tantra.session.BacktestSession` with `InstrumentKind.MUTUAL_FUND` for event-driven runs
+- Schedule rebalancing with `tantra.strategies.scheduling.RebalanceCalendar`

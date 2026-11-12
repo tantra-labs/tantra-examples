@@ -3,7 +3,7 @@
 Indian equity index options on NSE — NIFTY/BANKNIFTY — are European, cash-settled
 and cleared through ICCL on a T+1 cycle. This documents the three
 examples under `examples/options/` (06–08) and the cost-model helpers they share
-in `vyapaar_examples/options/`.
+in `tantra_examples/options/`.
 
 ## Scripts
 
@@ -15,7 +15,7 @@ in `vyapaar_examples/options/`.
 
 ## Cost model: option-premium STT and ICCL settlement
 
-`vyapaar_examples.options` collects the option-specific pieces the core
+`tantra_examples.options` collects the option-specific pieces the core
 cost schedules do not yet cover (F&O branch pending NSE F&O circulars):
 
 * **STT on the sell side** — 0.0625 % of the option premium (`OPTION_SELL_STT_RATE`),
@@ -44,11 +44,11 @@ net P&L and the max adverse spot move of the path.
 
 **07 — freeze-limit slicer.** A 5,000-contract parent exceeds the planned
 1,800-contract NIFTY freeze limit, so it must be sliced. The script uses
-the deterministic reference slicer in `vyapaar_examples.options` (`slice_order`);
+the deterministic reference slicer in `tantra_examples.options` (`slice_order`);
 `verify_slices` raises when any child exceeds the limit. 5,000 → [1,800, 1,800, 1,400].
 
 **08 — delta-hedged iron condor.** Sell the 4-leg condor for a net credit, then
-re-price the legs each bar with `vyapaar_examples.quant.bs_greeks` and flatten
+re-price the legs each bar with `tantra_examples.quant.bs_greeks` and flatten
 net delta with the underlying futures whenever `|net delta|` breaches the bound
 in `GreekRiskBounds`; gamma/vega breaches are logged. STT on the four opening
 sells is modelled; closing buys attract none. Reported: Greeks time series,

@@ -7,11 +7,11 @@ import datetime as dt
 import pytest
 
 from tests.unit.conftest import SCREEN_ASOF
-from vyapaar_examples.pipeline import DividendYieldScreener, MultibaggerScreener, ValueScreener
-from vyapaar_examples.pipeline.reporting import add_report_columns
-from vyapaar_examples.screening import graham, momentum, value
-from vyapaar_examples.screening.common import DEFAULT_FISCAL_LAG_DAYS
-from vyapaar_examples.screening.dispatch import run_screener
+from tantra_examples.pipeline import DividendYieldScreener, MultibaggerScreener, ValueScreener
+from tantra_examples.pipeline.reporting import add_report_columns
+from tantra_examples.screening import graham, momentum, value
+from tantra_examples.screening.common import DEFAULT_FISCAL_LAG_DAYS
+from tantra_examples.screening.dispatch import run_screener
 
 RECENT = SCREEN_ASOF - dt.timedelta(days=30)  # filed "after" a 90-day lag would allow
 OLD = SCREEN_ASOF - dt.timedelta(days=400)

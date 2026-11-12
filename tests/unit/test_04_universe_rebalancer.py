@@ -9,10 +9,10 @@ from pathlib import Path
 
 import pytest
 
-import vyapaar_examples.universe_lists as core
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.context import LedgerContext
-from vyapaar_examples._kernel.instrument import InstrumentId
+import tantra_examples.universe_lists as core
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.context import LedgerContext
+from tantra_examples._kernel.instrument import InstrumentId
 
 _PATH = (
     Path(__file__).resolve().parents[2]

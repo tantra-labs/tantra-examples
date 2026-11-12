@@ -9,11 +9,11 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.coverage import DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.amfi import parse_navall
-from vyapaar_examples.synthetic import session_ts
+from tantra_examples._kernel.coverage import DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.amfi import parse_navall
+from tantra_examples.synthetic import session_ts
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "storage" / "03_import_amfi_nav.py"
 D1 = "2025-06-02"

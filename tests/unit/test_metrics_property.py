@@ -1,6 +1,6 @@
 """tests/unit/test_metrics_property.py: Phase 7.3 property-based testing.
 
-Hypothesis-driven invariants for the equity-curve statistics in ``vyapaar_examples.metrics``
+Hypothesis-driven invariants for the equity-curve statistics in ``tantra_examples.metrics``
 (Sharpe, Sortino, max drawdown) and for first-class position sizing, across synthetic random
 equity curves. These are statistics (floats), not ledger entries: values stay in float
 domain here, per ADR 0011.
@@ -18,7 +18,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from vyapaar_examples.metrics import (
+from tantra_examples.metrics import (
     curve_metrics,
     max_drawdown,
     sharpe_ratio,

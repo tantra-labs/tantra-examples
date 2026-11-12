@@ -32,9 +32,9 @@ import datetime as dt
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.option import OptionChain, OptionContract, OptionKind, OptionStyle
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.option import OptionChain, OptionContract, OptionKind, OptionStyle
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 
@@ -168,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if is_table:
-        from vyapaar_examples.display_style import Column, render_kv, render_table
+        from tantra_examples.display_style import Column, render_kv, render_table
 
         chain_info = result.get("chain", {})
         render_kv(

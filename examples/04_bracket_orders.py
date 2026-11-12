@@ -15,7 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 
-from vyapaar_examples import SampleInstruments, trending_bars
+from tantra_examples import SampleInstruments, trending_bars
 
 STOP_OFFSET = Decimal("0.05")  # 5% stop distance
 TARGET_OFFSET = Decimal("0.10")  # 10% target

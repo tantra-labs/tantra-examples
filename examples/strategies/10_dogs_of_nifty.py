@@ -1,6 +1,6 @@
 """strategies/10_dogs_of_nifty: pipeline recipe — high dividend yielders at the 52-week low.
 
-Composition via :mod:`vyapaar_examples.pipeline` (``>>``/``|``):
+Composition via :mod:`tantra_examples.pipeline` (``>>``/``|``):
 
   DividendYieldScreener (near 52w low, trailing yield ≥ 3%)
     → FundamentalQualityFilter (ROCE / Debt-Eq / margin)
@@ -46,8 +46,8 @@ import json
 import sys
 from typing import Any
 
-from vyapaar_examples.cli import make_parser
-from vyapaar_examples.pipeline import (
+from tantra_examples.cli import make_parser
+from tantra_examples.pipeline import (
     DividendYieldScreener,
     FixedSipSizer,
     FundamentalQualityFilter,

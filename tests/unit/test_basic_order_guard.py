@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.adapters.errors import AdapterNotFound
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.cli import ALLOW_LIVE_ORDERS_ENV, require_paper_adapter
+from tantra_examples._kernel.adapters.errors import AdapterNotFound
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.cli import ALLOW_LIVE_ORDERS_ENV, require_paper_adapter
 
 ROOT = Path(__file__).resolve().parents[2] / "examples"
 

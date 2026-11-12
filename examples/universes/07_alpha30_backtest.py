@@ -1,11 +1,11 @@
-"""Example 07: Vyapaar-native backtest of the Alpha-30 equal-weight rebalance catalog strategy.
+"""Example 07: Tantra-native backtest of the Alpha-30 equal-weight rebalance catalog strategy.
 
-This is the reference way to backtest a catalog strategy over a universe in Vyapaar.
+This is the reference way to backtest a catalog strategy over a universe in Tantra.
 
 Pipeline
 --------
 1. **Strategy** - ``equal_weight`` (class ``EqualWeightRebalance``,
-   ``portfolio/rebalancing/equal_weight``) is loaded from the ``vyapaar-strategies`` catalog
+   ``portfolio/rebalancing/equal_weight``) is loaded from the ``tantra-strategies`` catalog
    by registry name with its ``config.toml``.
    Alpha 30 is just its ``universe`` param (``nifty200_alpha30``).
 2. **Universe** - resolved once, from the universe the strategy trades
@@ -48,19 +48,19 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.loader import CatalogError
-from vyapaar_examples._kernel.money import Currency, Money
-from vyapaar_examples.artifact import write_run_json
-from vyapaar_examples.backtest import BacktestRun, run_portfolio_backtest
-from vyapaar_examples.base import VyapaarExample, ts_to_date
-from vyapaar_examples.catalog import load_named
-from vyapaar_examples.display_style import Column, render_kv, render_table
-from vyapaar_examples.settlement import resolve_settlement_days
-from vyapaar_examples.universe_lists import resolve_universe
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.loader import CatalogError
+from tantra_examples._kernel.money import Currency, Money
+from tantra_examples.artifact import write_run_json
+from tantra_examples.backtest import BacktestRun, run_portfolio_backtest
+from tantra_examples.base import TantraExample, ts_to_date
+from tantra_examples.catalog import load_named
+from tantra_examples.display_style import Column, render_kv, render_table
+from tantra_examples.settlement import resolve_settlement_days
+from tantra_examples.universe_lists import resolve_universe
 
-SCHEMA = "vyapaar-examples/07-alpha30-backtest/v1"
+SCHEMA = "tantra-examples/07-alpha30-backtest/v1"
 DEFAULT_STRATEGY = "equal_weight"
 
 
@@ -86,8 +86,8 @@ def data_coverage(
     return {"members": per, "missing": missing, "n_members": len(per), "n_missing": len(missing)}
 
 
-class Alpha30BacktestExample(VyapaarExample):
-    """Vyapaar-native Alpha-30 equal-weight backtest."""
+class Alpha30BacktestExample(TantraExample):
+    """Tantra-native Alpha-30 equal-weight backtest."""
 
     universe_name: str = "nifty200_alpha_30"
     initial_capital: float | None = None
@@ -115,7 +115,7 @@ class Alpha30BacktestExample(VyapaarExample):
             "--strategies-dir",
             type=Path,
             default=None,
-            help="vyapaar-strategies checkout (default: $VYAAPAAR_STRATEGIES_DIR, then sibling)",
+            help="tantra-strategies checkout (default: $VYAAPAAR_STRATEGIES_DIR, then sibling)",
         )
         parser.add_argument(
             "--settlement-days",

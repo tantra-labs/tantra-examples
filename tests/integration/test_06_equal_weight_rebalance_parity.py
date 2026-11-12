@@ -2,7 +2,7 @@
 
 Both strategies replay the same synthetic bars (no network, no Parquet store); the
 catalog one (``portfolio/rebalancing/equal_weight``) is read from the sibling
-``vyapaar-strategies`` checkout (or ``$VYAAPAAR_STRATEGIES_DIR``) and the test is skipped
+``tantra-strategies`` checkout (or ``$VYAAPAAR_STRATEGIES_DIR``) and the test is skipped
 when it is not available.
 """
 
@@ -14,9 +14,9 @@ from types import ModuleType
 
 import pytest
 
-from vyapaar_examples._kernel.config import StrategyConfig
-from vyapaar_examples._kernel.context import LedgerContext
-from vyapaar_examples._kernel.loader import CatalogError, find_catalog
+from tantra_examples._kernel.config import StrategyConfig
+from tantra_examples._kernel.context import LedgerContext
+from tantra_examples._kernel.loader import CatalogError, find_catalog
 
 EXAMPLE = (
     Path(__file__).resolve().parents[2] / "examples" / "strategies" / "06_equal_weight_rebalance.py"

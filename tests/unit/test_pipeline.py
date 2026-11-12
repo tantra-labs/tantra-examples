@@ -6,7 +6,7 @@ import datetime as dt
 
 import pytest
 
-from vyapaar_examples.pipeline import (
+from tantra_examples.pipeline import (
     BreakoutSignal,
     BuyAndHoldSignal,
     DividendYieldScreener,
@@ -23,7 +23,7 @@ from vyapaar_examples.pipeline import (
     ValueScreener,
     parse_symbols,
 )
-from vyapaar_examples.pipeline.base import PipelineResult
+from tantra_examples.pipeline.base import PipelineResult
 
 
 class _RecordStep(Step):

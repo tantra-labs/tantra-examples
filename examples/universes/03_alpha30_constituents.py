@@ -1,12 +1,12 @@
 """03_alpha30_constituents: resolve Nifty200 Alpha 30, with a seed-list fallback.
 
-Universe resolution, no strategy. Resolve the current membership through the Vyapaar
+Universe resolution, no strategy. Resolve the current membership through the Tantra
 universe API and print it; when the engine does not know the name yet, fall back to
 an older seed list (also selectable with ``--list seed``). ``load_alpha30()``
 is the preferred helper for strategies that need the universe. Offline and
 deterministic.
 
-Catalog counterpart: vyapaar.markets.india.universes
+Catalog counterpart: tantra.markets.india.universes
 
 Run::
 
@@ -17,13 +17,13 @@ Pitfalls::
     - Today's members chosen by past returns: Alpha 30 ranks stocks by past alpha, so each name
       is in the list because of returns that already happened. Backtesting today's list over
       that earlier window selects winners with hindsight, on top of ordinary survivorship.
-    - The shipped history is not history: default_alpha30_history() in vyapaar stamps every one of
+    - The shipped history is not history: default_alpha30_history() in tantra stamps every one of
       today's 30 names as included from 2005-04-01, so resolve_universe(as_of=...) returns today's
       list for any date after that. The point-in-time API exists but the data behind it is not
       real reconstitution history; replace it before using as_of.
     - Two lists that disagree: the engine list (EICHERMOT, FORTIS, GLENMARK, MUTHOOTFIN) and the
       older seed (AUROPHARMA, MAHABANK, MOTHERSON, UNIONBANK) are different baskets. Both live in
-      vyapaar_examples/universe_lists.py; the engine list is authoritative and the default for 03,
+      tantra_examples/universe_lists.py; the engine list is authoritative and the default for 03,
       07 and 08, and --list seed / --alpha30-list seed opt into the seed. Do not mix them when
       comparing results.
     - register_alpha30_if_missing mutates the process-wide UNIVERSES map as a hidden
@@ -35,9 +35,9 @@ from __future__ import annotations
 
 import argparse
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.display_style import SYMBOL, Column, render_table
-from vyapaar_examples.universe_lists import (
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.display_style import SYMBOL, Column, render_table
+from tantra_examples.universe_lists import (
     ALPHA30_SEED,
     ALPHA30_VARIANTS,
     DEFAULT_ALPHA30_VARIANT,
@@ -46,7 +46,7 @@ from vyapaar_examples.universe_lists import (
     resolve_universe,
 )
 
-# The lists live in vyapaar_examples.universe_lists so 03/05/07/08 share one source. The engine
+# The lists live in tantra_examples.universe_lists so 03/05/07/08 share one source. The engine
 # list (what resolve_universe returns) is authoritative; the seed is a historical alternative.
 NIFTY200_ALPHA_30_SEED: tuple[str, ...] = ALPHA30_SEED
 
@@ -107,7 +107,7 @@ def print_members(members: list[InstrumentId]) -> None:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Resolve Nifty200 Alpha 30 through the Vyapaar universe API (engine list, "
+            "Resolve Nifty200 Alpha 30 through the Tantra universe API (engine list, "
             "authoritative) or the historical seed list."
         )
     )

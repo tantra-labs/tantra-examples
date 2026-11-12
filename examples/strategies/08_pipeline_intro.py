@@ -5,10 +5,10 @@ The smallest recipe that shows the ``>>``/``|`` composition and context flow::
     pipeline = A() >> B() >> C()
     result = pipeline.run()
 
-``A``, ``B`` and ``C`` are plain :class:`~vyapaar_examples.pipeline.base.Step` objects.  This recipe
+``A``, ``B`` and ``C`` are plain :class:`~tantra_examples.pipeline.base.Step` objects.  This recipe
 runs entirely in-process with a deterministic fake screener so it works with no Parquet
 catalog and no network — the next recipes replace it with real screeners from
-:mod:`vyapaar_examples.pipeline.screeners`.
+:mod:`tantra_examples.pipeline.screeners`.
 
 Run::
 
@@ -35,8 +35,8 @@ import json
 import sys
 from typing import Any
 
-from vyapaar_examples.cli import make_parser
-from vyapaar_examples.pipeline import EqualWeightSizer, Pipeline, Step
+from tantra_examples.cli import make_parser
+from tantra_examples.pipeline import EqualWeightSizer, Pipeline, Step
 
 __all__ = ["main"]
 

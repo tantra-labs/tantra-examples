@@ -11,8 +11,8 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.adapters.testing import FakeAdapter
-from vyapaar_examples.bars import SUPPORTED_TIMEFRAMES, bucket_start, timeframe_seconds
+from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra_examples.bars import SUPPORTED_TIMEFRAMES, bucket_start, timeframe_seconds
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "candles" / "03_custom_aggregation.py"
 _NS_PER_SECOND = 1_000_000_000

@@ -1,4 +1,4 @@
-"""vyapaar_examples.sip_plan / sip_report: schedule, XIRR and report helpers for script 08."""
+"""tantra_examples.sip_plan / sip_report: schedule, XIRR and report helpers for script 08."""
 
 from __future__ import annotations
 
@@ -8,13 +8,13 @@ import json
 
 import pytest
 
-from vyapaar_examples.sip_plan import (
+from tantra_examples.sip_plan import (
     calculate_xirr,
     monthly_dates,
     sip_target_dates,
     weekly_dates,
 )
-from vyapaar_examples.sip_report import add_sip_args, emit_sip_report
+from tantra_examples.sip_report import add_sip_args, emit_sip_report
 
 
 def test_monthly_dates_clamps_day_to_month_end():

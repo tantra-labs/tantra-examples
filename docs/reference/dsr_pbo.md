@@ -3,7 +3,7 @@
 ## Overview
 
 This document describes the implementation and usage of two critical overfitting diagnostics
-in the Vyapaar platform:
+in the Tantra platform:
 
 1. **Deflated Sharpe Ratio (DSR)** — Adjusts the observed Sharpe ratio for multiple
    testing, non-normality of returns, and sample length (Bailey & López de Prado, 2014).
@@ -12,8 +12,8 @@ in the Vyapaar platform:
    is due to overfitting rather than genuine edge.
 
 Both are implemented in:
-- Rust: `vyapaar-ya-enhancer/src/overfitting_guardrails.rs`
-- Python: `vyapaar_examples.optimizer.algo_analytics.deflated_sharpe` and walk-forward fold analysis
+- Rust: `tantra-ya-enhancer/src/overfitting_guardrails.rs`
+- Python: `tantra_examples.optimizer.algo_analytics.deflated_sharpe` and walk-forward fold analysis
 
 ---
 
@@ -77,10 +77,10 @@ Where:
 | 1.5 ≤ DSR < 3.0 | **Marginal**: Some edge may exist but sensitive to assumptions |
 | DSR < 1.5 | **Likely overfit**: Observed Sharpe likely due to selection bias |
 
-### Usage in Vyapaar
+### Usage in Tantra
 
 ```python
-from vyapaar_examples.optimizer.algo_analytics.deflated_sharpe import (
+from tantra_examples.optimizer.algo_analytics.deflated_sharpe import (
     deflated_sharpe,
 )  # gap 0001: algo_analytics engine mirror
 
@@ -94,7 +94,7 @@ dsr = deflated_sharpe(
 )
 
 # With automatic moment estimation from returns
-from vyapaar_examples.optimizer import compute_dsr
+from tantra_examples.optimizer import compute_dsr
 
 dsr_result = compute_dsr(
     observed_sharpe=2.5,
@@ -144,10 +144,10 @@ alternates IS/OOS blocks, ensuring no temporal leakage.
 | 0.3 ≤ PBO < 0.5 | **Elevated**: Some OOS degradation observed |
 | PBO ≥ 0.5 | **High**: Strategy likely overfit; degrades OOS in majority of partitions |
 
-### Usage in Vyapaar
+### Usage in Tantra
 
 ```python
-from vyapaar_examples.optimizer import compute_pbo_cscv
+from tantra_examples.optimizer import compute_pbo_cscv
 
 # From walk-forward folds
 pbo_result = compute_pbo_cscv(
@@ -159,13 +159,13 @@ pbo_result = compute_pbo_cscv(
 
 ### Integration with Walk-Forward Analysis
 
-The walk-forward analysis (`vyapaar_examples.optimizer.algo_analytics.walk_forward`) produces
+The walk-forward analysis (`tantra_examples.optimizer.algo_analytics.walk_forward`) produces
 in-sample and out-of-sample Sharpe ratios per fold. These can be fed directly
 into the PBO calculator:
 
 ```python
-from vyapaar_examples.optimizer.algo_analytics.walk_forward import walk_forward  # gap 0001: algo_analytics engine mirror
-from vyapaar_examples.optimizer import compute_pbo_cscv
+from tantra_examples.optimizer.algo_analytics.walk_forward import walk_forward  # gap 0001: algo_analytics engine mirror
+from tantra_examples.optimizer import compute_pbo_cscv
 
 wf_result = walk_forward(strategy, symbol="RELIANCE", start="2020-01-01", ...)
 
@@ -179,10 +179,10 @@ pbo = compute_pbo_cscv(is_sharpes, oos_sharpes, len(wf_result.folds))
 
 ## Combined Overfitting Assessment
 
-Vyapaar provides a combined assessment in `vyapaar-ya-enhancer`:
+Tantra provides a combined assessment in `tantra-ya-enhancer`:
 
 ```rust
-use vyapaar_ya_enhancer::OverfittingAssessment;
+use tantra_ya_enhancer::OverfittingAssessment;
 
 let assessment = OverfittingAssessment::assess(
     sharpe,           // Observed Sharpe
@@ -198,7 +198,7 @@ if assessment.passes_guards {
 }
 ```
 
-### Gate Thresholds (Vyapaar Defaults)
+### Gate Thresholds (Tantra Defaults)
 
 | Metric | Pass Threshold | Rationale |
 |--------|----------------|-----------|
@@ -233,10 +233,10 @@ With < 30 periods, DSR falls back to observed Sharpe (no adjustment).
 
 ### Synthetic Data vs Real Data
 
-The examples use synthetic bars (`vyapaar_examples.synthetic.oscillating_bars`)
+The examples use synthetic bars (`tantra_examples.synthetic.oscillating_bars`)
 for deterministic, offline testing. For real analysis:
 
-1. Ensure `vyapaar-data` lakehouse has the required symbols/date ranges
+1. Ensure `tantra-data` lakehouse has the required symbols/date ranges
 2. Run without `--synthetic` flag
 3. Use sufficient date range: at least 2+ years for walk-forward
 
@@ -251,5 +251,5 @@ for deterministic, offline testing. For real analysis:
 2. López de Prado, M. (2018). *Advances in Financial Machine Learning*. Wiley.
    Chapter 14: Backtest Overfitting.
 
-3. Vyapaar `vyapaar-ya-enhancer` crate: `overfitting_guardrails.rs`
-4. Vyapaar Python: `vyapaar_examples.optimizer.algo_analytics.deflated_sharpe`
+3. Tantra `tantra-ya-enhancer` crate: `overfitting_guardrails.rs`
+4. Tantra Python: `tantra_examples.optimizer.algo_analytics.deflated_sharpe`

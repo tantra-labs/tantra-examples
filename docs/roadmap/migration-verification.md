@@ -1,13 +1,13 @@
-# `vyapaar-examples` — Migration Verification Milestone
+# `tantra-examples` — Migration Verification Milestone
 
-Verification commands for the `honba-examples → vyapaar-examples` migration:
+Verification commands for the `honba-examples → tantra-examples` migration:
 
 ```bash
 # Run from the repository root
 pytest -q
 ruff check .
 ruff format --check .
-mypy vyapaar_examples
+mypy tantra_examples
 ```
 
 ## Migration Milestone Status
@@ -17,12 +17,12 @@ mypy vyapaar_examples
 | `pyproject.toml` fixed | Complete |
 | Entry journey (`examples/01`–`15`) | Complete |
 | Staged port Stages 0–8 (all 94 topic scripts) | Complete |
-| Shared harness modules (`vyapaar_examples/`) | Complete |
+| Shared harness modules (`tantra_examples/`) | Complete |
 | Test suite (137 test modules) | Complete |
 | Gaps 0001–0008 documented | Complete |
 | `pytest -q` (922 passed, 70 skipped, 0 failures) | Passing |
 | `ruff check .` | Clean |
 | `ruff format --check .` | Clean |
-| `mypy vyapaar_examples` | Clean |
+| `mypy tantra_examples` | Clean |
 | `make check` | Green |
 | Zero `honba` identifiers across repo | Complete |

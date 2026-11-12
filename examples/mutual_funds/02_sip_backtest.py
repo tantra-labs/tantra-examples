@@ -4,7 +4,7 @@ Simulates a Systematic Investment Plan: invest a fixed amount on a fixed calenda
 date each month, buy units at that day's NAV (falling back to the next published NAV,
 and skipping a SIP with none within a week), and track units, invested amount, current
 value and return. Teaches the units-at-NAV accounting behind SIP returns; the XIRR
-helper lives in `vyapaar_examples.metrics`. No `Strategy` subclass — runs are offline
+helper lives in `tantra_examples.metrics`. No `Strategy` subclass — runs are offline
 and deterministic on recorded NAV fixtures.
 
 Run::
@@ -20,7 +20,7 @@ Pitfalls::
       in skipped_sip_dates, so check it before comparing two schemes.
     - Result measure: return_pct is gain over total invested, not annualised and not XIRR, and it is
       valued at the last NAV in the window, so the end date moves it. Use XIRR from
-      `vyapaar_examples.metrics` to compare plans with different cash-flow timing.
+      `tantra_examples.metrics` to compare plans with different cash-flow timing.
     - Costs and taxes are absent: exit load, stamp duty on purchase and tax on gains are not
       charged. NAV is already net of the expense ratio, so a Direct and a Regular code of the same
       fund differ by that cost; do not subtract the expense ratio again.
@@ -37,8 +37,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.amfi import AmfiNavLoader
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.amfi import AmfiNavLoader
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 

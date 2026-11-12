@@ -1,14 +1,14 @@
-"""VyapaarExample CLI plumbing: every common flag must reach the attribute it names."""
+"""TantraExample CLI plumbing: every common flag must reach the attribute it names."""
 
 from __future__ import annotations
 
 import datetime as dt
 from pathlib import Path
 
-from vyapaar_examples.base import VyapaarExample
+from tantra_examples.base import TantraExample
 
 
-class _Probe(VyapaarExample):
+class _Probe(TantraExample):
     """Probe example."""
 
 
@@ -57,8 +57,8 @@ def test_construction_has_no_filesystem_side_effects(tmp_path: Path, monkeypatch
 
 
 def test_default_data_root_does_not_depend_on_cwd(tmp_path: Path, monkeypatch) -> None:
-    from vyapaar_examples._kernel.store import find_data_root
-    from vyapaar_examples.base import REPO_ROOT
+    from tantra_examples._kernel.store import find_data_root
+    from tantra_examples.base import REPO_ROOT
 
     monkeypatch.chdir(tmp_path)
     ex = _Probe()

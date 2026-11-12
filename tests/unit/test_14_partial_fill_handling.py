@@ -10,10 +10,10 @@ from typing import Protocol, cast
 
 import pytest
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.entities import Trade
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.order import OrderSide
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.entities import Trade
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.order import OrderSide
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "strategies" / "14_partial_fill_handling.py"

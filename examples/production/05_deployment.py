@@ -1,17 +1,17 @@
 """production/05_deployment: Systemd/container deployment configuration.
 
 Generates systemd service files, Docker Compose, and environment configuration
-for production deployment of Vyapaar strategies.
+for production deployment of Tantra strategies.
 
 Run::
 
-    python examples/production/05_deployment.py --output /etc/vyapaar/
+    python examples/production/05_deployment.py --output /etc/tantra/
     python examples/production/05_deployment.py  # prints to stdout
 
 Pitfalls::
 
-    - The generated unit and Dockerfile run `python -m vyapaar.session.run`, which does not exist in
-      the vyapaar package (session is a single module). Under Restart=on-failure the service would
+    - The generated unit and Dockerfile run `python -m tantra.session.run`, which does not exist in
+      the tantra package (session is a single module). Under Restart=on-failure the service would
       restart every 10 seconds without ever trading. Treat the files as a template and set a real
       entry point.
     - Secrets: .env.template has blank DHAN_CLIENT_ID and DHAN_ACCESS_TOKEN. The real .env must be
@@ -35,7 +35,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 
@@ -43,7 +43,7 @@ _STRATEGY_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*")
 
 
 SYSTEMD_SERVICE = """[Unit]
-Description=Vyapaar Trading Strategy: {strategy_name}
+Description=Tantra Trading Strategy: {strategy_name}
 After=network-online.target
 Wants=network-online.target
 
@@ -55,12 +55,12 @@ WorkingDirectory={workdir}
 Environment=PYTHONPATH={workdir}
 Environment=VYAAPAAR_STRATEGIES_DIR={strategies_dir}
 EnvironmentFile=-{env_file}
-ExecStart={python} -m vyapaar.session.run --config {config_file}
+ExecStart={python} -m tantra.session.run --config {config_file}
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
 StandardError=journal
-SyslogIdentifier=vyapaar-{strategy_name}
+SyslogIdentifier=tantra-{strategy_name}
 
 # Security
 NoNewPrivileges=true
@@ -76,12 +76,12 @@ WantedBy=multi-user.target
 DOCKER_COMPOSE = """version: '3.8'
 
 services:
-  vyapaar-{strategy_name}:
-    image: vyapaar/{strategy_name}:latest
+  tantra-{strategy_name}:
+    image: tantra/{strategy_name}:latest
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: vyapaar-{strategy_name}
+    container_name: tantra-{strategy_name}
     restart: unless-stopped
     environment:
       - PYTHONPATH=/app
@@ -93,7 +93,7 @@ services:
       - ./logs:/app/logs
       - ./data:/app/data
     networks:
-      - vyapaar-net
+      - tantra-net
     deploy:
       resources:
         limits:
@@ -103,7 +103,7 @@ services:
           memory: 512M
 
 networks:
-  vyapaar-net:
+  tantra-net:
     driver: bridge
 """
 
@@ -117,7 +117,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \\
     libpq-dev \\
     && rm -rf /var/lib/apt/lists/*
 
-# Install Vyapaar and dependencies
+# Install Tantra and dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -125,13 +125,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Non-root user
-RUN useradd -m -u 1000 vyapaar && chown -R vyapaar:vyapaar /app
-USER vyapaar
+RUN useradd -m -u 1000 tantra && chown -R tantra:tantra /app
+USER tantra
 
-CMD ["python", "-m", "vyapaar.session.run", "--config", "config/{strategy_name}.toml"]
+CMD ["python", "-m", "tantra.session.run", "--config", "config/{strategy_name}.toml"]
 """
 
-ENV_TEMPLATE = """# Vyapaar Production Environment
+ENV_TEMPLATE = """# Tantra Production Environment
 # Copy to .env and fill in values
 
 # Adapter credentials
@@ -154,7 +154,7 @@ MAX_DRAWDOWN_PCT=0.15
 
 # Logging
 LOG_LEVEL=INFO
-LOG_FILE=/app/logs/vyapaar.log
+LOG_FILE=/app/logs/tantra.log
 
 # Monitoring
 METRICS_PORT=9090
@@ -165,10 +165,10 @@ HEALTH_PORT=9091
 def run(
     strategy_name: str = "sma_crossover",
     output: Path | None = None,
-    user: str = "vyapaar",
-    group: str = "vyapaar",
-    workdir: str = "/opt/vyapaar",
-    strategies_dir: str = "/opt/vyapaar/strategies",
+    user: str = "tantra",
+    group: str = "tantra",
+    workdir: str = "/opt/tantra",
+    strategies_dir: str = "/opt/tantra/strategies",
     python: str = "/usr/bin/python3",
 ) -> dict[str, Any]:
     if not _STRATEGY_NAME.fullmatch(strategy_name) or ".." in strategy_name:
@@ -196,7 +196,7 @@ def run(
         output.mkdir(parents=True, exist_ok=True)
 
         # Systemd
-        (output / f"vyapaar-{strategy_name}.service").write_text(systemd)
+        (output / f"tantra-{strategy_name}.service").write_text(systemd)
 
         # Docker
         (output / "docker-compose.yml").write_text(docker_compose)
@@ -236,7 +236,7 @@ metrics_port = 9090
             "status": "written",
             "output_dir": str(output),
             "files": [
-                f"vyapaar-{strategy_name}.service",
+                f"tantra-{strategy_name}.service",
                 "docker-compose.yml",
                 "Dockerfile",
                 ".env.template",
@@ -257,10 +257,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = make_parser(__doc__)
     parser.add_argument("--strategy", type=str, default="sma_crossover")
     parser.add_argument("--output", type=Path, default=None)
-    parser.add_argument("--user", type=str, default="vyapaar")
-    parser.add_argument("--group", type=str, default="vyapaar")
-    parser.add_argument("--workdir", type=str, default="/opt/vyapaar")
-    parser.add_argument("--strategies-dir", type=str, default="/opt/vyapaar/strategies")
+    parser.add_argument("--user", type=str, default="tantra")
+    parser.add_argument("--group", type=str, default="tantra")
+    parser.add_argument("--workdir", type=str, default="/opt/tantra")
+    parser.add_argument("--strategies-dir", type=str, default="/opt/tantra/strategies")
     parser.add_argument("--python", type=str, default="/usr/bin/python3")
     add_out_arg(parser)
     args = parser.parse_args(argv)

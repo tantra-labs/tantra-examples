@@ -65,15 +65,15 @@ import sys
 from collections.abc import Sequence
 from typing import Any
 
-from vyapaar_examples._kernel.ai.llm.provider import LlmPort
-from vyapaar_examples._kernel.cli import _STORE
-from vyapaar_examples._kernel.data import parse_quantity
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.screener.coverage import DateInterval
-from vyapaar_examples.cli import make_parser
-from vyapaar_examples.screening.cli_args import add_nl_screener_args
-from vyapaar_examples.screening.nl_render import render_nl_result
-from vyapaar_examples.screening.nl_support import (
+from tantra_examples._kernel.ai.llm.provider import LlmPort
+from tantra_examples._kernel.cli import _STORE
+from tantra_examples._kernel.data import parse_quantity
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.screener.coverage import DateInterval
+from tantra_examples.cli import make_parser
+from tantra_examples.screening.cli_args import add_nl_screener_args
+from tantra_examples.screening.nl_render import render_nl_result
+from tantra_examples.screening.nl_support import (
     KNOWN_METRICS,
     MCAP_UNIT_MULTIPLIER,
     NIFTY50_SHARES_CR,
@@ -89,8 +89,8 @@ from vyapaar_examples.screening.nl_support import (
     resolve_asof,
     safe_eval_predicate,
 )
-from vyapaar_examples.screening.nl_support import resolve_llm_provider as _resolve_llm_provider
-from vyapaar_examples.universe_lists import resolve_universe
+from tantra_examples.screening.nl_support import resolve_llm_provider as _resolve_llm_provider
+from tantra_examples.universe_lists import resolve_universe
 
 __all__ = [
     "KNOWN_METRICS",
@@ -113,7 +113,7 @@ __all__ = [
 # An LLM (Ollama) turns free text into a small filter DSL such as
 # "market_cap > 250000000000 AND close > sma50". With no LLM available we fall back to the
 # deterministic rule-based translator below, which implements the same contract with regexes.
-# Plumbing (Ollama client, backend probing) lives in vyapaar_examples.screening.nl_support.
+# Plumbing (Ollama client, backend probing) lives in tantra_examples.screening.nl_support.
 
 
 class RuleBasedLlamaTranslator(LlmPort):

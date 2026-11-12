@@ -34,14 +34,14 @@ import argparse
 import sys
 from typing import Any, ClassVar, cast, override
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Atr, Sma
-from vyapaar_examples._kernel.order import OrderSide
-from vyapaar_examples._kernel.trade import Trade
-from vyapaar_examples.cli import run_example
-from vyapaar_examples.replay_report import replay_report
-from vyapaar_examples.synthetic import get_bars_with_source, oscillating_bars
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Atr, Sma
+from tantra_examples._kernel.order import OrderSide
+from tantra_examples._kernel.trade import Trade
+from tantra_examples.cli import run_example
+from tantra_examples.replay_report import replay_report
+from tantra_examples.synthetic import get_bars_with_source, oscillating_bars
 
 __all__ = ["DynamicPositionSizing", "compare_sizing_modes", "main", "run"]
 

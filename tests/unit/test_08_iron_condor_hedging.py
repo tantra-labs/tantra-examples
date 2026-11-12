@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.options import GreekRiskBounds, check_greek_bounds
+from tantra_examples.options import GreekRiskBounds, check_greek_bounds
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "options" / "08_iron_condor_hedging.py"
 

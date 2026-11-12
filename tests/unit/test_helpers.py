@@ -5,7 +5,7 @@ from __future__ import annotations
 from decimal import Decimal
 from itertools import pairwise
 
-from vyapaar_examples import (
+from tantra_examples import (
     SMA,
     Backtest,
     SampleInstruments,

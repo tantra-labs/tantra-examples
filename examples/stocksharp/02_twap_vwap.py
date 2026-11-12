@@ -9,7 +9,7 @@ session (09:15-15:30 IST) using either
 
 with deterministic microsecond jitter on every child order time (seeded RNG), so
 the same parent and seed always produce the same child stream.  Every child is
-checked against the instrument's freeze limit via ``vyapaar_examples.options``:
+checked against the instrument's freeze limit via ``tantra_examples.options``:
 ``verify_slices`` raises when a child exceeds the limit, so a parent above the
 freeze limit can never be submitted whole.
 
@@ -45,9 +45,9 @@ import random
 import sys
 from typing import Any
 
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.options import freeze_limit_qty, verify_slices
-from vyapaar_examples.options import slice_order as _ref_slice_order
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.options import freeze_limit_qty, verify_slices
+from tantra_examples.options import slice_order as _ref_slice_order
 
 __all__ = ["main", "run"]
 

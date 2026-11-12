@@ -1,4 +1,4 @@
-"""Unit: chain loading, validation against the vyapaar-strategies schema, and pipeline building."""
+"""Unit: chain loading, validation against the tantra-strategies schema, and pipeline building."""
 
 from __future__ import annotations
 
@@ -6,14 +6,14 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.loader import CatalogError
-from vyapaar_examples.pipeline import (
+from tantra_examples._kernel.loader import CatalogError
+from tantra_examples.pipeline import (
     EqualWeightSizer,
     FundamentalQualityFilter,
     Pipeline,
     ValueScreener,
 )
-from vyapaar_examples.pipeline.chain import (
+from tantra_examples.pipeline.chain import (
     REGISTRY,
     ChainError,
     ChainNotRunnableError,
@@ -43,7 +43,7 @@ def _need_catalog() -> None:
     try:
         validate([{"uses": "size.equal_weight"}])
     except CatalogError as exc:
-        pytest.skip(f"vyapaar-strategies catalog not available: {exc}")
+        pytest.skip(f"tantra-strategies catalog not available: {exc}")
 
 
 @pytest.fixture

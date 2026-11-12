@@ -8,11 +8,11 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.order import OrderSide
-from vyapaar_examples._kernel.trade import Trade
-from vyapaar_examples.metrics import fills_equity_curve
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.order import OrderSide
+from tantra_examples._kernel.trade import Trade
+from tantra_examples.metrics import fills_equity_curve
+from tantra_examples.synthetic import bar, weekdays
 
 ROOT = Path(__file__).resolve().parents[2] / "examples"
 IID = InstrumentId("RELIANCE", "NSE")

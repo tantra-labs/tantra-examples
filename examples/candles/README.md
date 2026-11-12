@@ -23,11 +23,11 @@ half-open windows and IST versus UTC stamps, the still-forming last bar, quote m
 trades, UTC buckets that split the IST hour, partial buckets that look complete, gaps that are
 absent rather than empty, and joining a coarse bar to finer bars before its bucket has closed. Read
 it before trusting a number. For the general treatment see
-[Avoiding backtest biases](https://vyapaar-labs.github.io/vyapaar/book/backtesting/avoiding_backtest_biases.html).
+[Avoiding backtest biases](https://tantra-labs.github.io/tantra/book/backtesting/avoiding_backtest_biases.html).
 
 ## Where the aggregation lives
 
-Vyapaar ships no resampler, so the rule is in `vyapaar_examples/bars.py`, which is
+Tantra ships no resampler, so the rule is in `tantra_examples/bars.py`, which is
 unit-tested on its own (`tests/unit/test_bars.py`):
 
 * buckets are **UTC** and right-open: `[start, start + timeframe)`;
@@ -36,7 +36,7 @@ unit-tested on its own (`tests/unit/test_bars.py`):
 * `1w` buckets start on Monday.
 
 ```python
-from vyapaar_examples.bars import aggregate, bucket_start, timeframe_seconds
+from tantra_examples.bars import aggregate, bucket_start, timeframe_seconds
 
 weekly = aggregate(minute_bars, "1w")
 ```

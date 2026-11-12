@@ -5,7 +5,7 @@ Parquet file per instrument, timeframe and year at
 ``<data_dir>/catalog/<TIMEFRAME>/<EXCHANGE>/<SYMBOL>/<year>.parquet``, plus a JSON ledger at
 ``<data_dir>/coverage_ledger.json`` recording which date ranges the store claims to hold.
 ``append(coverage_record, bars)`` is the only write path: it validates every bar
-(``vyapaar_examples._kernel.ports.validate_bar``), merges by ``ts`` so re-appending the same
+(``tantra_examples._kernel.ports.validate_bar``), merges by ``ts`` so re-appending the same
 bars is idempotent, and rewrites the ledger; ``read(instrument, timeframe, DateInterval(start,
 end))`` is a **half-open UTC window** ``[start 00:00, end 00:00)``, so a bar stamped on the end
 date is only read when you ask for ``end + 1 day``; ``coverage`` reads the ledger back.
@@ -13,7 +13,7 @@ date is only read when you ask for ``end + 1 day``; ``coverage`` reads the ledge
 The example builds a two-instrument store from deterministic synthetic bars, reads it back
 over the documented window, appends the same data a second time to show the idempotence, and
 reports the store's refusal of a bar whose ``low`` sits above its ``open`` as data instead of
-crashing. Nothing here touches the network or the vyapaar checkout's own data root.
+crashing. Nothing here touches the network or the tantra checkout's own data root.
 
 Run::
 
@@ -45,15 +45,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples._kernel.adapters.errors import AdapterNotFound
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples._kernel.ports import validate_bar
-from vyapaar_examples._kernel.store import ParquetBarStore
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.jsonable import jsonable
-from vyapaar_examples.synthetic import bar, weekdays
+from tantra_examples._kernel.adapters.errors import AdapterNotFound
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples._kernel.ports import validate_bar
+from tantra_examples._kernel.store import ParquetBarStore
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.jsonable import jsonable
+from tantra_examples.synthetic import bar, weekdays
 
 _TIMEFRAME = "1D"
 _DAYS = weekdays(dt.date(2025, 12, 29), 5)  # one week that crosses the year partition

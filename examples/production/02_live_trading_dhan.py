@@ -34,10 +34,10 @@ from __future__ import annotations
 import sys
 from typing import Any, ClassVar
 
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.instrument import InstrumentId
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.instrument import InstrumentId
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 
@@ -125,7 +125,7 @@ def run(
 
     return {
         "status": "template",
-        "message": "Live trading implementation requires vyapaar.session.Session with real adapter",
+        "message": "Live trading implementation requires tantra.session.Session with real adapter",
         "config": {
             "client_id": client_id[:4] + "****",
             "strategy": strategy,

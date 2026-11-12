@@ -1,6 +1,6 @@
 """backtesting/03_latency_modeling: bar-close vs next-open vs later-open fill models.
 
-Vyapaar has two fill models for bar data: ``bar_close`` (the decision bar's close, the single-price
+Tantra has two fill models for bar data: ``bar_close`` (the decision bar's close, the single-price
 conformance model) and ``next_open`` (daily, next session's open, simulated by
 ``_kernel.backtest.simulated.NextOpenExecution``). This example runs the same strategy under both
 and under a third stress case, ``open_after_2_bars`` (``fill_delay=2``: the open two bars after the
@@ -14,7 +14,7 @@ Run::
 Pitfalls::
 
     - Label versus engine: replay's fill_delay counts bars. 0 fills at the signal bar's close, and 1
-      or 2 fill at the open of the bar 1 or 2 later. Only bar_close and next_open match Vyapaar's
+      or 2 fill at the open of the bar 1 or 2 later. Only bar_close and next_open match Tantra's
       fill models; open_after_2_bars is a latency stress test, not an engine model.
     - Check that a knob reaches the code: --fast and --slow used to be echoed into config while the
       strategy kept its 10/30 defaults. Vary a parameter and confirm the output moves.
@@ -34,13 +34,13 @@ import datetime as dt
 import sys
 from typing import Any
 
-from vyapaar_examples._kernel.bar import Bar
-from vyapaar_examples._kernel.base import Strategy
-from vyapaar_examples._kernel.indicators import Sma
-from vyapaar_examples._kernel.testing import replay
-from vyapaar_examples.cli import add_out_arg, emit_json, make_parser
-from vyapaar_examples.synthetic import bar as synth_bar
-from vyapaar_examples.synthetic import weekdays as weekdays_func
+from tantra_examples._kernel.bar import Bar
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Sma
+from tantra_examples._kernel.testing import replay
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.synthetic import bar as synth_bar
+from tantra_examples.synthetic import weekdays as weekdays_func
 
 __all__ = ["main", "run"]
 
@@ -92,7 +92,7 @@ def run(
         synth_bar("RELIANCE", d, 2500.0 + i * 0.5) for i, d in enumerate(weekdays_func(start, bars))
     ]
 
-    # 0 = bar close (conformance model), 1 = next open (Vyapaar's daily model),
+    # 0 = bar close (conformance model), 1 = next open (Tantra's daily model),
     # 2 = the open two bars later (a latency stress test; no next-close model)
     models = {
         "bar_close": _run_model(bars_list, 0, fast, slow),

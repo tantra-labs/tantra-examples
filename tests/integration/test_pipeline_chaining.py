@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from vyapaar_examples.pipeline import (
+from tantra_examples.pipeline import (
     DividendYieldScreener,
     EqualWeightSizer,
     FixedSipSizer,
@@ -39,7 +39,7 @@ def _load(relative: str, name: str):
 
 
 def _check_catalog_or_skip() -> None:
-    from vyapaar_examples.screening.paths import find_catalog_path
+    from tantra_examples.screening.paths import find_catalog_path
 
     try:
         find_catalog_path()

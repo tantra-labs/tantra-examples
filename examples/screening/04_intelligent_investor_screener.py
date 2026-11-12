@@ -50,8 +50,8 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from vyapaar_examples.screener_cli import ScreenerCLIExample
-from vyapaar_examples.screening import graham_thresholds, screen_intelligent_investor
+from tantra_examples.screener_cli import ScreenerCLIExample
+from tantra_examples.screening import graham_thresholds, screen_intelligent_investor
 
 __all__ = ["IntelligentInvestorScreenerExample", "main"]
 
@@ -232,7 +232,7 @@ class IntelligentInvestorScreenerExample(ScreenerCLIExample):
         # Shared with the chained screener+SIP flow (backtesting/10_chained_screener_and_sip.py)
         # so the same strategy's candidates render identically through either entry point. The
         # effective P/E x P/B cap is already printed to stderr by effective_thresholds() above.
-        from vyapaar_examples.screening.render import render_screener_table
+        from tantra_examples.screening.render import render_screener_table
 
         render_screener_table(
             candidates, asof, "intelligent_investor", self.train_years, graham_mode=self.mode
