@@ -34,8 +34,10 @@ promoted verbatim.
 1. ex 0005 + ex 0001 — the `_kernel`-independent surfaces (done 2026-11-15).
 2. ex 0006 — Decimal-canonical domain-core slices, bottom-up: `money` /
    `position` / `trade` / `instrument` / `entities` (shipped in the wheel
-   2026-11-15), then the float kernel `bar` Decimal-canonical, then
-   `order_state`/`execution`, then `indicators` (87 files) / `portfolio_strategy`
+   2026-11-15), then the float kernel `bar` Decimal-canonical (shipped
+   2026-11-15: `tantra.bar.Bar`), then `tick` + `order` + `order_state`
+   (shipped 2026-11-15: `tantra.tick`, `tantra.order`, `tantra.order_state`
+   FSM), then `execution`, then `indicators` (87 files) / `portfolio_strategy`
    / `wire` / `store` / `backtest` sims.
 3. ex 0004 — display / universes / India market pack on top of the domain core.
 4. ex 0003 — re-point data loaders to `tantra_data`.

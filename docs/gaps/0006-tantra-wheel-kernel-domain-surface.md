@@ -83,15 +83,19 @@ name on the wheel). Then delete `_kernel/` together with `native.py`, retarget e
 `_kernel.*` import to the wheel surface, and drop the `[[tool.mypy.overrides]]`
 override block; the mirror accommodations evaporate with it.
 
-## Blocker analysis (2026-11-14)
+## Blocker analysis (2026-11-14, updated 2026-11-15)
 
 This 166-file mirror **is the root** of the whole cascade (0001–0008): every other gap's
 mirror imports from it. Verified state: a Decimal-canonical domain-core wheel slice
 (`money`/`position`/`trade`/`instrument`/`entities`) is **shipping in the parallel
-tantra-ffi batch** (status above reflects that). The remainder still needs the
+tantra-ffi batch** (status above reflects that), and on 2026-11-15 the wheel gained the
+next Decimal-canonical slices: `tantra.bar` (`Bar`), `tantra.tick` (`AggressorSide` /
+`QuoteTick` / `TradeTick`), `tantra.order` (`OrderSide`/`OrderType`/`TimeInForce`/
+`OrderStatus`/`validate_intent`/`OrderIntent`), and `tantra.order_state` (the `OrderEvent`
+/ `OrderState` FSM, mirror-parity transition table). The remainder still needs the
 Decimal-canonical re-architecture (the mirror is float-based — kernel `Bar`,
 `Position.quantity: float`, `Trade.quantity: float`, `Instrument.lot_size: float` — and
-must never be promoted verbatim): float kernel `bar`, `indicators` (**87 files**),
-`execution`, `order_state`, `portfolio_strategy`, `session`, `wire`, `backtest` sims,
-and `store`. Closure = full wheel domain layer + delete `_kernel/` + retarget every
-`_kernel.*` import + drop the `[[tool.mypy.overrides]]` block.
+must never be promoted verbatim): `execution`, `indicators` (**87 files**),
+`portfolio_strategy`, `session`, `wire`, `backtest` sims, and `store`. Closure = full
+wheel domain layer + delete `_kernel/` + retarget every `_kernel.*` import + drop the
+`[[tool.mypy.overrides]]` block.
