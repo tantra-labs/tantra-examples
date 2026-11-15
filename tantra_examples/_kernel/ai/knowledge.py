@@ -1,4 +1,7 @@
-# mirror: kernel-verbatim port (gap 0002: ai.knowledge surface)
+# mirror: kernel-verbatim port (gap 0002: ai.knowledge surface) — Decimal-canonical wheel
+# retarget (ex 0006 closure): the catalog stays the ``_kernel.screener.catalog`` mirror (no
+# wheel ``tantra.screener`` surface), and ``FEW_SHOT_EXAMPLES``/``units`` values stay floats
+# because they are wire predicate data (``PredicateValue`` on ``tantra.wire.screener``).
 
 from __future__ import annotations
 

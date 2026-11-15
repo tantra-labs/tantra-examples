@@ -15,6 +15,9 @@ because the ``argon2-cffi`` crate is not a dependency. Until it is added (as an 
 ``adapters`` extra), callers supply 32 raw key bytes from a keyring, a KMS, or an env var.
 Argon2id derivation is a documented next step, not a silent fallback.
 
+``cryptography`` is also an optional extra (wheel retarget, gap 0007): it is imported lazily
+so this module (and ``_kernel.adapters``) imports without it; using the store needs it.
+
 Deliberately out of scope: TOTP auto-login / per-broker token exchange (ROADMAP section
 3.5/3.1, deferred), and secret rotation on a schedule (an operator calls ``rotate_key``).
 """
@@ -28,8 +31,7 @@ import os
 import tempfile
 from abc import ABC, abstractmethod
 from pathlib import Path
-
-from cryptography.fernet import Fernet
+from typing import Any
 
 __all__ = ["FileSecretStore", "SecretStore"]
 
@@ -38,6 +40,14 @@ def _fernet_key(master_key: bytes) -> bytes:
     if len(master_key) != 32:
         raise ValueError(f"master_key must be exactly 32 bytes, got {len(master_key)}")
     return base64.urlsafe_b64encode(master_key)
+
+
+def _fernet(master_key: bytes) -> Any:
+    """A ``Fernet`` instance; ``cryptography`` is an optional extra, so it is imported
+    lazily and the module imports without it (gap 0007 wheel retarget)."""
+    from cryptography.fernet import Fernet
+
+    return Fernet(_fernet_key(master_key))
 
 
 class SecretStore(ABC):
@@ -65,7 +75,7 @@ class FileSecretStore(SecretStore):
     def __init__(self, path: str | os.PathLike[str], master_key: bytes) -> None:
         self._path = Path(path)
         self._master_key = master_key
-        self._fernet = Fernet(_fernet_key(master_key))
+        self._fernet = _fernet(master_key)
         if not self._path.exists():
             self._write({})
 
@@ -113,7 +123,7 @@ class FileSecretStore(SecretStore):
 
     def rotate_key(self, new_key: bytes) -> None:
         """Re-encrypt every stored secret under ``new_key`` and atomically replace the file."""
-        rotated_fernet = Fernet(_fernet_key(new_key))
+        rotated_fernet = _fernet(new_key)
         payload = {
             key: rotated_fernet.encrypt(self._fernet.decrypt(value.encode("ascii"))).decode("ascii")
             for key, value in self._read().items()

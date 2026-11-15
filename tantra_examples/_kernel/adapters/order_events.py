@@ -19,15 +19,16 @@ several venue fills into one ``Fill`` — a known loss of granularity, not an er
 The reducer never emits ``Submitted`` or ``CancelRequested``: those are the submitter's, so the
 caller synthesises them (as the runner does on the port path).
 """
-# mirror: kernel-verbatim port (gap 0007)
+# mirror: kernel-verbatim port (gap 0007) — Decimal-canonical wheel retarget
+# (ex 0006 closure): ``Trade``/``ExecutionEvent``/``Currency``/``Money``/``OrderIntent``
+# are the shipped ``tantra.*`` Decimal types; ``_EPS`` is ``Decimal("1e-9")``.
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
 
-from tantra_examples._kernel.adapters.models import OrderReport
-from tantra_examples._kernel.entities import Trade
-from tantra_examples._kernel.execution import (
+from tantra.execution import (
     Accepted,
     Cancelled,
     ExecutionEvent,
@@ -35,12 +36,15 @@ from tantra_examples._kernel.execution import (
     Fill,
     Rejected,
 )
-from tantra_examples._kernel.money import Currency, Money
-from tantra_examples._kernel.order import OrderIntent, OrderStatus
+from tantra.money import Currency, Money
+from tantra.order import OrderIntent, OrderStatus
+from tantra.trade import Trade
+
+from tantra_examples._kernel.adapters.models import OrderReport
 
 __all__ = ["ReportReduction", "reduce_order_report"]
 
-_EPS = 1e-9
+_EPS = Decimal("1e-9")
 
 #: A status is *working* once the venue has acknowledged it. ``FILLED`` is included because a
 #: poll can first see a completed order (an instant fill) with no earlier ack to diff against.
@@ -70,15 +74,15 @@ class ReportReduction:
     flagged: bool = False
 
 
-def _open_intent(report: OrderReport, quantity: float) -> OrderIntent:
+def _open_intent(report: OrderReport, quantity: Decimal) -> OrderIntent:
     """An intent carrying the instrument, side and the given (open/remainder) quantity."""
     return OrderIntent(report.instrument_id, report.side, max(quantity, _EPS))
 
 
-def _delta_price(prev: OrderReport | None, new: OrderReport) -> float:
+def _delta_price(prev: OrderReport | None, new: OrderReport) -> Decimal:
     """The price of the fill implied by a filled-quantity delta (delta > 0)."""
-    prev_filled = prev.filled_quantity if prev is not None else 0.0
-    prev_avg = prev.average_price if prev is not None else 0.0
+    prev_filled = prev.filled_quantity if prev is not None else Decimal("0.0")
+    prev_avg = prev.average_price if prev is not None else Decimal("0.0")
     delta = new.filled_quantity - prev_filled
     return (new.average_price * new.filled_quantity - prev_avg * prev_filled) / delta
 
@@ -101,7 +105,7 @@ def reduce_order_report(
         if decreasing or backwards:
             return ReportReduction(events=(), flagged=True)
 
-    prev_filled = prev.filled_quantity if prev is not None else 0.0
+    prev_filled = prev.filled_quantity if prev is not None else Decimal("0.0")
     prev_status = prev.status if prev is not None else None
     prev_venue = prev.venue_order_id if prev is not None else None
     cur = currency if isinstance(currency, Currency) else Currency(currency)

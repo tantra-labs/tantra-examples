@@ -13,11 +13,25 @@ The fake declares a *subset* of the capability set on purpose, so the suite can 
 refusing an unsupported capability with :class:`CapabilityError` is itself part of the
 contract. Ask for anything it does not declare and it refuses before doing anything.
 """
-# mirror: kernel-verbatim port (gap 0007)
+# mirror: kernel-verbatim port (gap 0007) — Decimal-canonical wheel retarget
+# (ex 0006 closure): every price and quantity is an exact ``decimal.Decimal`` on the
+# shipped ``tantra.*`` types (``Bar``, ``Instrument``, ``OrderIntent``/``OrderSide``/
+# ``OrderStatus``/``OrderType``, ``OrderEvent``/``OrderState``, ``Position``,
+# ``QuoteTick``, ``Trade``, ``PriceType``).
 
 from __future__ import annotations
 
 import datetime as dt
+from decimal import Decimal
+
+from tantra.bar import Bar
+from tantra.instrument import Instrument, InstrumentId, InstrumentKind
+from tantra.order import OrderIntent, OrderSide, OrderStatus, OrderType
+from tantra.order_state import OrderEvent, OrderState
+from tantra.position import Position, PositionSide
+from tantra.tick import QuoteTick
+from tantra.trade import Trade
+from tantra.wire.wire import PriceType
 
 from tantra_examples._kernel.adapters.base import Adapter
 from tantra_examples._kernel.adapters.capabilities import AdapterCapabilities, Capability
@@ -35,14 +49,6 @@ from tantra_examples._kernel.adapters.models import (
     StreamMode,
     Subscription,
 )
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import Instrument, InstrumentId, InstrumentKind
-from tantra_examples._kernel.order import OrderIntent, OrderSide, OrderStatus, OrderType
-from tantra_examples._kernel.order_state import OrderEvent, OrderState
-from tantra_examples._kernel.position import Position, PositionSide
-from tantra_examples._kernel.tick import QuoteTick
-from tantra_examples._kernel.trade import Trade
-from tantra_examples._kernel.wire.wire import PriceType
 
 __all__ = ["FakeAdapter"]
 
@@ -53,28 +59,33 @@ _BAR_STEP = dt.timedelta(minutes=1)
 #: Deterministic (bid, ask) pairs per instrument, used for quotes and for history. A market
 #: order fills a buy at the ask and a sell at the bid, so both sides are stated explicitly
 #: rather than being derived from a single series.
-_SERIES: dict[InstrumentId, tuple[tuple[float, float], ...]] = {
+_SERIES: dict[InstrumentId, tuple[tuple[Decimal, Decimal], ...]] = {
     InstrumentId("RELIANCE", "NSE"): (
-        (2450.45, 2450.55),
-        (2451.75, 2452.10),
-        (2452.60, 2452.85),
-        (2453.40, 2453.95),
+        (Decimal("2450.45"), Decimal("2450.55")),
+        (Decimal("2451.75"), Decimal("2452.10")),
+        (Decimal("2452.60"), Decimal("2452.85")),
+        (Decimal("2453.40"), Decimal("2453.95")),
     ),
     InstrumentId("TCS", "NSE"): (
-        (4120.10, 4120.30),
-        (4118.90, 4120.00),
-        (4122.40, 4123.00),
-        (4125.10, 4126.20),
+        (Decimal("4120.10"), Decimal("4120.30")),
+        (Decimal("4118.90"), Decimal("4120.00")),
+        (Decimal("4122.40"), Decimal("4123.00")),
+        (Decimal("4125.10"), Decimal("4126.20")),
     ),
 }
 _INSTRUMENTS: tuple[Instrument, ...] = (
     Instrument(
         InstrumentId("RELIANCE", "NSE"),
         InstrumentKind.EQUITY,
-        lot_size=1.0,
-        tick_size=0.05,
+        lot_size=Decimal("1.0"),
+        tick_size=Decimal("0.05"),
     ),
-    Instrument(InstrumentId("TCS", "NSE"), InstrumentKind.EQUITY, lot_size=1.0, tick_size=0.05),
+    Instrument(
+        InstrumentId("TCS", "NSE"),
+        InstrumentKind.EQUITY,
+        lot_size=Decimal("1.0"),
+        tick_size=Decimal("0.05"),
+    ),
 )
 _SUPPORTED: frozenset[Capability] = frozenset(
     {
@@ -113,8 +124,8 @@ def _load_instruments_from_store() -> tuple[Instrument, ...]:
                                 Instrument(
                                     iid,
                                     InstrumentKind.EQUITY,
-                                    lot_size=1.0,
-                                    tick_size=0.05,
+                                    lot_size=Decimal("1.0"),
+                                    tick_size=Decimal("0.05"),
                                 )
                             )
                             seen.add(iid)
@@ -139,15 +150,15 @@ class FakeAdapter(Adapter):
         *,
         mode: RunMode = RunMode.LIVE,
         user_id: str = "FAKE_USER",
-        opening_balance: float = 1_000_000.0,
+        opening_balance: Decimal | int | str = Decimal("1000000.0"),
         bars_per_request: int = 5,
         instruments: tuple[Instrument, ...] | None = None,
     ) -> None:
         self.name = name
         self._mode = mode
         self._user_id = user_id
-        self._opening_balance = opening_balance
-        self._cash = opening_balance
+        self._opening_balance = Decimal(str(opening_balance))
+        self._cash = self._opening_balance
         self._bars_per_request = bars_per_request
         chosen_instruments = (
             instruments if instruments is not None else _load_instruments_from_store()
@@ -215,8 +226,8 @@ class FakeAdapter(Adapter):
             ts=self._tick(),
             bid_price=bid,
             ask_price=ask,
-            bid_size=100.0,
-            ask_size=100.0,
+            bid_size=Decimal("100.0"),
+            ask_size=Decimal("100.0"),
         )
 
     async def depth(self, instrument_id: InstrumentId, levels: int = 5) -> MarketDepth:
@@ -246,7 +257,21 @@ class FakeAdapter(Adapter):
                 if real_bars:
                     start_ns = int(start.timestamp() * 1e9)
                     end_ns = int(end.timestamp() * 1e9)
-                    matching = [b for b in real_bars if start_ns <= b.ts < end_ns]
+                    # The mirror store still serves ``_kernel.bar`` floats; convert to the
+                    # shipped Decimal ``tantra.bar.Bar`` exactly (ex 0006 closure).
+                    matching = [
+                        Bar(
+                            instrument_id=b.instrument_id,
+                            ts=b.ts,
+                            open=Decimal(str(b.open)),
+                            high=Decimal(str(b.high)),
+                            low=Decimal(str(b.low)),
+                            close=Decimal(str(b.close)),
+                            volume=Decimal(str(b.volume)),
+                        )
+                        for b in real_bars
+                        if start_ns <= b.ts < end_ns
+                    ]
                     if matching:
                         return (
                             matching[: self._bars_per_request]
@@ -259,18 +284,18 @@ class FakeAdapter(Adapter):
             # For injected instruments, return one bar at the touch price
             if instrument_id not in self._instruments:
                 raise AdapterError(f"unknown instrument {instrument_id}")
-            bid, ask = 10.0, 10.0
-            close = 10.0
+            bid, ask = Decimal("10.0"), Decimal("10.0")
+            close = Decimal("10.0")
             bar_ts = _BAR_START
             return [
                 Bar(
                     instrument_id=instrument_id,
                     ts=int(bar_ts.timestamp() * 1e9),
                     open=close,
-                    high=close + 1.0,
-                    low=close - 1.0,
+                    high=close + Decimal("1.0"),
+                    low=close - Decimal("1.0"),
                     close=close,
-                    volume=1000.0,
+                    volume=Decimal("1000.0"),
                 )
             ]
         series = self._series(instrument_id)
@@ -280,16 +305,16 @@ class FakeAdapter(Adapter):
             if not start <= bar_ts < end:
                 continue
             bid, ask = series[offset % len(series)]
-            close = (bid + ask) / 2.0
+            close = (bid + ask) / Decimal("2.0")
             bars.append(
                 Bar(
                     instrument_id=instrument_id,
                     ts=int(bar_ts.timestamp() * 1e9),
                     open=close,
-                    high=close + 1.0,
-                    low=close - 1.0,
+                    high=close + Decimal("1.0"),
+                    low=close - Decimal("1.0"),
                     close=close,
-                    volume=1000.0 + offset,
+                    volume=Decimal("1000.0") + offset,
                 )
             )
         return bars
@@ -414,9 +439,9 @@ class FakeAdapter(Adapter):
         self,
         order_id: str,
         *,
-        quantity: float | None = None,
-        price: float | None = None,
-        trigger_price: float | None = None,
+        quantity: Decimal | None = None,
+        price: Decimal | None = None,
+        trigger_price: Decimal | None = None,
     ) -> None:
         self._refuse("modify_order", Capability.MODIFY_ORDER)
         raise AssertionError("unreachable")  # pragma: no cover
@@ -494,7 +519,7 @@ class FakeAdapter(Adapter):
         return Funds(
             available_cash=self._cash,
             opening_balance=self._opening_balance,
-            margin_used=0.0,
+            margin_used=Decimal("0.0"),
         )
 
     async def margin(self, instrument_id: InstrumentId | None = None) -> MarginReport:
@@ -503,9 +528,9 @@ class FakeAdapter(Adapter):
 
     # -- test affordances (not part of the contract) ---------------------------
 
-    def deposit(self, amount: float) -> None:
+    def deposit(self, amount: Decimal | int | str) -> None:
         """Add cash, so a test can place an order larger than the opening balance."""
-        self._cash += amount
+        self._cash += Decimal(str(amount))
 
     def order_state(self, order_id: str) -> OrderState:
         """The FSM state behind ``order_id``'s report (ADR 0019): the status is derived from it."""
@@ -528,13 +553,13 @@ class FakeAdapter(Adapter):
         self.capabilities().require(capability)
         raise AssertionError("unreachable")  # pragma: no cover
 
-    def _series(self, instrument_id: InstrumentId) -> tuple[tuple[float, float], ...]:
+    def _series(self, instrument_id: InstrumentId) -> tuple[tuple[Decimal, Decimal], ...]:
         try:
             return _SERIES[instrument_id]
         except KeyError:
             raise AdapterError(f"unknown instrument {instrument_id}") from None
 
-    def _touch(self, instrument_id: InstrumentId) -> tuple[float, float]:
+    def _touch(self, instrument_id: InstrumentId) -> tuple[Decimal, Decimal]:
         """The current (bid, ask), defaulting to a flat 10.0 touch for injected instruments."""
         if instrument_id in _SERIES:
             return self._series(instrument_id)[self._cursor(instrument_id) % 4]
@@ -553,11 +578,13 @@ class FakeAdapter(Adapter):
                     ),
                 )
                 if bars:
-                    close = bars[-1].close
-                    return (round(close - 0.05, 2), round(close + 0.05, 2))
+                    # The mirror store serves ``_kernel.bar`` floats; convert exactly.
+                    close = Decimal(str(bars[-1].close))
+                    tick = Decimal("0.05")
+                    return (close - tick, close + tick)
             except (OSError, RuntimeError, ValueError, KeyError):
                 pass
-            return (10.0, 10.0)
+            return (Decimal("10.0"), Decimal("10.0"))
         raise AdapterError(f"unknown instrument {instrument_id}")
 
     def _require_instrument(self, instrument_id: InstrumentId) -> None:
@@ -577,8 +604,8 @@ class FakeAdapter(Adapter):
             ts=self._tick(),
             bid_price=bid,
             ask_price=ask,
-            bid_size=100.0,
-            ask_size=100.0,
+            bid_size=Decimal("100.0"),
+            ask_size=Decimal("100.0"),
         )
 
     def _emit(self, instrument_id: InstrumentId) -> None:
@@ -609,7 +636,7 @@ class FakeAdapter(Adapter):
             )
         )
 
-    def _new_state(self, order_id: str, quantity: float) -> OrderState:
+    def _new_state(self, order_id: str, quantity: Decimal) -> OrderState:
         """A fresh FSM for ``order_id``, already submitted (the fake has no pre-gate)."""
         state = OrderState()
         state.apply(OrderEvent.submitted(quantity))

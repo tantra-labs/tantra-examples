@@ -1,19 +1,21 @@
 # ruff: noqa: E501
-# mirror: kernel-verbatim port (gap 0002: ai.ask surface)
+# mirror: kernel-verbatim port (gap 0002: ai.ask surface) — Decimal-canonical wheel
+# retarget (ex 0006 closure): the screener DTOs are ``tantra.wire.screener``.
 
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass
 
-from tantra_examples._kernel.ai.knowledge import KnowledgePack, build_knowledge_pack
-from tantra_examples._kernel.ai.llm.provider import LlmPort
-from tantra_examples._kernel.screener.catalog import MetricCatalog, load_catalog
-from tantra_examples._kernel.wire.screener import (
+from tantra.wire.screener import (
     FilterOp,
     ScreenerFilterGroup,
     ScreenerFilterPredicate,
 )
+
+from tantra_examples._kernel.ai.knowledge import KnowledgePack, build_knowledge_pack
+from tantra_examples._kernel.ai.llm.provider import LlmPort
+from tantra_examples._kernel.screener.catalog import MetricCatalog, load_catalog
 
 __all__ = [
     "AskResult",

@@ -21,6 +21,14 @@
   pinned `STRATEGY_API_VERSION="1.0.0"`), `loader` (wheel `Strategy`), `screener/coverage`
   (`tantra.coverage.DateInterval`), `cli` (`tantra.store.ParquetBarStore`), `data`
   (Decimal quantity parser); `calendar`/`log`/`screener/catalog` were Decimal-free and unchanged.
+  **Wave 3** retargeted `runner`/`testing` (wheel `tantra.backtest.bar_close_fills.BarCloseFills`
+  + Decimal `Bar`/`OrderIntent`/`Trade`), `session`, `service`. **Wave 4** retargeted the
+  `adapters` subpackage (gap 0007 dependency-unblock) and the `ai` subpackage (gap 0002
+  dependency-unblock): `adapters/*` now drives wheel `tantra.{bar,instrument,order,order_state,
+  position,tick,trade,money,execution,wire.wire}` Decimal types end to end (models are
+  Decimal-coercing; `FakeAdapter` passes the full `verify_adapter_contract`; `secrets` lazy-imports
+  the optional `cryptography`), and `ai/ask` builds `tantra.wire.screener` DTOs (`ai/decision`
+  stays a `decision_guard` re-export — no wheel `tantra.ai` decision surface yet, per gap 0002).
   The rest of `_kernel/` remains as later-wave slices. Status: in progress.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
   `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/

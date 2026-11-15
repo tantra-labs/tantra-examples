@@ -10,7 +10,9 @@ argument, so the capability depends on the call).
 The vocabulary here is market-neutral. Broker product codes (CNC, NRML, MIS) are E1-S4 and
 live in the per-adapter mapping tables, not in the core.
 """
-# mirror: kernel-verbatim port (gap 0007)
+# mirror: kernel-verbatim port (gap 0007) — Decimal-canonical wheel retarget
+# (ex 0006 closure): ``OrderType``/``TimeInForce`` are ``tantra.order.*`` and
+# ``PriceType`` is ``tantra.wire.wire.PriceType``.
 
 from __future__ import annotations
 
@@ -18,10 +20,11 @@ import re
 from dataclasses import dataclass, field
 from enum import Enum
 
+from tantra.order import OrderType, TimeInForce
+from tantra.wire.wire import PriceType
+
 from tantra_examples._kernel.adapters.errors import CapabilityError
 from tantra_examples._kernel.adapters.models import Product, StreamMode
-from tantra_examples._kernel.order import OrderType, TimeInForce
-from tantra_examples._kernel.wire.wire import PriceType
 
 __all__ = [
     "AdapterCapabilities",

@@ -26,13 +26,23 @@ Rules every implementation must follow (the shared suite in
 * broker wire types never appear in a return value; only the types in
   :mod:`_kernel.adapters.models` and :mod:`_kernel`.
 """
-# mirror: kernel-verbatim port (gap 0007)
+# mirror: kernel-verbatim port (gap 0007) — Decimal-canonical wheel retarget
+# (ex 0006 closure): ``Bar``/``Instrument``/``OrderIntent``/``Position``/
+# ``QuoteTick``/``Trade`` are the shipped ``tantra.*`` Decimal types.
 
 from __future__ import annotations
 
 import datetime as dt
 from abc import ABC, abstractmethod
+from decimal import Decimal
 from typing import Protocol, runtime_checkable
+
+from tantra.bar import Bar
+from tantra.instrument import Instrument, InstrumentId
+from tantra.order import OrderIntent
+from tantra.position import Position
+from tantra.tick import QuoteTick
+from tantra.trade import Trade
 
 from tantra_examples._kernel.adapters.capabilities import AdapterCapabilities, Capability
 from tantra_examples._kernel.adapters.errors import AdapterError
@@ -48,12 +58,6 @@ from tantra_examples._kernel.adapters.models import (
     StreamMode,
     Subscription,
 )
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import Instrument, InstrumentId
-from tantra_examples._kernel.order import OrderIntent
-from tantra_examples._kernel.position import Position
-from tantra_examples._kernel.tick import QuoteTick
-from tantra_examples._kernel.trade import Trade
 
 __all__ = [
     "Adapter",
@@ -210,9 +214,9 @@ class ExecutionAdapter(Protocol):
         self,
         order_id: str,
         *,
-        quantity: float | None = None,
-        price: float | None = None,
-        trigger_price: float | None = None,
+        quantity: Decimal | None = None,
+        price: Decimal | None = None,
+        trigger_price: Decimal | None = None,
     ) -> None:
         """Change a live order. All-``None`` is a no-op error: raise ``AdapterError``."""
         ...

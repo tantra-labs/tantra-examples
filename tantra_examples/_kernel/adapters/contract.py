@@ -31,14 +31,24 @@ broker fixtures (each adapter's own tests) and margin sufficiency (E2-S2).
 The suite is pytest-free and deterministic: no network, no wall clock, no randomness. It
 never leaves the adapter connected.
 """
-# mirror: kernel-verbatim port (gap 0007)
+# mirror: kernel-verbatim port (gap 0007) — Decimal-canonical wheel retarget
+# (ex 0006 closure): every probe quantity is an exact ``decimal.Decimal`` on the shipped
+# ``tantra.*`` domain types.
 
 from __future__ import annotations
 
 import datetime as dt
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
+from decimal import Decimal
 from typing import Any, NoReturn, cast
+
+from tantra.bar import Bar
+from tantra.instrument import Instrument, InstrumentId, InstrumentKind
+from tantra.order import OrderIntent, OrderStatus, OrderType
+from tantra.position import Position
+from tantra.tick import QuoteTick, TradeTick
+from tantra.trade import Trade
 
 from tantra_examples._kernel.adapters.base import (
     Adapter,
@@ -64,12 +74,6 @@ from tantra_examples._kernel.adapters.models import (
     StreamMode,
     Subscription,
 )
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import Instrument, InstrumentId, InstrumentKind
-from tantra_examples._kernel.order import OrderIntent, OrderStatus, OrderType
-from tantra_examples._kernel.position import Position
-from tantra_examples._kernel.tick import QuoteTick, TradeTick
-from tantra_examples._kernel.trade import Trade
 
 __all__ = ["ContractViolation", "verify_adapter_contract"]
 
@@ -176,11 +180,11 @@ class _Probe:
     unknown_order: str
     unknown_subscription: str
     client_order_id: str
-    quantity: float
+    quantity: Decimal
 
 
 def _probe_from(
-    instruments: Iterable[Instrument], caps: AdapterCapabilities, quantity: float
+    instruments: Iterable[Instrument], caps: AdapterCapabilities, quantity: Decimal
 ) -> _Probe:
     first = next(iter(instruments))
     return _Probe(
@@ -358,7 +362,9 @@ async def _verify_order_type_refusals(adapter: Adapter, probe: _Probe) -> None:
         return
     if caps.supports_order_type(OrderType.TRAILING_STOP):
         return
-    intent = OrderIntent.trailing_stop_sell(probe.instrument_id, probe.quantity, trail_percent=1.0)
+    intent = OrderIntent.trailing_stop_sell(
+        probe.instrument_id, probe.quantity, trail_percent=Decimal("1.0")
+    )
     await _refuses(
         f"place_order() with undeclared order type {OrderType.TRAILING_STOP.value}",
         lambda: cast(ExecutionAdapter, adapter).place_order(intent, product=probe.product),
@@ -500,7 +506,9 @@ async def _place_resting_order(adapter: Any, probe: _Probe) -> OrderReport | Non
     if not adapter.capabilities().supports(Capability.QUOTES):
         return None
     quote = await _call("quote()", adapter.quote, probe.instrument_id)
-    intent = OrderIntent.limit_buy(probe.instrument_id, probe.quantity, quote.bid_price / 2.0)
+    intent = OrderIntent.limit_buy(
+        probe.instrument_id, probe.quantity, quote.bid_price / Decimal("2.0")
+    )
     report = await _call(
         "place_order() (resting limit)",
         adapter.place_order,
@@ -635,7 +643,7 @@ async def _verify_execution(adapter: Any, probe: _Probe) -> None:
 async def verify_adapter_contract(
     adapter: Adapter,
     *,
-    probe_quantity: float = 1.0,
+    probe_quantity: Decimal = Decimal("1.0"),
     disconnect: bool = True,
 ) -> None:
     """Verify ``adapter`` against the whole contract, raising :class:`ContractViolation`.
@@ -657,8 +665,8 @@ async def verify_adapter_contract(
                 Instrument(
                     InstrumentId("VYAAPAAR-CONTRACT", "TEST"),
                     InstrumentKind.EQUITY,
-                    1.0,
-                    0.05,
+                    Decimal("1.0"),
+                    Decimal("0.05"),
                 )
             ]
         probe = _probe_from(instruments, caps, probe_quantity)

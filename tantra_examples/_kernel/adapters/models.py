@@ -5,9 +5,11 @@ payloads never travel past the adapter (see ``_kernel.adapters.boundary``). They
 values: frozen, validated at construction, no I/O, no framework, no wall clock. Timestamps
 are unix nanoseconds, matching ``_kernel``.
 
-Prices and quantities are ``float`` here, consistent with ``_kernel``. The
-money-representation decision (integer minor units vs fixed point, E0-S6) will settle this; until
-then these types follow the existing domain convention rather than diverging from it.
+Decimal-canonical wheel retarget (ex 0006 closure, gap 0007): prices and quantities are
+exact ``decimal.Decimal`` values on the shipped ``tantra.*`` types (``Bar``,
+``InstrumentId``, ``OrderSide``/``OrderStatus``/``OrderType``/``TimeInForce``,
+``QuoteTick``/``TradeTick``) under the zero-floats policy, and the money fields here
+(``Funds``, ``MarginReport``) are ``Decimal`` in settlement currency.
 
 Deliberately *not* in this module: instrument master snapshots with an as-of date (E1-S3),
 per-broker product codes such as CNC/NRML/MIS (E1-S4), named statutory charges (E3-S3) and
@@ -18,17 +20,17 @@ maps its broker codes onto.
 
 from __future__ import annotations
 
-import math
 from collections.abc import Callable
 from dataclasses import dataclass
+from decimal import Decimal
 from enum import Enum
 from itertools import pairwise
 from typing import TypeAlias
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderSide, OrderStatus, OrderType, TimeInForce
-from tantra_examples._kernel.tick import QuoteTick, TradeTick
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
+from tantra.order import OrderSide, OrderStatus, OrderType, TimeInForce
+from tantra.tick import QuoteTick, TradeTick
 
 __all__ = [
     "DepthLevel",
@@ -89,12 +91,26 @@ StreamEvent: TypeAlias = QuoteTick | TradeTick | Bar
 StreamCallback: TypeAlias = Callable[[StreamEvent], None]
 
 
-def _finite(name: str, value: float) -> None:
-    if not math.isfinite(value):
+def _as_decimal(name: str, value: object) -> Decimal:
+    """Exact ``Decimal`` coercion: rejects non-numeric and non-finite values."""
+    if isinstance(value, Decimal):
+        result = value
+    else:
+        try:
+            result = Decimal(str(value))
+        except (ValueError, ArithmeticError, TypeError) as exc:
+            raise TypeError(f"{name} must be numeric, got {value!r}") from exc
+    if not result.is_finite():
+        raise ValueError(f"{name} must be finite, got {value}")
+    return result
+
+
+def _finite(name: str, value: Decimal) -> None:
+    if not value.is_finite():
         raise ValueError(f"{name} must be finite, got {value}")
 
 
-def _non_negative(name: str, value: float) -> None:
+def _non_negative(name: str, value: Decimal) -> None:
     _finite(name, value)
     if value < 0:
         raise ValueError(f"{name} must be >= 0, got {value}")
@@ -138,11 +154,12 @@ class SessionInfo:
 class DepthLevel:
     """One price level of a book: ``price > 0``, ``quantity >= 0``."""
 
-    price: float
-    quantity: float
+    price: Decimal
+    quantity: Decimal
 
     def __post_init__(self) -> None:
-        _finite("price", self.price)
+        object.__setattr__(self, "price", _as_decimal("price", self.price))
+        object.__setattr__(self, "quantity", _as_decimal("quantity", self.quantity))
         if self.price <= 0:
             raise ValueError(f"price must be > 0, got {self.price}")
         _non_negative("quantity", self.quantity)
@@ -191,30 +208,30 @@ class MarketDepth:
         return self.asks[0] if self.asks else None
 
     @property
-    def mid_price(self) -> float | None:
+    def mid_price(self) -> Decimal | None:
         """Mid of the top of book, or ``None`` when a side is empty."""
         best_bid, best_ask = self.best_bid, self.best_ask
         if best_bid is None or best_ask is None:
             return None
-        return (best_bid.price + best_ask.price) / 2.0
+        return (best_bid.price + best_ask.price) / Decimal("2.0")
 
 
 @dataclass(frozen=True, slots=True)
 class Funds:
     """Account cash and margin as the broker reports it. Every amount is finite and >= 0.
 
-    Amounts are in settlement currency, kept separate rather than netted, so the engine can
-    show what is available versus what is tied up. Margin requirements computed by the risk
-    stage (E2-S2) are a different object from this broker-reported snapshot.
+    Amounts are ``Decimal`` in settlement currency, kept separate rather than netted, so the
+    engine can show what is available versus what is tied up. Margin requirements computed by
+    the risk stage (E2-S2) are a different object from this broker-reported snapshot.
     """
 
-    available_cash: float
-    opening_balance: float
+    available_cash: Decimal
+    opening_balance: Decimal
     currency: str = "INR"
-    margin_used: float = 0.0
-    collateral: float = 0.0
-    payin: float = 0.0
-    payout: float = 0.0
+    margin_used: Decimal = Decimal("0.0")
+    collateral: Decimal = Decimal("0.0")
+    payin: Decimal = Decimal("0.0")
+    payout: Decimal = Decimal("0.0")
 
     def __post_init__(self) -> None:
         _non_empty("currency", self.currency)
@@ -226,6 +243,7 @@ class Funds:
             "payin",
             "payout",
         ):
+            object.__setattr__(self, name, _as_decimal(name, getattr(self, name)))
             _non_negative(name, getattr(self, name))
 
 
@@ -234,19 +252,21 @@ class Holding:
     """A demat holding. ``quantity == 0`` is a real state (shares sold, not yet delivered)."""
 
     instrument_id: InstrumentId
-    quantity: float
-    average_price: float = 0.0
-    last_price: float = 0.0
+    quantity: Decimal
+    average_price: Decimal = Decimal("0.0")
+    last_price: Decimal = Decimal("0.0")
 
     def __post_init__(self) -> None:
-        _finite("quantity", self.quantity)
+        object.__setattr__(self, "quantity", _as_decimal("quantity", self.quantity))
+        object.__setattr__(self, "average_price", _as_decimal("average_price", self.average_price))
+        object.__setattr__(self, "last_price", _as_decimal("last_price", self.last_price))
         _non_negative("average_price", self.average_price)
         _non_negative("last_price", self.last_price)
 
     @property
     def is_zero(self) -> bool:
         """Whether the demat balance is flat (shares sold, delivery pending)."""
-        return self.quantity == 0.0
+        return self.quantity == 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -258,13 +278,15 @@ class MarginReport:
     (E2-S2) and the two are compared during reconciliation (E2-S7).
     """
 
-    initial: float
-    maintenance: float
+    initial: Decimal
+    maintenance: Decimal
     currency: str = "INR"
     instrument_id: InstrumentId | None = None
 
     def __post_init__(self) -> None:
         _non_empty("currency", self.currency)
+        object.__setattr__(self, "initial", _as_decimal("initial", self.initial))
+        object.__setattr__(self, "maintenance", _as_decimal("maintenance", self.maintenance))
         _non_negative("initial", self.initial)
         _non_negative("maintenance", self.maintenance)
         if self.maintenance > self.initial:
@@ -273,7 +295,7 @@ class MarginReport:
             )
 
     @property
-    def headroom(self) -> float:
+    def headroom(self) -> Decimal:
         """How far the position can be extended before maintenance is breached."""
         return self.initial - self.maintenance
 
@@ -290,26 +312,29 @@ class OrderReport:
     order_id: str
     instrument_id: InstrumentId
     side: OrderSide
-    quantity: float
+    quantity: Decimal
     status: OrderStatus
     product: Product
     order_type: OrderType = OrderType.MARKET
     time_in_force: TimeInForce = TimeInForce.DAY
-    filled_quantity: float = 0.0
-    average_price: float = 0.0
-    price: float | None = None
-    trigger_price: float | None = None
+    filled_quantity: Decimal = Decimal("0.0")
+    average_price: Decimal = Decimal("0.0")
+    price: Decimal | None = None
+    trigger_price: Decimal | None = None
     reject_reason: str | None = None
     ts_event: int = 0
     venue_order_id: str | None = None
 
     def __post_init__(self) -> None:
         _non_empty("order_id", self.order_id)
-        _finite("quantity", self.quantity)
+        object.__setattr__(self, "quantity", _as_decimal("quantity", self.quantity))
         if self.quantity <= 0:
             raise ValueError(f"quantity must be > 0, got {self.quantity}")
-        _finite("filled_quantity", self.filled_quantity)
-        if not 0.0 <= self.filled_quantity <= self.quantity:
+        object.__setattr__(
+            self, "filled_quantity", _as_decimal("filled_quantity", self.filled_quantity)
+        )
+        object.__setattr__(self, "average_price", _as_decimal("average_price", self.average_price))
+        if not Decimal("0.0") <= self.filled_quantity <= self.quantity:
             raise ValueError(
                 f"filled_quantity must be within [0, {self.quantity}], got {self.filled_quantity}"
             )
@@ -333,7 +358,8 @@ class OrderReport:
         for name in ("price", "trigger_price"):
             value = getattr(self, name)
             if value is not None:
-                _finite(name, value)
+                object.__setattr__(self, name, _as_decimal(name, value))
+                _finite(name, getattr(self, name))
         if self.ts_event < 0:
             raise ValueError(f"ts_event must be >= 0, got {self.ts_event}")
 
