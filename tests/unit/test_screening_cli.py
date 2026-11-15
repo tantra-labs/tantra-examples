@@ -66,7 +66,7 @@ def mf_script():
 
 @pytest.fixture
 def _real_catalog() -> Path:
-    """The real 1D NSE catalog, or skip (docs/gaps/0003-tantra-data-nav-loaders.md).
+    """The real 1D NSE catalog, or skip (real catalog absent; ``VYAAPAAR_DATA_DIR`` seam).
 
     These tests exercise the real catalog-resolution path rather than a synthetic
     fixture, so they need the actual ``tantra-data`` catalog checkout, absent in
@@ -75,7 +75,7 @@ def _real_catalog() -> Path:
     try:
         return find_catalog_path()
     except FileNotFoundError as exc:
-        pytest.skip(f"1D NSE catalog not available (gap 0003-tantra-data-nav-loaders): {exc}")
+        pytest.skip(f"1D NSE catalog not available (offline seam: real catalog absent): {exc}")
 
 
 _CANDIDATES = [

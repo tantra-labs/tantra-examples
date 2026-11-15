@@ -1,6 +1,6 @@
 """02_import_nse_bhavcopy: parse an exchange EOD CSV into Bars and hand them to the Parquet store.
 
-The ingest edge is deliberately thin: ``tantra_examples.bhavcopy.parse_bhavcopy_csv``
+The ingest edge is deliberately thin: ``tantra_data.loaders.nse.parse_bhavcopy_csv``
 sniffs the header dialect of an exchange's end-of-day CSV and returns
 ``dict[str, Bar]`` - offline and pure, no network, no store. This example embeds
 one small fixture per dialect it accepts (UDiFF, Sec Bhavdata, legacy bhavcopy),
@@ -57,9 +57,9 @@ from tantra.bar import Bar
 from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore
+from tantra_data.loaders.nse import parse_bhavcopy_csv
 
 from tantra_examples.base import ts_to_date
-from tantra_examples.bhavcopy import parse_bhavcopy_csv
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 

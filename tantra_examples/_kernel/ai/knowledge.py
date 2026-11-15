@@ -10,7 +10,7 @@ import json
 from dataclasses import dataclass
 from typing import Any
 
-from tantra_examples._kernel.screener.catalog import load_catalog
+from tantra.screener import load_catalog
 
 __all__ = [
     "FEW_SHOT_EXAMPLES",

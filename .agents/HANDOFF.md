@@ -1,6 +1,19 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **Gap 0003 CLOSED (2026-11-15, ex 0003 closure)** — the owning surfaces shipped:
+  `tantra_data.loaders.{amfi,nse,yfinance}` + `tantra_data.domain.quantity` (tantra-data
+  `54d5b34`) and the wheel `tantra.screener` catalog/coverage surface (tantra-ffi
+  `07b4956`). This repo **deleted the mirrors** (`_kernel/data/`, `_kernel/screener/`,
+  `amfi.py`, `bhavcopy.py`) and **retargeted every consumer** to `tantra_data.loaders.*` +
+  `tantra.screener` + `tantra_data.parse_quantity` (12 AMFI consumers, the bhavcopy import,
+  `_kernel.ai.{ask,knowledge}` catalog imports, `01_llm_research_analyst`, `03_nl_screener`,
+  7 test files). The `VYAAPAAR_DATA_DIR` offline seam in `screening/paths.py` is kept (the
+  real NSE catalog is absent from CI). Unit suite in the provisioned venv is identical to
+  untouched HEAD (840 passed / 73 failed / 3 errors / 41 skipped — no new failures; the +1
+  over the pre-provisioning 72 is `test_screening_cli::test_mutual_fund_screener_execution`,
+  which now runs instead of skipping because `tantra_data` is installed, and fails on the
+  known catalog-absent condition).
 * **Gap 0007 CLOSED (2026-11-15, ex 0007 closure)** — wheel `tantra.adapters` shipped
   (tantra-ffi `437eddf5`); `_kernel/adapters/` mirror (13 modules) deleted; 18 consumers
   retargeted; adapters unit tests green; full unit suite unchanged (re-measured
@@ -53,11 +66,11 @@
   touched files, unit run = 838 passed / 72 failed (pre-existing float-rooted, e.g.
   `metrics.fills_equity_curve`) / 3 errors (`test_07_run_via_client`, `httpx` optional dep absent)
   / 50 skipped. Status: shipped-mirror deletion complete; the remaining `_kernel` files are
-  other-gap mirrors (0002/0003/0004/0008) — ex 0006 stays open for the compiled risk/
+  other-gap mirrors (0002/0004/0008) — ex 0006 stays open for the compiled risk/
   trading-state surface.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
-  `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/
-  0007/0008 carry `open — blocked` status with precise blockers; 0006 `in progress`.
+  `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0004/0008
+  carry `open — blocked` status with precise blockers; 0006 `in progress`.
 * **Gates**: full `pytest` green except one pre-existing environmental failure
   (`test_mutual_fund_screener_execution` needs the 1D NSE catalog on disk); `ruff check` +
   `ruff format --check` clean (incl. pre-existing I001/SIM102 in untouched files fixed).
@@ -69,11 +82,11 @@
 
 ## Decisions & Discoveries
 * **Pytest import mode & test structure**: `pythonpath = ["."]` in `pyproject.toml` + empty `__init__.py` in `tests/`, `tests/unit/`, `tests/integration/` lets `pytest -q` run from the repo root and resolves module-name collisions between unit and integration tests.
-* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (ai/calendar/cli/config/data/greeks/loader/log/manifest/markets/option/ports/screener/service/session + kept evaluator/risk/runner/testing/portfolio) still mirror the not-yet-shipped surfaces.
+* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (ai/calendar/cli/config/greeks/loader/log/manifest/markets/option/ports/service/session + kept evaluator/risk/runner/testing/portfolio) still mirror the not-yet-shipped surfaces.
 * **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` + `pipeline/io.py` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
 * **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
 * **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.
-* **Offline catalog seam**: integration tests that require the multi-GB real Parquet catalog skip when run offline (`VYAAPAAR_DATA_DIR` synthetic fixture seam, gap 0003).
+* **Offline catalog seam**: integration tests that require the multi-GB real Parquet catalog skip when run offline (`VYAAPAAR_DATA_DIR` synthetic fixture seam, kept after the gap 0003 closure).
 
 ## Immediate Next Step
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.

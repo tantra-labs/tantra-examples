@@ -11,8 +11,8 @@ import pytest
 from tantra.coverage import DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore
+from tantra_data.loaders.amfi import parse_navall
 
-from tantra_examples.amfi import parse_navall
 from tantra_examples.synthetic import session_ts
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "storage" / "03_import_amfi_nav.py"

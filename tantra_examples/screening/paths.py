@@ -11,8 +11,9 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
-# Offline/test seam: when the tantra-data checkout is absent (gap:
-# 0003-tantra-data-nav-loaders), callers point this env var at a synthetic
+# Offline/test seam (kept after ex 0003 closure): the tantra_data loader
+# surface has shipped and downloads are handled by sip_plan's providers, but the
+# real NSE catalog is absent from CI, so callers point this env var at a synthetic
 # data root whose layout mirrors <data_root>/catalog/1D/NSE and
 # <data_root>/fundamentals.duckdb.
 

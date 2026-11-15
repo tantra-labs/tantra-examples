@@ -1,6 +1,6 @@
 # 07 Mutual Funds – NAV handling and SIP backtests
 
-Mutual-fund examples use the AMFI NAV feed (`tantra_examples.amfi`) and Tantra's
+Mutual-fund examples use the AMFI NAV feed (`tantra_data.loaders.amfi`) and Tantra's
 mutual-fund instrument type (`InstrumentKind.MUTUAL_FUND`). They are data and
 analytics workflows, not trading strategies — none defines a `Strategy` subclass.
 All runs are offline and deterministic, reading recorded NAV fixtures from the
@@ -29,7 +29,7 @@ see
 
 ## The AMFI NAV feed
 
-`tantra_examples.amfi.AmfiNavLoader` provides:
+`tantra_data.loaders.amfi.AmfiNavLoader` provides:
 - `load(scheme_code: str, start, end) -> list[NavPoint]` — NAV series from the local Parquet store
 - `load_category(category: str) -> dict[str, list[NavPoint]]` — schemes in a category (loader stub: returns `{}` today)
 - `latest_nav(scheme_code: str) -> NavPoint | None` — most recent NAV (for live SIP)

@@ -50,7 +50,7 @@ stamped on `end`.
 
 ## The ingest edge
 
-`tantra_examples.bhavcopy.parse_bhavcopy_csv` and `tantra_examples.amfi.parse_navall` are
+`tantra_data.loaders.nse.parse_bhavcopy_csv` and `tantra_data.loaders.amfi.parse_navall` are
 pure and offline: the examples embed small fixtures instead of downloading, report what each
 dialect produced, and surface malformed input as *data* in the report rather than repairing
 or crashing. NAV rows become flat bars (`open == high == low == close == NAV`, zero volume)

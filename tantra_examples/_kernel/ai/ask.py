@@ -7,6 +7,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from tantra.screener import MetricCatalog, load_catalog
 from tantra.wire.screener import (
     FilterOp,
     ScreenerFilterGroup,
@@ -15,7 +16,6 @@ from tantra.wire.screener import (
 
 from tantra_examples._kernel.ai.knowledge import KnowledgePack, build_knowledge_pack
 from tantra_examples._kernel.ai.llm.provider import LlmPort
-from tantra_examples._kernel.screener.catalog import MetricCatalog, load_catalog
 
 __all__ = [
     "AskResult",

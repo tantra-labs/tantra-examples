@@ -34,7 +34,7 @@ def _default_catalog() -> None:
 
     ``main()``'s default run reads the real data root (no synthetic ``bars=``
     override); that root is the absent ``tantra-data`` checkout here
-    (docs/gaps/0003-tantra-data-nav-loaders.md).
+    (the real NSE catalog is absent; see the ``VYAAPAAR_DATA_DIR`` offline seam).
     """
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(
@@ -43,8 +43,7 @@ def _default_catalog() -> None:
     bars = store.read(InstrumentId("ALPHAETF", "NSE"), "1D", interval)
     if not bars:
         pytest.skip(
-            "ALPHAETF.NSE 1D catalog not available locally "
-            "(docs/gaps/0003-tantra-data-nav-loaders.md)"
+            "ALPHAETF.NSE 1D catalog not available locally (offline seam: real catalog absent)"
         )
 
 

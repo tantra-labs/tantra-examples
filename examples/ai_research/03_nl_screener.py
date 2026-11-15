@@ -66,11 +66,11 @@ from collections.abc import Sequence
 from typing import Any
 
 from tantra.instrument import InstrumentId
+from tantra.screener import DateInterval
+from tantra_data import parse_quantity
 
 from tantra_examples._kernel.ai.llm.provider import LlmPort
 from tantra_examples._kernel.cli import _STORE
-from tantra_examples._kernel.data import parse_quantity
-from tantra_examples._kernel.screener.coverage import DateInterval
 from tantra_examples.cli import make_parser
 from tantra_examples.screening.cli_args import add_nl_screener_args
 from tantra_examples.screening.nl_render import render_nl_result

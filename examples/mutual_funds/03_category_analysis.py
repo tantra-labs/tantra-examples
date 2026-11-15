@@ -33,7 +33,8 @@ import statistics
 import sys
 from typing import Any
 
-from tantra_examples.amfi import AmfiNavLoader
+from tantra_data.loaders.amfi import AmfiNavLoader
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.metrics import max_drawdown, sharpe_ratio
 

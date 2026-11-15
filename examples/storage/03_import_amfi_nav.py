@@ -6,7 +6,7 @@ code, scheme name, NAV, date. The import here is fully offline: two embedded pub
 stand in for the download, one scheme arrives with a missing NAV (``-``) and a third file
 arrives with a structurally damaged line. The two failures are not the same: a missing value
 is skipped and reported with its line, code and reason, while structural damage is refused
-by ``tantra_examples.amfi.parse_navall`` and reported as data rather than repaired.
+by ``tantra_data.loaders.amfi.parse_navall`` and reported as data rather than repaired.
 
 Parsed rows become NAV bars (``open == high == low == close == NAV``, volume zero), are
 appended per scheme under the ``AMFI`` exchange - the publisher is the venue for a series
@@ -46,8 +46,8 @@ from tantra.adapters.errors import AdapterNotFound
 from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore
+from tantra_data.loaders.amfi import EXCHANGE, NavRow, NavSkip, nav_bars, parse_navall
 
-from tantra_examples.amfi import EXCHANGE, NavRow, NavSkip, nav_bars, parse_navall
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 
