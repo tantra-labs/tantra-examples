@@ -104,7 +104,7 @@ pytest tests/unit -q -k "first_backtest or cost_modeling or latency_modeling or 
 
 The same `Strategy` subclass works with:
 - `_kernel.testing.replay` (these examples — bar-close fills, no settlement)
-- `_kernel.session.BacktestSession` (event-driven with Parquet data, next-open fills, T+N settlement)
-- `tantra.engine` + adapter (paper/live)
+- `tantra.backtest.session.Tantra.backtest` (event-driven, next-open fills, India costs, T+N settlement)
+- `tantra.adapters` + a broker (paper/live; `tantra.client` REST is a future wheel surface)
 
 The harness handles context binding, intent draining, fill application, settlement — the strategy only sees `self.ctx` and emits intents.

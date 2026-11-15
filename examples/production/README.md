@@ -31,21 +31,24 @@ the generated deployment files. Read it before trusting a number. For the genera
 
 ```python
 from tantra.adapters.registry import AdapterRegistry
-from tantra_examples._kernel.session import Session, SessionConfig
+from tantra.backtest.session import Tantra
 
-# 1. Configure session (paper or live)
-config = SessionConfig(
-    adapter="dhan",
-    adapter_config={"client_id": "...", "access_token": "..."},
-    strategy=MyStrategy(),
-    risk_limits={"max_position_pct": 0.1, "max_daily_loss": 50000},
-    capital=10_00_000,
-)
+# 1. Resolve a broker adapter (fake by default; the wheel ships no live
+#    REST client yet — tantra.client is a future surface)
+registry = AdapterRegistry()
+dhan = registry.create("dhan", **{"client_id": "...", "access_token": "..."})
 
-# 2. Run session (blocks until stop)
-session = Session(config)
-session.start()
-# ... on signal: session.stop()
+# 2. Backtest the strategy offline through the wheel session (next-open
+#    fills, NSE delivery costs, T+1 settlement)
+result = Tantra.backtest(
+    MyStrategy(),
+    symbol="RELIANCE",
+    exchange="NSE",
+    start="2024-01-01",
+    end="2024-12-31",
+    cash=1_000_000,
+).run()
+print(result.metrics["final_equity"])
 ```
 
 ## Running them
