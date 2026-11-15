@@ -1,8 +1,13 @@
-"""ai_research/05_rl_training: design placeholder for reinforcement-learning training.
+"""ai_research/05_rl_training: design notes for reinforcement-learning training.
 
-See README for details. ``tantra.ai.rl.*`` are stubs (gap 0002) and torch and gymnasium
-are optional extras, so this file runs nothing. The Pitfalls below are the traps an RL
-trainer must defend against, not behaviour you can run.
+This is a design-documentation script: it prints the design notes below and the
+optional-dependency requirement. torch and gymnasium are optional extras and are never
+imported by this script or anywhere in the default install. ``tantra.ai.rl.*`` does not
+ship in the wheel.
+
+Run::
+
+    python examples/ai_research/05_rl_training.py
 
 Pitfalls::
 
@@ -21,9 +26,33 @@ Pitfalls::
       universe or volatility changes. Walk forward and re-test on a point-in-time universe.
 """
 
-import pytest
+from __future__ import annotations
 
-pytest.skip(
-    "Design-only (gap 0002): blocked on missing wheel surface. See docs/gaps/0002-*.md.",
-    allow_module_level=True,
+import sys
+
+__all__ = ["DESIGN_NOTES", "main"]
+
+DESIGN_NOTES = (
+    "Reinforcement-learning training for trading strategies is documented design, not a shipped "
+    "surface: tantra.ai.rl.* does not exist in the wheel. When it ships, the trainer must run "
+    "against an offline simulator (the same Decimal bars as the backtester), keep torch and "
+    "gymnasium as optional extras, and defend against every pitfall above. A trainer on live "
+    "data with a learned reward is a strategy that must still pass the same risk gate and "
+    "replayable-journal discipline as any other."
 )
+
+
+def main(argv: list[str] | None = None) -> int:
+    print(__doc__)
+    print()
+    print(DESIGN_NOTES)
+    print()
+    print(
+        "Dependency requirement: torch and gymnasium are optional extras and are NOT imported "
+        "by this script or its tests."
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

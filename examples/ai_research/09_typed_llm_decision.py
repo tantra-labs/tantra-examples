@@ -17,7 +17,7 @@ Pitfalls::
       real model may know what happened after the decision date; test vetoes on dates after its
       training cutoff or replay recorded live decisions.
     - The core invariant bounds quantity, not exposure: validate_llm_decision itself accepts a
-      veto or size-down on an exit. guard_llm_decision (tantra_examples/decision_guard.py) adds the
+      veto or size-down on an exit. guard_llm_decision (tantra.ai.decision) adds the
       reduce-only rule, but only for intents it can recognise: stop-type orders, or any intent you
       pass reduce_only=True for. A plain market SELL that is really a stop-out is not detected
       unless you flag it. Route risk-reducing orders around the model when in doubt.
@@ -39,17 +39,17 @@ from typing import Any
 
 from rich.console import Console
 from rich.panel import Panel
-from tantra.display import SECONDARY, Column, render_table
-from tantra.instrument import InstrumentId
-from tantra.order import OrderIntent, OrderSide
-
-from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.decision_guard import (
+from tantra.ai.decision import (
     DecisionKind,
     LlmDecision,
     apply_llm_decision,
     guard_llm_decision,
 )
+from tantra.display import SECONDARY, Column, render_table
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent, OrderSide
+
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run", "run_typed_llm_decision_demo"]
 

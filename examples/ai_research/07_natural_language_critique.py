@@ -1,8 +1,12 @@
-"""ai_research/07_natural_language_critique: design placeholder for an LLM backtest critique.
+"""ai_research/07_natural_language_critique: design notes for an LLM backtest critique.
 
-See README for details. ``tantra.ai.verification.critic`` is a stub today (gap 0002),
-so this file runs nothing. The Pitfalls below are the traps a critique step must defend
-against, not behaviour you can run.
+This is a runnable design-documentation script: it prints the Pitfalls prose below and runs a
+tiny offline ``tantra.ai`` ask call to show the translation plumbing. The
+``tantra.ai.verification.critic`` surface is future work (documented design) and is not imported.
+
+Run::
+
+    python examples/ai_research/07_natural_language_critique.py
 
 Pitfalls::
 
@@ -23,9 +27,42 @@ Pitfalls::
       selection. Store the prompt, the response and a hash of the result it saw.
 """
 
-import pytest
+from __future__ import annotations
 
-pytest.skip(
-    "Design-only (gap 0002): blocked on missing wheel surface. See docs/gaps/0002-*.md.",
-    allow_module_level=True,
-)
+import json
+import sys
+from typing import Any
+
+from tantra.ai.ask import translate_query
+from tantra.ai.llm.provider import ScriptedFakeLlm
+
+__all__ = ["FILTER", "QUERY", "main", "run"]
+
+QUERY = "stocks with volume above 1m and an RSI below 30"
+FILTER = "volume > 1000000 and rsi < 30"
+
+
+def run() -> dict[str, Any]:
+    """Tiny offline ask demo; the critic itself stays documented design."""
+    llm = ScriptedFakeLlm(responses=[FILTER])
+    result = translate_query(QUERY, llm)
+    return {
+        "ask_demo": {
+            "query": QUERY,
+            "filter_text": result.filter_text,
+            "repair_count": result.repair_count,
+        },
+        "critic_status": (
+            "tantra.ai.verification.critic is future work (documented design), not imported"
+        ),
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    print(__doc__)
+    print(json.dumps(run(), indent=2, default=str))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

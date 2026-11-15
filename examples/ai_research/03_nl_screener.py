@@ -65,12 +65,12 @@ import sys
 from collections.abc import Sequence
 from typing import Any
 
+from tantra.ai.llm.provider import LlmPort
 from tantra.instrument import InstrumentId
 from tantra.markets.india.universes import resolve_universe
 from tantra.screener import DateInterval
 from tantra_data import parse_quantity
 
-from tantra_examples._kernel.ai.llm.provider import LlmPort
 from tantra_examples.base import get_store
 from tantra_examples.cli import make_parser
 from tantra_examples.screening.cli_args import add_nl_screener_args

@@ -42,11 +42,11 @@ from __future__ import annotations
 import sys
 from typing import Any
 
+from tantra.ai.ask import AskResult, build_system_prompt, translate_query
+from tantra.ai.knowledge import KnowledgePack, build_knowledge_pack
+from tantra.ai.llm.provider import LlmPort, ScriptedFakeLlm
 from tantra.screener import MetricCatalog, load_catalog
 
-from tantra_examples._kernel.ai.ask import AskResult, build_system_prompt, translate_query
-from tantra_examples._kernel.ai.knowledge import KnowledgePack, build_knowledge_pack
-from tantra_examples._kernel.ai.llm.provider import LlmPort, ScriptedFakeLlm
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["DEFAULT_FILTER", "DEFAULT_QUERY", "EmptyFilterError", "main", "run"]

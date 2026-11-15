@@ -7,7 +7,7 @@ decision can be reproduced without calling the model again.
 
 Offline by default: decisions are generated deterministically from a seed, so
 the same seed always yields the same journal. A real provider
-(``tantra_examples._kernel.ai.llm.provider.LlmPort``) can be wired in behind an explicit flag.
+(``tantra.ai.llm.provider.LlmPort``) can be wired in behind an explicit flag.
 
 Run::
 

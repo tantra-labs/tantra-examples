@@ -1,8 +1,16 @@
-"""ai_research/02_autoresearch_loop: design placeholder for the autonomous research loop.
+"""ai_research/02_autoresearch_loop: deterministic demo of the autonomous research loop.
 
-See README for details. ``tantra.ai.autoresearch.*`` are stubs today (gap 0002), so this file runs
-nothing. The Pitfalls below are the traps the loop must be built to defend against (design in
-tantra-docs/docs/tutorials/autoresearch-loop.md), not behaviour you can run.
+The full loop — hypothesis proposal, trial budget, deflated-Sharpe threshold, holdout, and a
+seed-replay journal — is documented design (tantra-docs/docs/tutorials/autoresearch-loop.md);
+``tantra.ai.autoresearch.*`` does not ship in the wheel. What this script runs is the offline,
+deterministic core of that design: a ``ScriptedFakeLlm`` proposes hypotheses, each is translated
+via ``tantra.ai.ask.translate_query`` into a validated screener filter, and the resulting order
+decision is passed through ``tantra.ai.decision.guard_llm_decision`` (fail-closed, no quantity
+increases, protective exits never shrunk).
+
+Run::
+
+    python examples/ai_research/02_autoresearch_loop.py
 
 Pitfalls::
 
@@ -22,9 +30,87 @@ Pitfalls::
       verification sandbox, never be executed directly.
 """
 
-import pytest
+from __future__ import annotations
 
-pytest.skip(
-    "Design-only (gap 0002): blocked on missing wheel surface. See docs/gaps/0002-*.md.",
-    allow_module_level=True,
-)
+import json
+import sys
+from typing import Any
+
+from tantra.ai.ask import translate_query
+from tantra.ai.decision import guard_llm_decision
+from tantra.ai.llm.provider import ScriptedFakeLlm
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent
+
+__all__ = ["HYPOTHESES", "main", "run"]
+
+# (hypothesis, scripted filter the fake LLM replies with) — deterministic offline.
+HYPOTHESES: list[tuple[str, str]] = [
+    ("mean reversion: buy oversold large caps", "market_cap_basic > 100000000000 and rsi < 30"),
+    ("momentum: strong-RSI leaders on volume", "rsi > 70 and volume > 500000"),
+]
+
+
+def run() -> dict[str, Any]:
+    """One deterministic pass: translate each hypothesis and guard its order decision."""
+    symbol = InstrumentId("NIFTY", "NSE")
+    intent = OrderIntent.market_buy(symbol, 100.0)
+    stop_loss = OrderIntent.stop_sell(symbol, 100.0, 95.0)
+
+    results: list[dict[str, Any]] = []
+    for name, filter_text in HYPOTHESES:
+        llm = ScriptedFakeLlm(responses=[filter_text])
+        translated = translate_query(name, llm)
+        guard = guard_llm_decision(
+            {
+                "order_id": f"loop-{len(results)}",
+                "decision": "approve",
+                "decided_quantity": 100.0,
+                "rationale": name,
+            },
+            intent,
+        )
+        results.append(
+            {
+                "hypothesis": name,
+                "filter_text": translated.filter_text,
+                "repair_count": translated.repair_count,
+                "guard": {
+                    "fail_closed": guard.fail_closed,
+                    "overridden": guard.overridden,
+                    "effective_quantity": (
+                        None
+                        if guard.effective_intent is None
+                        else float(guard.effective_intent.quantity)
+                    ),
+                },
+            }
+        )
+
+    # Protective-exit invariant: the model cannot cancel a stop-loss.
+    exit_guard = guard_llm_decision(
+        {"order_id": "loop-stop", "decision": "veto", "decided_quantity": 0.0}, stop_loss
+    )
+
+    return {
+        "design": (
+            "the full loop (trial budget, deflated-Sharpe threshold, holdout, seed-replay "
+            "journal) is documented design; tantra.ai.autoresearch.* does not ship"
+        ),
+        "trials": len(results),
+        "results": results,
+        "protective_exit": {
+            "model_decision": "veto",
+            "overridden": exit_guard.overridden,
+            "exit_kept": exit_guard.effective_intent == stop_loss,
+        },
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    print(json.dumps(run(), indent=2, default=str))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

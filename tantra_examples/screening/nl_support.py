@@ -17,8 +17,9 @@ import urllib.request
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from tantra.ai.llm.provider import LlmPort, ScriptedFakeLlm
+
 from tantra_examples._kernel.evaluator import extract_metrics_from_bars
-from tantra_examples.fake_llm import LlmPort, ScriptedFakeLlm
 
 __all__ = [
     "KNOWN_METRICS",

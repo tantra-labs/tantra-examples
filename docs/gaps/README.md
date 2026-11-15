@@ -19,7 +19,6 @@ here means deleting the mirrored code and re-pointing consumers.
 
 | # | Slug | Symptom | Owning repo | Status |
 | :--- | :--- | :--- | :--- | :--- |
-| [0002](0002-tantra-wheel-ai-provider-surface.md) | tantra-wheel-ai-provider-surface | `honba.ai.{ask,decision,llm.provider,autoresearch}` have no wheel equivalent → `_kernel/ai/` mirror, `fake_llm.py`, `decision_guard.py`, `screening/nl_support.py`; `02/04/05/07_autoresearch_loop` design-only (pytest.skip) | `tantra-agent` (research loop, llm adapters) / `tantra-ffi` | open — blocked |
 | [0008](0008-runtime-session-surface.md) | runtime-session-surface | No wheel session orchestrator for real-data runs (next-open fills, NSE costs, T+1 settlement) → `_kernel/session.py` protocol-only stub; `Tantra.backtest` raises `NotImplementedError` on purpose | `tantra-runtime` (Strategy Tester session) / `tantra-ffi` (wheel surface) | open — blocked |
 
 ## Closed Gaps
@@ -27,6 +26,7 @@ here means deleting the mirrored code and re-pointing consumers.
 | # | Title | Closed In |
 | :--- | :--- | :--- |
 | 0001 | tantra-wheel-algo-analytics-surface — wheel `tantra.algo_analytics` / `tantra.quant` / `tantra.optimizer` shipped; mirror (`optimizer/algo_analytics/` + `quant.py`) deleted; consumers retargeted | 2026-11-15 (T9.3; tantra-ffi `d79d31b` + `6ac14dd`, tantra-examples closure) |
+| 0002 | tantra-wheel-ai-provider-surface — wheel `tantra.ai` (ask/decision/knowledge/llm.provider) shipped; `_kernel/ai/` + `fake_llm.py` + `decision_guard.py` deleted; consumers retargeted; 4 design-only scripts un-skipped; `nl_support.py` retained as screener harness | 2026-11-15 (ex 0002 closure; tantra-ffi + tantra-examples) |
 | 0003 | tantra-data-nav-loaders — `tantra_data.loaders.{amfi,nse,yfinance}` + `domain.quantity` shipped; wheel `tantra.screener` (catalog/coverage) shipped; `_kernel/data/`+`_kernel/screener/`+`amfi.py`+`bhavcopy.py` deleted; consumers retargeted; `VYAAPAAR_DATA_DIR` offline seam kept (real catalog absent from CI) | 2026-11-15 (ex 0003 closure; tantra-data + tantra-ffi + tantra-examples) |
 | 0004 | tantra-wheel-display-universes-client — wheel `tantra.display` + `tantra.markets.india` (costs/settlement) + `tantra.markets.india.universes` + `tantra.cli.data` shipped; `display_style.py`/`universe_lists.py`/`pipeline/io.py` + `_kernel/markets/india/` + `_kernel/cli/` deleted; consumers retargeted; `tantra.client` (REST) remains a separate future surface (options/* keep the best-effort try-import) | 2026-11-15 (ex 0004 closure; tantra-ffi + tantra-examples) |
 | 0005 | tantra-exec-freeze-slicer-mirror — wheel `tantra.sizing` freeze-slicing (`freeze_limit_qty`/`slice_order`/`verify_slices`) shipped; `options/__init__.py` mirror removed; consumers retargeted | 2026-11-15 (T9.7; tantra-ffi `d79d31b`, tantra-examples closure) |
@@ -40,7 +40,7 @@ closing commit).
 As of 2026-11-15, the 8-gap dependency cascade rooted in the 166-file `_kernel` mirror is
 resolved: the **root (0006) is closed** — the wheel ships the Decimal-canonical kernel
 domain and every `_kernel.*` consumer is retargeted to it. The remaining `_kernel/` files
-are the other gaps' mirrors (0002 `ai/`, 0008 `session.py`) plus the shared harness
+are the other gap's mirror (0008 `session.py`) plus the shared harness
 (`runner`, `risk`, `testing`, `portfolio`, …) — all now built on the wheel, with the
 cascade root unblocked. **Retained harness (ex 0004)**: `output.py`, `screener_cli.py` and
 `cli.py` are example-harness modules that stay on top of the wheel surfaces — only their

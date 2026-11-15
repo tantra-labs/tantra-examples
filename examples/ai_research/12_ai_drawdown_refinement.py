@@ -4,7 +4,7 @@ Runs a base SMA crossover strategy on synthetic bars, detects a drawdown streak
 (>= 12 % from peak), and lets a seeded ``ScriptedFakeLlm`` diagnose it: add an
 ADX trend filter so the strategy only trades when the market is trending
 (ADX above 25 with +DI above -DI for longs, below -DI for shorts). The AI's
-proposed change is run through ``tantra_examples.decision_guard.guard_llm_decision``
+proposed change is run through ``tantra.ai.decision.guard_llm_decision``
 (typed LlmDecision guard rules: reduce-only, no quantity increases, fail-closed),
 then both the base and the ADX-filtered strategy are re-evaluated out-of-sample
 on a held-out walk-forward test slice (replay on the same fold geometry as
@@ -47,6 +47,7 @@ import random
 import sys
 from typing import Any
 
+from tantra.ai.decision import guard_llm_decision
 from tantra.algo_analytics import deflated_sharpe
 from tantra.bar import Bar
 from tantra.base import Strategy
@@ -56,7 +57,6 @@ from tantra.order import OrderIntent
 
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.decision_guard import guard_llm_decision
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import oscillating_bars
 

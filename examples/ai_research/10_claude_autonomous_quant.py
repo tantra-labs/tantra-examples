@@ -39,16 +39,16 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tantra.ai.decision import DecisionKind, LlmDecision
+from tantra.ai.llm.provider import ScriptedFakeLlm
 from tantra.algo_analytics import deflated_sharpe
 from tantra.bar import Bar
 from tantra.base import Strategy
 from tantra.indicators import Rsi
 from tantra.order import OrderSide
 
-from tantra_examples._kernel.ai.llm.provider import ScriptedFakeLlm
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.decision_guard import DecisionKind, LlmDecision
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import oscillating_bars
 
