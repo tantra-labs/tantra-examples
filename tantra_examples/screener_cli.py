@@ -22,8 +22,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tantra.cli.data import parse_symbols  # noqa: F401
+
 from tantra_examples.base import TantraExample
-from tantra_examples.pipeline.io import parse_symbols  # noqa: F401
 from tantra_examples.screening import find_catalog_path, get_latest_market_date
 
 __all__ = ["ScreenerCLIExample"]

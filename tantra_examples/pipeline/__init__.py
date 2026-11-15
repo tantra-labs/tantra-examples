@@ -25,6 +25,8 @@ execution harnesses with the ``>>`` (or ``|``) operator::
 
 from __future__ import annotations
 
+from tantra.cli.data import dumps, parse_symbols, read_symbols, to_stream
+
 from tantra_examples.pipeline.base import (
     Pipeline,
     PipelineContext,
@@ -39,7 +41,6 @@ from tantra_examples.pipeline.filters import (
     LiquidityFilter,
     MarketRegimeFilter,
 )
-from tantra_examples.pipeline.io import dumps, parse_symbols, read_symbols, to_stream
 from tantra_examples.pipeline.screeners import (
     DividendYieldScreener,
     MultibaggerScreener,

@@ -75,20 +75,20 @@ from typing import Any
 
 from rich.console import Console
 from tantra.bar import Bar
-from tantra.instrument import InstrumentId
-
-from tantra_examples.cli import add_out_arg
-from tantra_examples.display_style import (  # gap 0004: display surface mirror
+from tantra.cli.data import read_symbols
+from tantra.display import (  # wheel surface (ex 0004 closure)
     SYMBOL,
     Column,
     OutputFormat,
     pnl_style_fn,
     render_table,
 )
+from tantra.instrument import InstrumentId
+
+from tantra_examples.cli import add_out_arg
 from tantra_examples.ewr import FEE_RATE, REBALANCE_DAYS, SimResult, simulate
 from tantra_examples.pipeline import SipBacktestHarness
 from tantra_examples.pipeline.base import Pipeline, as_date
-from tantra_examples.pipeline.io import read_symbols
 from tantra_examples.screener_cli import ScreenerCLIExample  # noqa: F401
 from tantra_examples.screening import find_catalog_path, get_latest_market_date
 from tantra_examples.settlement import resolve_settlement_days
@@ -267,7 +267,7 @@ class PortfolioRebalancerExample:
         return union_screens(outputs)
 
     def run(self, argv: list[str] | None = None) -> int:
-        # Resolve symbols via the same pipeline.io contract used by 08.
+        # Resolve symbols via the same tantra.cli.data contract used by 08.
         syms: list[str] | None = None
         if self.symbols is not None and self.symbols.strip() not in ("", "-"):
             syms = [s.strip().upper() for s in self.symbols.split(",") if s.strip()]

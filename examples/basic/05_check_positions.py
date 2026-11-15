@@ -191,7 +191,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if is_table:
-        from tantra_examples.display_style import (  # gap 0004: display surface mirror
+        from tantra.display import (  # wheel surface (ex 0004 closure)
             SYMBOL,
             Column,
             pnl_style_fn,

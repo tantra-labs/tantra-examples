@@ -92,7 +92,7 @@ pytest tests/unit -q -k "first_backtest or cost_modeling or latency_modeling or 
 ## Key concepts demonstrated
 
 1. **Synthetic data** — `tantra_examples/synthetic.py` provides deterministic bar generators; same bars = same results
-2. **Cost model** — `_kernel.markets.india.costs.nse_equity_delivery_*` applies the full per-leg breakdown
+2. **Cost model** — `tantra.markets.india.costs.nse_equity_delivery_*` applies the full per-leg breakdown
 3. **Fill models** — `fill_delay` in `replay()` controls bar_close (0), next_open (1), next_close (2), etc.
 4. **Walk-forward** — Optimize on train window, validate on test window, roll forward
 5. **Monte Carlo** — Resample fills with replacement to estimate distribution of outcomes

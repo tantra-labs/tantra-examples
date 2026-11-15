@@ -16,11 +16,11 @@ from types import ModuleType
 
 import pytest
 from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.markets.india.universes import resolve_universe
 from tantra.store import ParquetBarStore
 
 from tantra_examples._kernel.loader import CatalogError, find_catalog
 from tantra_examples.synthetic import bar, weekdays
-from tantra_examples.universe_lists import resolve_universe
 
 SCRIPT = Path(__file__).resolve().parents[2] / "examples" / "universes" / "07_alpha30_backtest.py"
 DAYS = weekdays(dt.date(2026, 5, 4), 45)  # ~9 weeks of sessions

@@ -19,8 +19,7 @@ from typing import Any
 
 # Grafted deterministic engine runs on the wheel simulator/runner
 # (`tantra.backtest`, `tantra_examples._kernel.runner`: gap 0006) with the India
-# cost/settlement mirror (`tantra_examples._kernel.markets.india`: gap 0004) -
-# deleted when the wheel ships the same.
+# cost/settlement wheel surface (`tantra.markets.india` costs + settlement).
 from tantra.backtest import (
     FillCostFn as SimFillCostFn,
 )
@@ -34,14 +33,14 @@ from tantra.bar import Bar
 from tantra.base import Strategy
 from tantra.context import LedgerContext
 from tantra.instrument import InstrumentId
+from tantra.markets.india.costs import (
+    nse_equity_delivery_fill_cost as _kernel_nse_equity_delivery_fill_cost,
+)
+from tantra.markets.india.settlement import settlement_days_for
 from tantra.money import Currency, Money
 from tantra.order import OrderIntent, OrderSide
 
 from tantra_examples._compat import D
-from tantra_examples._kernel.markets.india.costs import (
-    nse_equity_delivery_fill_cost as _kernel_nse_equity_delivery_fill_cost,
-)
-from tantra_examples._kernel.markets.india.settlement import settlement_days_for
 from tantra_examples._kernel.runner import StrategyRunner
 from tantra_examples.base import ts_to_date
 from tantra_examples.data import Bar as FreshBar

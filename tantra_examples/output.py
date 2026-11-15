@@ -22,7 +22,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import Any, TextIO
 
-from tantra_examples.display_style import (
+from tantra.display import (
     SYMBOL,
     Column,
     OutputFormat,
@@ -30,7 +30,7 @@ from tantra_examples.display_style import (
     render_kv,
     render_table,
 )
-from tantra_examples.display_style import render as _render
+from tantra.display import render as _render
 
 __all__ = [
     "OutputFormat",

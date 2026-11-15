@@ -9,11 +9,10 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
+import tantra.markets.india.universes as core
 from tantra.bar import Bar
 from tantra.context import LedgerContext
 from tantra.instrument import InstrumentId
-
-import tantra_examples.universe_lists as core
 
 _PATH = (
     Path(__file__).resolve().parents[2]

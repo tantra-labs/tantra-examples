@@ -86,13 +86,13 @@ from pathlib import Path
 from typing import Any
 
 from rich.console import Console
+from tantra.cli.data import parse_symbols, read_symbols
+
+# Ensure tantra-examples root is on path
+from tantra.display import OutputFormat  # wheel surface (ex 0004 closure)
 
 from tantra_examples.artifact import write_json_report
 from tantra_examples.base import TantraExample
-
-# Ensure tantra-examples root is on path
-from tantra_examples.display_style import OutputFormat  # gap 0004: display surface mirror
-from tantra_examples.pipeline.io import parse_symbols, read_symbols
 from tantra_examples.screening import (
     find_catalog_path,
     get_latest_market_date,

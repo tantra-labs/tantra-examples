@@ -20,10 +20,10 @@ from typing import Any
 from tantra.bar import Bar
 from tantra.coverage import DateInterval  # gap 0003: tantra-data optional
 from tantra.instrument import InstrumentId
+from tantra.markets.india.universes import resolve_universe
 from tantra.store import ParquetBarStore, find_data_root
 
 from tantra_examples.output import OutputFormat, OutputOptions, add_output_args, resolve_output
-from tantra_examples.universe_lists import resolve_universe
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 """Root of this checkout; the default data root is searched from here, not from the cwd."""

@@ -5,7 +5,7 @@ the Stage 2 forward-confirmation table with its summary panel. Candidates and po
 the plain dicts produced by :mod:`tantra_examples.screening` and :mod:`tantra_examples.sip`.
 
 Every table renders through :func:`tantra.display.render_table` using the shared palette in
-:mod:`tantra_examples.display_style`, so a strategy's candidates look the same here as they do
+:mod:`tantra.display`, so a strategy's candidates look the same here as they do
 printed directly by its standalone screener script (e.g. ``screening/01_multibagger_screener.py``).
 The Stage 2 summary block is a Rich ``Panel``, not a table, and stays hand-built -- it is a
 different widget, out of scope for table unification.
@@ -19,8 +19,7 @@ from typing import Any, TextIO, cast
 from rich import box
 from rich.console import Console
 from rich.panel import Panel
-
-from tantra_examples.display_style import (
+from tantra.display import (
     SCORE,
     SECONDARY,
     SURGE,
@@ -29,6 +28,7 @@ from tantra_examples.display_style import (
     pnl_style_fn,
     render_table,
 )
+
 from tantra_examples.sip import sip_data_notes
 
 __all__ = [

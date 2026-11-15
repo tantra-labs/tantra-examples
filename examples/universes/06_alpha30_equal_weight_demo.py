@@ -6,7 +6,7 @@ every 15 trading days. Membership is resolved through the Tantra universe API an
 re-fetched on every rebalance (as of the bar date) so index joiners / leavers are applied
 when a real history is registered:
 
-    from tantra_examples.universe_lists import resolve_universe
+    from tantra.markets.india.universes import resolve_universe
     ids = resolve_universe("nifty200_alpha_30", exchange="NSE", as_of=bar_date)
 
 The ``__main__`` block resolves membership as a smoke test, so the example runs
@@ -33,8 +33,7 @@ import importlib.util
 from pathlib import Path
 
 from tantra.instrument import InstrumentId
-
-from tantra_examples.universe_lists import resolve_universe
+from tantra.markets.india.universes import resolve_universe
 
 _path_04 = Path(__file__).resolve().parent / "04_alpha30_generic_rebalancer.py"
 _spec = importlib.util.spec_from_file_location("ex04_generic", _path_04)

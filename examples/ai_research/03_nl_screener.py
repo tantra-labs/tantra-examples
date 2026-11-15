@@ -66,11 +66,12 @@ from collections.abc import Sequence
 from typing import Any
 
 from tantra.instrument import InstrumentId
+from tantra.markets.india.universes import resolve_universe
 from tantra.screener import DateInterval
 from tantra_data import parse_quantity
 
 from tantra_examples._kernel.ai.llm.provider import LlmPort
-from tantra_examples._kernel.cli import _STORE
+from tantra_examples.base import get_store
 from tantra_examples.cli import make_parser
 from tantra_examples.screening.cli_args import add_nl_screener_args
 from tantra_examples.screening.nl_render import render_nl_result
@@ -91,7 +92,10 @@ from tantra_examples.screening.nl_support import (
     safe_eval_predicate,
 )
 from tantra_examples.screening.nl_support import resolve_llm_provider as _resolve_llm_provider
-from tantra_examples.universe_lists import resolve_universe
+
+# The `_kernel.cli` global-store mirror (gap 0004) is deleted; the harness store
+# accessor lives on `tantra_examples.base`.
+_STORE = get_store()
 
 __all__ = [
     "KNOWN_METRICS",

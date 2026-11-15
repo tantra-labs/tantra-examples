@@ -94,7 +94,7 @@ def _print_rows(payload: dict[str, Any], fmt: str) -> None:
         for row in rows:
             writer.writerow({k: ("" if row.get(k) is None else row.get(k)) for k in columns})
     else:
-        from tantra_examples.display_style import SYMBOL, Column, render_table
+        from tantra.display import SYMBOL, Column, render_table
 
         keys = list(rows[0]) if rows else ["symbol"]
         columns = [Column(k, style=SYMBOL if k == "symbol" else None) for k in keys]

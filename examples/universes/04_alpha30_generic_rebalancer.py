@@ -47,9 +47,8 @@ from typing import Any
 from tantra.bar import Bar
 from tantra.base import Strategy
 from tantra.instrument import InstrumentId
+from tantra.markets.india.universes import resolve_universe
 from tantra.sizing import whole_shares
-
-from tantra_examples.universe_lists import resolve_universe
 
 try:
     import alpha30_constituents

@@ -146,7 +146,7 @@ class PipelineResult(PipelineContext):
 
         console = Console()
         if stocks:
-            from tantra_examples.display_style import SYMBOL, Column, pnl_style_fn, render_table
+            from tantra.display import SYMBOL, Column, pnl_style_fn, render_table
 
             columns = [
                 Column("symbol", "Symbol", style=SYMBOL),

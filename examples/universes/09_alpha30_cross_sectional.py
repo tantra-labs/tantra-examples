@@ -64,15 +64,15 @@ import statistics
 from pathlib import Path
 from typing import Any
 
+from tantra.display import Column, render_kv, render_table
 from tantra.instrument import InstrumentId
+from tantra.markets.india.universes import ALPHA30_ENGINE
 
 from tantra_examples.artifact import write_run_json
 from tantra_examples.base import TantraExample, ts_to_date
-from tantra_examples.display_style import Column, render_kv, render_table
 from tantra_examples.ewr.model import FEE_RATE
 from tantra_examples.metrics import curve_metrics, exposure_metrics
 from tantra_examples.synthetic import oscillating_bars
-from tantra_examples.universe_lists import ALPHA30_ENGINE
 
 SCHEMA = "tantra-examples/09-alpha30-cross-sectional/v1"
 MOMENTUM_BARS = 252  # ~12 months of sessions; lookback adapts to available history

@@ -196,7 +196,7 @@ class SwingApSetupScreenerExample(ScreenerCLIExample):
 
     @override
     def render_table(self, candidates: list[dict[str, Any]], asof: dt.date) -> None:
-        from tantra_examples.display_style import (
+        from tantra.display import (
             SCORE,
             SECONDARY,
             SURGE,

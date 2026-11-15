@@ -15,7 +15,7 @@ Every numbered script in this directory has a `Pitfalls::` section in its module
 universe resolved without `as_of` is today's membership, so any past window is survivorship-biased
 (and Alpha 30 members were picked for past alpha); the shipped Alpha 30 history stamps today's
 names as members since 2005, so `as_of=` does not rescue it; the engine list and the seed list used
-by 08 differ (now one source, `tantra_examples/universe_lists.py`; engine list is the default and
+by 08 differ (now one source, `tantra.markets.india.universes`; engine list is the default and
 `--alpha30-list seed` / `--list seed` opt into the seed); 04/06 resolve membership with `as_of=` the bar date, but the shipped Alpha 30 history is today's
 names stamped from 2005, so nothing joins or leaves; and fills at the signal bar's close (08) flatter results compared with the
 next-open fills of 07. `02_banknifty_constituents.py` exits with an explanatory message because `banknifty` is not a

@@ -25,10 +25,9 @@ Pitfalls::
 
 from __future__ import annotations
 
+from tantra.display import SYMBOL, Column, render_kv, render_table
 from tantra.instrument import InstrumentId
-
-from tantra_examples.display_style import SYMBOL, Column, render_kv, render_table
-from tantra_examples.universe_lists import resolve_universe
+from tantra.markets.india.universes import resolve_universe
 
 UNIVERSE_NAME = "nifty50"
 EXCHANGE = "NSE"

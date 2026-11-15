@@ -169,7 +169,7 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     if is_table:
-        from tantra_examples.display_style import Column, render_kv, render_table
+        from tantra.display import Column, render_kv, render_table
 
         chain_info = result.get("chain", {})
         render_kv(

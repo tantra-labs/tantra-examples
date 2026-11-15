@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from tantra_examples.display_style import SYMBOL, Column, render_kv, render_table
+from tantra.display import SYMBOL, Column, render_kv, render_table
 
 __all__ = ["render_nl_result"]
 

@@ -50,6 +50,12 @@ import argparse
 import datetime as dt
 
 from tantra.instrument import InstrumentId
+from tantra.markets.india.universes import (
+    ALPHA30_ENGINE,
+    ALPHA30_VARIANTS,
+    DEFAULT_ALPHA30_VARIANT,
+    alpha30_instruments,
+)
 
 from tantra_examples.base import TantraExample
 from tantra_examples.ewr import (
@@ -73,12 +79,6 @@ from tantra_examples.ewr import (
     trade_changes,
 )
 from tantra_examples.settlement import resolve_settlement_days
-from tantra_examples.universe_lists import (
-    ALPHA30_ENGINE,
-    ALPHA30_VARIANTS,
-    DEFAULT_ALPHA30_VARIANT,
-    alpha30_instruments,
-)
 
 # Re-export engine symbols for backwards compatibility with tests and callers
 __all__ = [

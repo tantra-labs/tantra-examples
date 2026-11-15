@@ -32,12 +32,12 @@ import sys
 from decimal import Decimal
 from typing import Any
 
-from tantra.order import OrderSide
-
-from tantra_examples._kernel.markets.india.costs import (
+from tantra.markets.india.costs import (
     nse_equity_delivery_breakdown,
     nse_equity_delivery_fill_cost,
 )
+from tantra.order import OrderSide
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 

@@ -7,8 +7,7 @@ import importlib.util
 from pathlib import Path
 
 import pytest
-
-from tantra_examples.universe_lists import (
+from tantra.markets.india.universes import (
     ALPHA30_ENGINE,
     ALPHA30_SEED,
     Constituent,

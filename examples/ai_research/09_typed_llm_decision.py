@@ -39,6 +39,7 @@ from typing import Any
 
 from rich.console import Console
 from rich.panel import Panel
+from tantra.display import SECONDARY, Column, render_table
 from tantra.instrument import InstrumentId
 from tantra.order import OrderIntent, OrderSide
 
@@ -49,7 +50,6 @@ from tantra_examples.decision_guard import (
     apply_llm_decision,
     guard_llm_decision,
 )
-from tantra_examples.display_style import SECONDARY, Column, render_table
 
 __all__ = ["main", "run", "run_typed_llm_decision_demo"]
 

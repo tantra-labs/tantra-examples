@@ -49,7 +49,9 @@ from pathlib import Path
 from typing import Any
 
 from tantra.bar import Bar
+from tantra.display import Column, render_kv, render_table
 from tantra.instrument import InstrumentId
+from tantra.markets.india.universes import resolve_universe
 from tantra.money import Currency, Money
 
 from tantra_examples._kernel.loader import CatalogError
@@ -57,9 +59,7 @@ from tantra_examples.artifact import write_run_json
 from tantra_examples.backtest import BacktestRun, run_portfolio_backtest
 from tantra_examples.base import TantraExample, ts_to_date
 from tantra_examples.catalog import load_named
-from tantra_examples.display_style import Column, render_kv, render_table
 from tantra_examples.settlement import resolve_settlement_days
-from tantra_examples.universe_lists import resolve_universe
 
 SCHEMA = "tantra-examples/07-alpha30-backtest/v1"
 DEFAULT_STRATEGY = "equal_weight"

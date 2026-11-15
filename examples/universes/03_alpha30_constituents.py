@@ -23,7 +23,7 @@ Pitfalls::
       real reconstitution history; replace it before using as_of.
     - Two lists that disagree: the engine list (EICHERMOT, FORTIS, GLENMARK, MUTHOOTFIN) and the
       older seed (AUROPHARMA, MAHABANK, MOTHERSON, UNIONBANK) are different baskets. Both live in
-      tantra_examples/universe_lists.py; the engine list is authoritative and the default for 03,
+      tantra.markets.india.universes; the engine list is authoritative and the default for 03,
       07 and 08, and --list seed / --alpha30-list seed opt into the seed. Do not mix them when
       comparing results.
     - register_alpha30_if_missing mutates the process-wide UNIVERSES map as a hidden
@@ -35,10 +35,9 @@ from __future__ import annotations
 
 import argparse
 
+from tantra.display import SYMBOL, Column, render_table
 from tantra.instrument import InstrumentId
-
-from tantra_examples.display_style import SYMBOL, Column, render_table
-from tantra_examples.universe_lists import (
+from tantra.markets.india.universes import (
     ALPHA30_SEED,
     ALPHA30_VARIANTS,
     DEFAULT_ALPHA30_VARIANT,
@@ -47,7 +46,7 @@ from tantra_examples.universe_lists import (
     resolve_universe,
 )
 
-# The lists live in tantra_examples.universe_lists so 03/05/07/08 share one source. The engine
+# The lists live in tantra.markets.india.universes so 03/05/07/08 share one source. The engine
 # list (what resolve_universe returns) is authoritative; the seed is a historical alternative.
 NIFTY200_ALPHA_30_SEED: tuple[str, ...] = ALPHA30_SEED
 

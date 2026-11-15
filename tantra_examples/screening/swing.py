@@ -22,7 +22,7 @@ def _universe_symbols(universe: str) -> list[str] | None:
     if universe == "all":
         return None
     if universe == "nifty50":
-        from tantra_examples.universe_lists import resolve_universe
+        from tantra.markets.india.universes import resolve_universe
 
         return [instrument.symbol for instrument in resolve_universe("nifty50")]
     raise ValueError(f"unknown --universe {universe!r}; expected 'nifty50' or 'all'")
