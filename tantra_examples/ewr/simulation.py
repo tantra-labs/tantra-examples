@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import datetime as dt
 
-from tantra_examples._kernel.bar import Bar
+from tantra.bar import Bar
+
 from tantra_examples.base import ts_to_date
 from tantra_examples.ewr.model import (
     DEFAULT_INITIAL_MARGIN,

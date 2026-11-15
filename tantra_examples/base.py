@@ -17,10 +17,11 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.coverage import DateInterval  # gap 0003: tantra-data optional
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.store import ParquetBarStore, find_data_root
+from tantra.bar import Bar
+from tantra.coverage import DateInterval  # gap 0003: tantra-data optional
+from tantra.instrument import InstrumentId
+from tantra.store import ParquetBarStore, find_data_root
+
 from tantra_examples.output import OutputFormat, OutputOptions, add_output_args, resolve_output
 from tantra_examples.universe_lists import resolve_universe
 

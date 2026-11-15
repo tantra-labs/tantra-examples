@@ -29,6 +29,14 @@
   Decimal-coercing; `FakeAdapter` passes the full `verify_adapter_contract`; `secrets` lazy-imports
   the optional `cryptography`), and `ai/ask` builds `tantra.wire.screener` DTOs (`ai/decision`
   stays a `decision_guard` re-export — no wheel `tantra.ai` decision surface yet, per gap 0002).
+  **Wave 5a** retargeted the simple outer consumers of the shipped `_kernel` leaf modules to the
+  wheel: `universe_lists` (wheel `InstrumentId` + `tantra.store.find_data_root`), `bars`
+  (`tantra.bar.Bar`), `synthetic` (wheel Decimal `Bar` builders), `amfi` (Decimal NAV bars +
+  wheel `Bar`/`InstrumentId`/`coverage`), `bhavcopy` (Decimal OHLCV wheel `Bar`),
+  `ewr/simulation` (wheel `Bar`), `sip_plan` (wheel `coverage`/`instrument`/`store`),
+  `base` (wheel `Bar`/`InstrumentId`/`DateInterval`/`ParquetBarStore`), `decision_guard`
+  (wheel `OrderIntent`/`OrderSide`/`OrderType`, float→Decimal boundary at `float(intent.quantity)`).
+  `catalog` + `screening/nl_support` untouched (only kept modules `_kernel.loader`/`evaluator`).
   The rest of `_kernel/` remains as later-wave slices. Status: in progress.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
   `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/

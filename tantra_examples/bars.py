@@ -15,8 +15,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
 
 __all__ = ["SUPPORTED_TIMEFRAMES", "aggregate", "bucket_start", "timeframe_seconds"]
 

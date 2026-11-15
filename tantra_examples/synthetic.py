@@ -8,9 +8,10 @@ from __future__ import annotations
 import datetime as dt
 import math
 import random
+from decimal import Decimal
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
 
 IST_OPEN_UTC = dt.time(3, 45)  # 09:15 IST; Parquet daily bars are stamped at the open
 
@@ -29,14 +30,16 @@ def bar(
     exchange: str = "NSE",
 ) -> Bar:
     close = open_ if close is None else close
+    d_open = Decimal(str(open_))
+    d_close = Decimal(str(close))
     return Bar(
         InstrumentId(symbol, exchange),
         session_ts(day),
-        open_,
-        max(open_, close),
-        min(open_, close),
-        close,
-        1_000.0,
+        d_open,
+        max(d_open, d_close),
+        min(d_open, d_close),
+        d_close,
+        Decimal("1000"),
     )
 
 
@@ -114,8 +117,8 @@ def load_real_bars(
 ) -> list[Bar]:
     """Load real historical bars from the tantra-data lakehouse, falling back to empty list."""
     try:
-        from tantra_examples._kernel.coverage import DateInterval
-        from tantra_examples._kernel.store import ParquetBarStore, find_data_root
+        from tantra.coverage import DateInterval
+        from tantra.store import ParquetBarStore, find_data_root
 
         store = ParquetBarStore(find_data_root())
         start_d = start.date() if isinstance(start, dt.datetime) else (start or dt.date(2020, 1, 1))

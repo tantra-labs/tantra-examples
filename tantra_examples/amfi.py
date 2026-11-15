@@ -20,10 +20,11 @@ import datetime as dt
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass
+from decimal import Decimal
 from pathlib import Path
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
 
 __all__ = ["EXCHANGE", "NavRow", "NavSkip", "nav_bars", "parse_navall"]
 
@@ -122,11 +123,11 @@ def nav_bars(rows: Sequence[NavRow]) -> list[Bar]:
         Bar(
             instrument_id=InstrumentId(row.code, EXCHANGE),
             ts=(row.date - _EPOCH).days * _NS_PER_DAY + _SESSION_OPEN_NS,
-            open=row.nav,
-            high=row.nav,
-            low=row.nav,
-            close=row.nav,
-            volume=0.0,
+            open=(nav := Decimal(str(row.nav))),
+            high=nav,
+            low=nav,
+            close=nav,
+            volume=Decimal("0"),
         )
         for row in rows
     ]
@@ -164,7 +165,7 @@ class AmfiNavLoader:
         """NAV points for a single scheme from ``start`` to ``end``, both days inclusive."""
         # NAV series rides the mirrored coverage/store surface (kernel-owner gap 0006;
         # the wheel's tantra_data.domain surface does not exist yet — gap 0003).
-        from tantra_examples._kernel.coverage import DateInterval
+        from tantra.coverage import DateInterval
 
         inst = InstrumentId(symbol=scheme, exchange=EXCHANGE)
         start_d = start or dt.date(2000, 1, 1)

@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from itertools import pairwise
 from pathlib import Path
 
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
 
 # =============================================================================
 # Mirrored kernel universes (markets.india.universes): Nifty 50 / Alpha 30 lists,
@@ -238,10 +238,8 @@ def _catalog_path(name: str, data_dir: Path | None) -> Path:
 
 
 def _find_data_root() -> Path:
-    # Imported lazily (kernel-verbatim structure; the wheel's ``ncav:``-style store
-    # surface is mirrored by ``_kernel.store`` here). Kernel-owner gap:
-    # 0006-tantra-wheel-kernel-domain-surface.
-    from tantra_examples._kernel.store import find_data_root
+    # Imported lazily to keep the module-level import graph minimal.
+    from tantra.store import find_data_root
 
     return find_data_root()
 

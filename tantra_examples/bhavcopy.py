@@ -21,9 +21,11 @@ import csv
 import datetime as dt
 import io
 from dataclasses import dataclass
+from decimal import Decimal
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
+
 from tantra_examples.synthetic import session_ts
 
 __all__ = ["parse_bhavcopy_csv"]
@@ -101,11 +103,11 @@ def parse_bhavcopy_csv(csv_content: str, exchange: str = "NSE") -> dict[str, Bar
             continue
         symbol = (row.get(symbol_col) or "").strip()
         day = _parse_date(row.get(date_col) or "", dialect.date_format)
-        open_ = float(row[open_col])
-        high = float(row[high_col])
-        low = float(row[low_col])
-        close = float(row[close_col])
-        volume = float(row[volume_col])
+        open_ = Decimal(str(row[open_col]))
+        high = Decimal(str(row[high_col]))
+        low = Decimal(str(row[low_col]))
+        close = Decimal(str(row[close_col]))
+        volume = Decimal(str(row[volume_col]))
         bars[symbol] = Bar(
             instrument_id=InstrumentId(symbol, exchange),
             ts=session_ts(day),
@@ -113,7 +115,7 @@ def parse_bhavcopy_csv(csv_content: str, exchange: str = "NSE") -> dict[str, Bar
             high=max(high, open_, close),
             low=min(low, open_, close),
             close=close,
-            volume=max(volume, 0.0),
+            volume=max(volume, Decimal("0")),
         )
     return bars
 

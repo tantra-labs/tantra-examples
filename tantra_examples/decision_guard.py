@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from tantra_examples._kernel.order import OrderIntent, OrderSide, OrderType
+from tantra.order import OrderIntent, OrderSide, OrderType
 
 __all__ = [
     "DecisionKind",
@@ -199,7 +199,7 @@ def validate_llm_decision(
     if original_intent is not None:
         symbol = original_intent.instrument_id.symbol
         side_raw = original_intent.side
-        orig_qty = original_intent.quantity
+        orig_qty = float(original_intent.quantity)
 
     return LlmDecision(
         order_id=order_id,
@@ -268,7 +268,7 @@ def _rejection(intent: OrderIntent, reason: str) -> LlmDecision:
         order_id="unparsed",
         symbol=intent.instrument_id.symbol,
         side=intent.side,
-        original_quantity=intent.quantity,
+        original_quantity=float(intent.quantity),
         decision=DecisionKind.VETO,
         decided_quantity=0.0,
         rationale=f"fail-closed: {reason}",
@@ -301,7 +301,7 @@ def guard_llm_decision(
             decision = validate_llm_decision(explicit, original_intent=original_intent)
         except (ValueError, TypeError) as exc:
             qty = explicit.get("decided_quantity")
-            if isinstance(qty, (int, float)) and qty > original_intent.quantity + _EPS:
+            if isinstance(qty, (int, float)) and qty > float(original_intent.quantity) + _EPS:
                 raise
             problem = str(exc)
     if decision is None:
