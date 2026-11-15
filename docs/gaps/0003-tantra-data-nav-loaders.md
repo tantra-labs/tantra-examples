@@ -1,6 +1,6 @@
 # 0003 — tantra-data-nav-loaders
 
-**Status**: open
+**Status**: open — blocked
 **Owning repo**: `tantra-data` (Python + DuckDB lakehouse: loaders, store, coverage
 ledger).
 
@@ -33,3 +33,14 @@ catalog, `fundamentals.duckdb`, `mutual_funds.duckdb`, NAV ingestion). Then dele
 `amfi.py`'s loader duplication, `bhavcopy.py`, `_kernel/data/`, `_kernel/screener/`, and
 the env/test seam; retarget the `tantra_data.*` imports and drop the conftest synthetic
 catalog fixtures where the real surface covers CI.
+
+## Blocker analysis (2026-11-14)
+
+Verified: `amfi.py`/`bhavcopy.py`/`universe_lists.py` import `_kernel.bar`/`_kernel.instrument`
+(the **float** kernel `Bar` / `InstrumentId`), and the `_kernel/{data,screener}` mirrors
+are kernel-verbatim. `tantra-data` ships the lakehouse but its loaders are **not** the same
+API as the mirror's loader functions — closing needs an API-rewrite of the consumers, not a
+straight re-point. The Decimal-canonical `bar`/`instrument` surface (ex 0006) must land
+first; only then can `amfi.py`/`bhavcopy.py`/`_kernel/{data,screener}` be re-pointed to
+`tantra_data` and the `VYAAPAAR_DATA_DIR` env seam / conftest synthetic catalog fixtures
+dropped where the real surface covers CI.

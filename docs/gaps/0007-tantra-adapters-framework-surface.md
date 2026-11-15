@@ -1,6 +1,6 @@
 # 0007 — tantra-adapters-framework-surface
 
-**Status**: open
+**Status**: open — blocked
 **Owning repo**: `tantra-adapters` (broker connector packages advertised through the
 adapters entry-point group) / `tantra-ffi` (compiled `tantra` wheel exposing the
 `tantra.adapters` framework namespace).
@@ -45,3 +45,17 @@ wheel namespace — keeping the same public names (`Adapter`, `ExecutionAdapter`
 types). Then delete `_kernel/adapters/`, retarget the scripts' imports, and drop the
 `rest.py`/`gateway.py` exclusion once `honba.client`'s equivalent (`tantra.client`, gap
 0004) also ships.
+
+## Blocker analysis (2026-11-14)
+
+Verified (probe of `base.py`/`models.py`/`testing.py`/`contract.py`/`capabilities.py`/
+`order_events.py`): `_kernel/adapters/` imports the whole `_kernel` domain web — `bar`,
+`instrument`, `order`, `order_state`, `position`, `tick`, `trade`, `money`, `execution`,
+`entities`, `wire` — so it depends on the ex 0006 domain core shipping first. The sibling
+`tantra-adapters` repo ships the **broker ACL** package (`dhan.py`, `zerodha.py`,
+`common/models.py`, `PaperBroker`, entry-point registry) — NOT the `honba.adapters`
+framework surface this mirror stands in for (capabilities / `FakeAdapter` / contract
+conformance / entry-point registry), so ex 0007 **cannot close by re-pointing to
+`tantra-adapters`** (different API). Closure needs a `tantra.adapters` framework namespace
+**and** the domain core; the `rest.py`/`gateway.py` exclusion drops only once `tantra.client`
+(ex 0004) ships.

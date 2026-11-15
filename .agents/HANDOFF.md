@@ -1,5 +1,12 @@
 # `tantra-examples` — Inter-Agent Handoff
 
+## Latest Batch
+* Verified the 8-gap dependency cascade rooted in the 166-file `_kernel` mirror (gaps
+  0001–0008); wrote `docs/design/gap-cascade-kernel-mirror.md`.
+* Blocker analysis added to gap docs 0002/0003/0004/0006/0007/0008; the independent
+  surfaces (algo_analytics, freeze-slicer) are shipping in the parallel tantra-ffi batch.
+* Next step = re-point the examples consumers once the wheel ships.
+
 ## Phase / Slice Status
 * **Honba staged port (plan 0002)** — **ALL 9 STAGES COMPLETE (Stages 0–8)**; recorded Implemented in `docs/plans/README.md` (commit `bbfa692`). Plan doc cleaned up per gap-tracking §4.
 * **Docs (this change)**: former `docs/roadmap/` (`roadmap.md` + `migration-verification.md`) dismantled into `docs/design/` (`architecture.md`, `implementation-record.md`, `code-migration-map.md`), `docs/gaps/` (README + 0001–0008 source-verified), and `docs/plans/README.md`; `docs/reference/` concept docs unchanged.

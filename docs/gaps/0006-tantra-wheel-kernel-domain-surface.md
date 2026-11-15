@@ -1,6 +1,6 @@
 # 0006 — tantra-wheel-kernel-domain-surface
 
-**Status**: open
+**Status**: open — in progress (domain-core slice shipping)
 **Owning repo**: `tantra-ffi` (compiled `tantra` wheel; the kernel-domain engine surface
 behind it), sourced from the tamashii-class Rust engine of the ecosystem.
 
@@ -82,3 +82,16 @@ module) **plus** the Stage-2 extension surface: the indicator registry/families,
 name on the wheel). Then delete `_kernel/` together with `native.py`, retarget every
 `_kernel.*` import to the wheel surface, and drop the `[[tool.mypy.overrides]]`
 override block; the mirror accommodations evaporate with it.
+
+## Blocker analysis (2026-11-14)
+
+This 166-file mirror **is the root** of the whole cascade (0001–0008): every other gap's
+mirror imports from it. Verified state: a Decimal-canonical domain-core wheel slice
+(`money`/`position`/`trade`/`instrument`/`entities`) is **shipping in the parallel
+tantra-ffi batch** (status above reflects that). The remainder still needs the
+Decimal-canonical re-architecture (the mirror is float-based — kernel `Bar`,
+`Position.quantity: float`, `Trade.quantity: float`, `Instrument.lot_size: float` — and
+must never be promoted verbatim): float kernel `bar`, `indicators` (**87 files**),
+`execution`, `order_state`, `portfolio_strategy`, `session`, `wire`, `backtest` sims,
+and `store`. Closure = full wheel domain layer + delete `_kernel/` + retarget every
+`_kernel.*` import + drop the `[[tool.mypy.overrides]]` block.

@@ -1,6 +1,6 @@
 # 0004 — tantra-wheel-display-universes-client
 
-**Status**: open
+**Status**: open — blocked
 **Owning repo**: `tantra-ffi` (wheel: `tantra.display`, `tantra.client`,
 `tantra.markets.india.universes`, `tantra.cli.data`) and `tantra-market` (India market
 pack: costs + settlement schedules).
@@ -37,3 +37,14 @@ console output and cost/settlement math the examples use.
 Ship the wheel display/universe/client modules and the India market-pack surface; delete
 the mirrors and retarget the imports (`from tantra.display → ...`,
 `from tantra.markets.india.universes → ...`, `from tantra.markets.india.costs → ...`).
+
+## Blocker analysis (2026-11-14)
+
+Verified: `universe_lists.py` → `_kernel.instrument` and `_kernel/markets/india/costs.py`
+→ `_kernel.money`, i.e. the universes/india halves sit on the `_kernel` domain-core types
+(the Decimal `money`/`instrument` wheel slice landing in the parallel batch — ex 0006).
+`display_style.py`/`output.py` are `_kernel`-independent (stdlib/Decimal only) and are the
+next-candidate surfaces. `tantra.client` (REST) has **no** surface anywhere yet — it is a
+separate future surface, and gap 0007's `rest.py`/`gateway.py` exclusion is itself waiting
+on it. Closure order: domain-core Decimal slice → wheel `display`/`markets.india`/
+`universes` → delete mirrors + retarget → `tantra.client` as its own later surface.

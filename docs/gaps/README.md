@@ -38,4 +38,8 @@ Status values: `open` (mirror/stub is live in this repo; filing doc exists) ·
 `closed` (owner shipped; the gap doc is deleted with the mirror's removal — see the
 closing commit).
 
+As of 2026-11-14, gaps 0001–0008 carry precise blocker analysis per doc (see the
+dependency map [`docs/design/gap-cascade-kernel-mirror.md`](../design/gap-cascade-kernel-mirror.md));
+0001/0005 are closing in the parallel wheel batch.
+
 Per gap doc template: status · what is stubbed/mirrored · why · how to close it.

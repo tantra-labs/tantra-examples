@@ -1,6 +1,6 @@
 # 0008 — runtime-session-surface
 
-**Status**: open
+**Status**: open — blocked
 **Owning repo**: `tantra-runtime` (Strategy Tester session orchestrator) /
 `tantra-ffi` (wheel surface).
 
@@ -41,3 +41,14 @@ runs next-open fills with NSE delivery costs and T+1 settlement against the
 lakehouse). Then delete `_kernel/session.py`, retarget the three
 `algo_analytics` consumers' `from tantra_examples._kernel.session import
 Tantra` to the wheel surface, and drop the `NotImplementedError` branch.
+
+## Blocker analysis (2026-11-14)
+
+Verified: `_kernel/session.py` is a **protocol-only stub** (`DataProvider`/`CostModel`/
+`BacktestResult` Protocols + a `Tantra` factory whose `backtest` raises
+`NotImplementedError` by design); `optimizer/algo_analytics/walk_forward.py` lazily
+imports it in the real-data branch. The closure surface is the runtime Strategy Tester
+session orchestrator over the lakehouse (next-open fills, NSE costs, T+1 settlement) —
+**not shippable from `tantra-examples`**. It depends on the ex 0006 domain core +
+`tantra-runtime`'s session engine; `walk_forward` is being retargeted in the parallel
+wheel batch, and this gap closes last, when the wheel session surface ships.

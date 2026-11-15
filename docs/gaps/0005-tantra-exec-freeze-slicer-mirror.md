@@ -25,3 +25,6 @@ stand in for the real crate.
 Once `tantra-exec`/`tantra-ffi` ship a real slicer surface, delete the local
 mirror in `tantra_examples/options/__init__.py` and retarget both scripts'
 imports to the real package.
+
+**Parallel batch (2026-11-14)**: the owning wheel surface is being shipped (see the
+parallel tantra-ffi batch); this doc will close with the mirror deletion.

@@ -32,3 +32,6 @@ Ship the same surface from `tantra-runtime` through `tantra-ffi` (wheel `algo_an
 namespace or equivalent), then delete the mirrors and retarget the imports. Until then the
 staged port keeps byte-comparable semantics so the golden parity tests pin the mirror
 behaviour.
+
+**Parallel batch (2026-11-14)**: the owning wheel surface is being shipped (see the
+parallel tantra-ffi batch); this doc will close with the mirror deletion.
