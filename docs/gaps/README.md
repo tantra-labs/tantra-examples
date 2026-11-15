@@ -17,9 +17,7 @@ here means deleting the mirrored code and re-pointing consumers.
 
 ## Open Gaps
 
-| # | Slug | Symptom | Owning repo | Status |
-| :--- | :--- | :--- | :--- | :--- |
-| [0008](0008-runtime-session-surface.md) | runtime-session-surface | No wheel session orchestrator for real-data runs (next-open fills, NSE costs, T+1 settlement) → `_kernel/session.py` protocol-only stub; `Tantra.backtest` raises `NotImplementedError` on purpose | `tantra-runtime` (Strategy Tester session) / `tantra-ffi` (wheel surface) | open — blocked |
+None — all 8 gaps are closed.
 
 ## Closed Gaps
 
@@ -32,17 +30,18 @@ here means deleting the mirrored code and re-pointing consumers.
 | 0005 | tantra-exec-freeze-slicer-mirror — wheel `tantra.sizing` freeze-slicing (`freeze_limit_qty`/`slice_order`/`verify_slices`) shipped; `options/__init__.py` mirror removed; consumers retargeted | 2026-11-15 (T9.7; tantra-ffi `d79d31b`, tantra-examples closure) |
 | 0006 | tantra-wheel-kernel-domain-surface — the Decimal-canonical wheel kernel-domain layer shipped (money/position/trade/instrument/entities, bar, tick, order, order_state, execution, indicators, base/context, declarative, portfolio_strategy, wire, store, backtest sims); the 166-file `_kernel` mirror's kernel-domain portion deleted; every `_kernel.*` consumer retargeted to the wheel; `[[tool.mypy.overrides]]` dropped | 2026-11-15 (ex 0006 closure; tantra-ffi wheel commits, tantra-examples closure `2684d34` etc.) |
 | 0007 | tantra-adapters-framework-surface — wheel `tantra.adapters` shipped; `_kernel/adapters/` (13 modules) deleted; consumers retargeted | 2026-11-15 (ex 0007 closure; tantra-ffi + tantra-examples) |
+| 0008 | runtime-session-surface — wheel `tantra.backtest.session` shipped (`Tantra.backtest` next-open fills, India delivery costs, T+1 settlement); wheel `algo_analytics` retargeted; `_kernel/session.py` deleted | 2026-11-15 (ex 0008 closure; tantra-ffi + tantra-examples) |
 
 Status values: `open` (mirror/stub is live in this repo; filing doc exists) ·
 `closed` (owner shipped; the gap doc is deleted with the mirror's removal — see the
 closing commit).
 
 As of 2026-11-15, the 8-gap dependency cascade rooted in the 166-file `_kernel` mirror is
-resolved: the **root (0006) is closed** — the wheel ships the Decimal-canonical kernel
-domain and every `_kernel.*` consumer is retargeted to it. The remaining `_kernel/` files
-are the other gap's mirror (0008 `session.py`) plus the shared harness
-(`runner`, `risk`, `testing`, `portfolio`, …) — all now built on the wheel, with the
-cascade root unblocked. **Retained harness (ex 0004)**: `output.py`, `screener_cli.py` and
+resolved: **all 8 gaps are closed** — the `_kernel` mirror is fully dismantled. The
+remaining `_kernel/` files are only the shared example harness
+(`calendar`, `config`, `evaluator`, `greeks`, `loader`, `log`, `manifest`, `option`,
+`portfolio`, `ports`, `risk`, `runner`, `service`, `testing`) — all built on the wheel,
+with the cascade root unblocked. **Retained harness (ex 0004)**: `output.py`, `screener_cli.py` and
 `cli.py` are example-harness modules that stay on top of the wheel surfaces — only their
 imports were retargeted to `tantra.display` / `tantra.cli.data`; they are not kernel
 mirrors. **Ownership (ex 0003)**: the screener

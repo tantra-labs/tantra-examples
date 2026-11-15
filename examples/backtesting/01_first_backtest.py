@@ -1,6 +1,7 @@
 """backtesting/01_first_backtest: a minimal backtest with synthetic data.
 
-Uses ``_kernel.session.BacktestSession`` (the same runner that powers live) with
+Uses ``tantra.backtest.session.Tantra.backtest`` (the wheel session orchestrator
+that powers live) with
 a tiny ``DataProvider`` that returns synthetic bars. The strategy emits market
 orders; here ``replay(..., fill_delay=1)`` fills them at the next bar's open, the same timing as
 Tantra's ``next_open`` model for daily sessions (``_kernel.backtest.simulated.NextOpenExecution``,

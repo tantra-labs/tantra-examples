@@ -1,6 +1,16 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **Gap 0008 CLOSED (2026-11-15, ex 0008 closure — the last gap; all 8 closed)** — the
+  wheel shipped the session orchestrator (`tantra.backtest.session`, `Tantra.backtest`
+  next-open fills, India delivery costs, T+1 settlement; tantra-ffi `2d9214e`) and the
+  wheel `algo_analytics` consumers (`monte_carlo`/`plateau`/`walk_forward`) now default
+  to it. This repo **deleted `_kernel/session.py`** (the final mirror/stub) and
+  retargeted the one docstring reference (`examples/backtesting/01_first_backtest.py`).
+  **All 8 gaps (0001–0008) are closed**; the `_kernel` mirror is fully dismantled and
+  only the shared example harness remains. Unit suite unchanged (841 passed / 73 failed /
+  3 errors / 49 skipped — the brief's 50th skip is an environment-dependent measure,
+  absent here both before and after this change).
 * **Gap 0002 CLOSED (2026-11-15, ex 0002 closure)** — the wheel shipped `tantra.ai`
   (ask / decision / knowledge / llm.provider; tantra-ffi `4d570b4`). This repo **deleted the
   mirrors** (`_kernel/ai/`, `fake_llm.py`, `decision_guard.py`) and **retargeted every
@@ -87,12 +97,13 @@
   `[[tool.mypy.overrides]]` block. Verified: `_kernel` import + facade checks pass, ruff clean on
   touched files, unit run = 838 passed / 72 failed (pre-existing float-rooted, e.g.
   `metrics.fills_equity_curve`) / 3 errors (`test_07_run_via_client`, `httpx` optional dep absent)
-  / 50 skipped. Status: shipped-mirror deletion complete; the remaining `_kernel` file is the
-  other-gap mirror (0008) — ex 0006 stays open for the compiled risk/
-  trading-state surface.
+  / 50 skipped. Status: shipped-mirror deletion complete; the only remaining `_kernel` mirror
+  was `session.py` (gap 0008), deleted in the ex 0008 closure — ex 0006 stays open for the
+  compiled risk/trading-state surface.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
-  `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap 0008 carries
-  `open — blocked` status with precise blockers (0002 closed, ex 0002 closure; 0006 closed).
+  `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap 0008 carried
+  `open — blocked` status with precise blockers (0002 closed, ex 0002 closure; 0006 closed) —
+  now closed in the ex 0008 closure.
 * **Gates**: full `pytest` green except one pre-existing environmental failure
   (`test_mutual_fund_screener_execution` needs the 1D NSE catalog on disk); `ruff check` +
   `ruff format --check` clean (incl. pre-existing I001/SIM102 in untouched files fixed).
@@ -104,7 +115,7 @@
 
 ## Decisions & Discoveries
 * **Pytest import mode & test structure**: `pythonpath = ["."]` in `pyproject.toml` + empty `__init__.py` in `tests/`, `tests/unit/`, `tests/integration/` lets `pytest -q` run from the repo root and resolves module-name collisions between unit and integration tests.
-* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (calendar/config/greeks/loader/log/manifest/option/ports/service/session + kept evaluator/risk/runner/testing/portfolio) still mirror the not-yet-shipped surfaces.
+* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (calendar/config/evaluator/greeks/loader/log/manifest/option/portfolio/ports/risk/runner/service/testing) are the shared example harness, all built on the wheel — no mirrors remain after the ex 0008 closure deleted `session.py`.
 * **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` re-exporting `tantra.cli.data` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
 * **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
 * **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.
@@ -112,7 +123,9 @@
 
 ## Immediate Next Step
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.
-* Next open work is gap-driven (all 0001–0008 owned by other repos): close a gap when its owning surface ships, then delete the mirror/stub and retarget consumers.
+* All 8 gaps (0001–0008) are closed — no `_kernel` mirror/stub remains (only the shared
+  example harness). Next work is example-side maintenance (keep every numbered script runnable
+  and its `tests/unit/` regression green) or whatever the orchestrator assigns next.
 
 ## Operating Invariants
 * Zero floats in financial math (documented exceptions: BS internals example 13; grafted `metrics.py` stats; kernel-mirror float domain, gap 0006). Deterministic offline runs; tests live in `tests/` only.
