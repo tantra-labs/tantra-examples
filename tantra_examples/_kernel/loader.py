@@ -30,8 +30,8 @@ from typing import Any
 
 from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
+from tantra.base import Strategy
 
-from tantra_examples._kernel.base import Strategy
 from tantra_examples._kernel.config import StrategyConfig
 
 __all__ = [

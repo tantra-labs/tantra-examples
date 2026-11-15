@@ -12,8 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field
-
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
 
 if sys.version_info >= (3, 11):
     import tomllib

@@ -1,4 +1,5 @@
-# mirror: kernel-verbatim port (gap 0003: tantra-data quantity query)
+# mirror: kernel-verbatim port (gap 0003: tantra-data quantity query) —
+# Decimal-canonical wheel retarget (ex 0006): quantities are exact ``Decimal``.
 
 from __future__ import annotations
 
@@ -17,18 +18,25 @@ class QuantityError(ValueError):
 
 @dataclass(frozen=True)
 class Quantity:
-    """Parsed quantity representing an evaluated numeric value and metadata."""
+    """Parsed quantity representing an evaluated numeric value and metadata.
 
-    value: float
-    raw_number: float = 0.0
+    ``value`` and ``raw_number`` are exact ``Decimal`` (zero-floats policy).
+    """
+
+    value: Decimal
+    raw_number: Decimal = Decimal(0)
     unit_suffix: str | None = None
     currency: str | None = None
 
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "value", Decimal(str(self.value)))
+        object.__setattr__(self, "raw_number", Decimal(str(self.raw_number)))
+
     def __iter__(self) -> Iterator[Any]:
-        return iter((Decimal(str(self.value)), self.unit_suffix or "shares"))
+        return iter((self.value, self.unit_suffix or "shares"))
 
     def __getitem__(self, index: int) -> Any:
-        return (Decimal(str(self.value)), self.unit_suffix or "shares")[index]
+        return (self.value, self.unit_suffix or "shares")[index]
 
 
 def parse_quantity(qty_str: str, market: str | None = None) -> Quantity:
@@ -43,28 +51,28 @@ def parse_quantity(qty_str: str, market: str | None = None) -> Quantity:
     # Strip commas in numbers like 25,000 or 1,00,000
     cleaned = re.sub(r"(?<=\d),(?=\d)", "", qty_str).lower()
 
-    mult_map: dict[str, float] = {
-        "cr": 10_000_000.0,
-        "crore": 10_000_000.0,
-        "crores": 10_000_000.0,
-        "lk": 100_000.0,
-        "l": 100_000.0,
-        "lakh": 100_000.0,
-        "lakhs": 100_000.0,
-        "k": 1_000.0,
-        "thousand": 1_000.0,
-        "m": 1_000_000.0,
-        "mn": 1_000_000.0,
-        "million": 1_000_000.0,
-        "b": 1_000_000_000.0,
-        "bn": 1_000_000_000.0,
-        "billion": 1_000_000_000.0,
-        "t": 1_000_000_000_000.0,
-        "tn": 1_000_000_000_000.0,
-        "trillion": 1_000_000_000_000.0,
-        "%": 0.01,
-        "pct": 0.01,
-        "percent": 0.01,
+    mult_map: dict[str, Decimal] = {
+        "cr": Decimal(10_000_000),
+        "crore": Decimal(10_000_000),
+        "crores": Decimal(10_000_000),
+        "lk": Decimal(100_000),
+        "l": Decimal(100_000),
+        "lakh": Decimal(100_000),
+        "lakhs": Decimal(100_000),
+        "k": Decimal(1_000),
+        "thousand": Decimal(1_000),
+        "m": Decimal(1_000_000),
+        "mn": Decimal(1_000_000),
+        "million": Decimal(1_000_000),
+        "b": Decimal(1_000_000_000),
+        "bn": Decimal(1_000_000_000),
+        "billion": Decimal(1_000_000_000),
+        "t": Decimal(1_000_000_000_000),
+        "tn": Decimal(1_000_000_000_000),
+        "trillion": Decimal(1_000_000_000_000),
+        "%": Decimal("0.01"),
+        "pct": Decimal("0.01"),
+        "percent": Decimal("0.01"),
     }
 
     # Match numeric part and suffix
@@ -74,12 +82,12 @@ def parse_quantity(qty_str: str, market: str | None = None) -> Quantity:
 
     num_part, suffix_part = m.groups()
     try:
-        raw_val = float(num_part)
-    except ValueError as exc:
+        raw_val = Decimal(num_part)
+    except (ValueError, ArithmeticError) as exc:
         raise QuantityError(f"invalid number {num_part!r}") from exc
 
     suffix = suffix_part.strip()
-    mult = 1.0
+    mult = Decimal(1)
     if suffix:
         if suffix in mult_map:
             mult = mult_map[suffix]

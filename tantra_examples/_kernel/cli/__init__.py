@@ -1,8 +1,9 @@
-# mirror: kernel-verbatim port (gap 0004: wheel display/client surface)
+# mirror: kernel-verbatim port (gap 0004: wheel display/client surface) —
+# Decimal-canonical wheel retarget (ex 0006): ParquetBarStore is ``tantra.store``.
 
 from __future__ import annotations
 
-from tantra_examples._kernel.store import ParquetBarStore
+from tantra.store import ParquetBarStore
 
 __all__ = ["_STORE", "get_store"]
 

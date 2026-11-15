@@ -1,17 +1,22 @@
-"""Ports for BarStore and MarketDataProvider, plus bar invariant validation."""
+"""Ports for BarStore and MarketDataProvider, plus bar invariant validation.
+
+Decimal-canonical wheel retarget (ex 0006): ``Bar``, ``CoverageRecord``/``DateInterval``
+and ``InstrumentId`` are the shipped ``tantra.*`` types, and bar validation uses exact
+Decimal ``is_finite()`` checks (zero-floats policy).
+"""
 # ruff: noqa: E501
 
 from __future__ import annotations
 
-import math
 from collections.abc import Sequence
 from typing import Any, Protocol
 
-from tantra_examples._kernel.bar import Bar
+from tantra.bar import Bar
+from tantra.coverage import CoverageRecord, DateInterval
+from tantra.instrument import InstrumentId
+from tantra.wire.screener import ScreenerScanRequest, ScreenerScanResponse
+
 from tantra_examples._kernel.calendar import ist_midnight_ns
-from tantra_examples._kernel.coverage import CoverageRecord, DateInterval
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.wire.screener import ScreenerScanRequest, ScreenerScanResponse
 
 
 def validate_bar(bar: Bar) -> bool:
@@ -23,7 +28,7 @@ def validate_bar(bar: Bar) -> bool:
         (bar.close, "close"),
         (bar.volume, "volume"),
     ):
-        if not math.isfinite(val):
+        if not val.is_finite():
             raise ValueError(f"bar {name} must be finite, got {val}")
 
     if bar.low > bar.high:

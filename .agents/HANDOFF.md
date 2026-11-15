@@ -14,8 +14,14 @@
   in the wheel (`tantra.money` / `position` / `trade` / `instrument` / `entities`); **Wave 1**
   retargeted the financial leaf modules to the wheel — `markets/india/costs` (Decimal rates +
   wheel `Money` fill costs), `portfolio` (`Account`/`Portfolio` on Decimal-major `Money`),
-  `risk.check_state` (Decimal), `evaluator` (wheel `Bar` series math); the rest of `_kernel/`
-  remains as later-wave slices. Status: in progress.
+  `risk.check_state` (Decimal), `evaluator` (wheel `Bar` series math); **Wave 2** retargeted the
+  config-ish leaf modules — `config` (wheel `InstrumentId`), `option` (Decimal contract),
+  `greeks` (Decimal Black-Scholes + portable A&S 7.1.26 normal CDF), `ports` (wheel `Bar`/
+  `CoverageRecord`/`DateInterval`/wire screener), `manifest` (wheel `InstrumentId` + wire types,
+  pinned `STRATEGY_API_VERSION="1.0.0"`), `loader` (wheel `Strategy`), `screener/coverage`
+  (`tantra.coverage.DateInterval`), `cli` (`tantra.store.ParquetBarStore`), `data`
+  (Decimal quantity parser); `calendar`/`log`/`screener/catalog` were Decimal-free and unchanged.
+  The rest of `_kernel/` remains as later-wave slices. Status: in progress.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
   `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/
   0007/0008 carry `open — blocked` status with precise blockers; 0006 `in progress`.

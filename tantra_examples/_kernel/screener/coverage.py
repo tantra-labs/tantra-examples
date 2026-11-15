@@ -1,19 +1,11 @@
-# mirror: kernel-verbatim port (gap 0003: screener coverage surface)
+# mirror: kernel-verbatim port (gap 0003: screener coverage surface) —
+# Decimal-canonical wheel retarget (ex 0006): ``DateInterval`` is ``tantra.coverage``.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import date
+from tantra.coverage import DateInterval
 
 __all__ = ["Coverage", "DateInterval"]
-
-
-@dataclass(frozen=True)
-class DateInterval:
-    """A date interval for coverage queries."""
-
-    start: date
-    end: date
 
 
 class Coverage:

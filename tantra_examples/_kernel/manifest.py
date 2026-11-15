@@ -29,17 +29,20 @@ from pydantic import (
     StrictInt,
     model_validator,
 )
-
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.native import native_attr
-from tantra_examples._kernel.wire.wire import BarAggregation
-from tantra_examples._kernel.wire.wire import InstrumentId as WireInstrumentId
+from tantra.instrument import InstrumentId
+from tantra.wire.wire import BarAggregation
+from tantra.wire.wire import InstrumentId as WireInstrumentId
 
 if TYPE_CHECKING:
-    from tantra_examples._kernel.base import Parameter, Strategy
+    from tantra.base import Parameter, Strategy
+
+# ``STRATEGY_API_VERSION`` is not exposed by the compiled wheel (gap
+# ``0006-tantra-wheel-kernel-domain-surface``); pinned here from the owning engine's
+# ``manifest.rs`` (the ``_kernel.native`` stand-in pinned the same ``"1.0.0"``).
+STRATEGY_API_VERSION = "1.0.0"
 
 __all__ = [
-    "STRATEGY_API_VERSION",  # noqa: F822 - lazy, see __getattr__
+    "STRATEGY_API_VERSION",
     "ManifestError",
     "ParameterSpec",
     "StrategyManifest",
@@ -51,14 +54,6 @@ __all__ = [
     "sweep_space_from_manifest",
     "trial_grid_from_manifest",
 ]
-
-
-def __getattr__(name: str) -> Any:
-    """Lazy ``STRATEGY_API_VERSION`` from its one owner ``honba_strategy::STRATEGY_API_VERSION``."""
-    if name == "STRATEGY_API_VERSION":
-        return native_attr(name)
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
 
 _U32_MAX = 2**32 - 1
 
@@ -213,16 +208,36 @@ class ParameterSpec(_Strict):
         return [self.default]
 
 
+def _parameter_to_spec(parameter: Parameter) -> ParameterSpec:
+    """Convert a ``Parameter`` (``tantra.base``) to a ``ParameterSpec``.
+
+    The wheel ``Parameter`` does not expose ``to_spec()`` yet (gap
+    ``0006-tantra-wheel-kernel-domain-surface``), so the spec is built from its
+    declared attributes directly; a kernel-side ``to_spec()`` wins when present.
+    """
+    to_spec = getattr(parameter, "to_spec", None)
+    if to_spec is not None:
+        return to_spec()
+    return ParameterSpec(
+        default=parameter.default,
+        range=parameter.range_str,
+        min=float(parameter.min) if parameter.min is not None else None,
+        max=float(parameter.max) if parameter.max is not None else None,
+        step=float(parameter.step) if parameter.step is not None else None,
+        description=parameter.description or None,
+    )
+
+
 def param_range_to_schema(
     range_expr: str | tuple[float, float, float] | list[float] | Parameter,
     default: Any = None,
     description: str | None = None,
 ) -> ParameterSpec:
     """Convert a parameter range expression or Parameter to a ParameterSpec (E4-S2)."""
-    from tantra_examples._kernel.base import Parameter
+    from tantra.base import Parameter
 
     if isinstance(range_expr, Parameter):
-        return range_expr.to_spec()
+        return _parameter_to_spec(range_expr)
     if default is None:
         raise ManifestError(
             "parameter_default_out_of_range",
@@ -271,7 +286,7 @@ class StrategyManifest(_Strict):
     ) -> StrategyManifest:
         """Start a manifest stamped with the current contract version (Rust ``new`` + ``with_*``)."""
         return cls(
-            api_version=native_attr("STRATEGY_API_VERSION"),
+            api_version=STRATEGY_API_VERSION,
             name=name,
             source_hash=source_hash,
             universe=universe,
@@ -299,7 +314,7 @@ class StrategyManifest(_Strict):
     ) -> StrategyManifest:
         """Create a manifest directly from a Strategy class, extracting its name, warmup, and hyperparameters."""
         hparams = strategy_cls.hyperparameters()
-        param_specs = {k: p.to_spec() for k, p in hparams.items()}
+        param_specs = {k: _parameter_to_spec(p) for k, p in hparams.items()}
         return cls.build(
             name=strategy_cls.name,
             source_hash=source_hash,
@@ -325,7 +340,7 @@ class StrategyManifest(_Strict):
             raise ManifestError("empty_name", "strategy name must not be empty")
         if not self.source_hash.strip():
             raise ManifestError("empty_source_hash", "source_hash must not be empty")
-        if self.api_version != native_attr("STRATEGY_API_VERSION"):
+        if self.api_version != STRATEGY_API_VERSION:
             raise ManifestError(
                 "unsupported_api_version",
                 f"unsupported strategy api_version: {self.api_version}",
@@ -380,7 +395,7 @@ def sweep_space_from_manifest(
     manifest: StrategyManifest | type[Strategy] | Strategy | Mapping[str, Any],
 ) -> dict[str, list[Any]]:
     """Extract discrete search space choices from a manifest or strategy (E4-S2)."""
-    from tantra_examples._kernel.base import Strategy
+    from tantra.base import Strategy
 
     if isinstance(manifest, type) and issubclass(manifest, Strategy):
         params = manifest.hyperparameters()
