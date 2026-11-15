@@ -42,15 +42,17 @@ from __future__ import annotations
 
 import datetime as dt
 import sys
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from tantra.bar import Bar
+from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.instrument import InstrumentId
+from tantra.store import ParquetBarStore
+
 from tantra_examples._kernel.adapters.errors import AdapterNotFound
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from tantra_examples._kernel.instrument import InstrumentId
 from tantra_examples._kernel.ports import validate_bar
-from tantra_examples._kernel.store import ParquetBarStore
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import bar, weekdays
@@ -137,7 +139,7 @@ def _validation(sample: list[Bar]) -> dict[str, Any]:
         ts=good.ts,
         open=good.open,
         high=good.high,
-        low=good.open + 1.0,
+        low=good.open + Decimal("1"),
         close=good.close,
         volume=good.volume,
     )

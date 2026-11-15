@@ -8,10 +8,10 @@ import json
 from pathlib import Path
 
 import pytest
+from tantra.coverage import DateInterval
+from tantra.instrument import InstrumentId
+from tantra.store import ParquetBarStore, find_data_root
 
-from tantra_examples._kernel.coverage import DateInterval
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.store import ParquetBarStore, find_data_root
 from tantra_examples.base import REPO_ROOT
 from tantra_examples.synthetic import bar as synth_bar
 from tantra_examples.synthetic import weekdays as weekdays_func

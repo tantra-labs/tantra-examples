@@ -36,8 +36,9 @@ from __future__ import annotations
 import sys
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
+from tantra.base import Strategy
+from tantra.indicators import Sma
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 
@@ -65,7 +66,7 @@ class SmaBacktest(Strategy):
 
         position = self.position(bar.instrument_id)
         if fast_val > slow_val and position <= 0:
-            qty = int(self.capital // bar.close)  # all-in, whole shares, sized off the signal close
+            qty = int(self.capital // float(bar.close))  # all-in, whole shares off the signal close
             if qty > 0:
                 self.buy(bar.instrument_id, qty)
         elif fast_val < slow_val and position > 0:
@@ -101,9 +102,9 @@ def run(
     held = 0.0
     for f in result.fills:
         sign = 1.0 if f.side.value == "buy" else -1.0
-        cash -= sign * f.quantity * f.price
-        held += sign * f.quantity
-    final_equity = cash + held * bars_list[-1].close if bars_list else capital
+        cash -= sign * float(f.quantity) * float(f.price)
+        held += sign * float(f.quantity)
+    final_equity = cash + held * float(bars_list[-1].close) if bars_list else capital
 
     strategy_repr = {
         "name": strat.name,

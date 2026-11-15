@@ -52,19 +52,17 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import sys
+from decimal import Decimal
 from typing import Any
 
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.declarative import DeclarativeStrategy, Entry
-from tantra_examples._kernel.entities import (
-    Bar,
-    InstrumentId,
-    OrderIntent,
-    OrderSide,
-    OrderType,
-    Trade,
-)
-from tantra_examples._kernel.indicators import Sma
+from tantra.bar import Bar
+from tantra.context import LedgerContext
+from tantra.declarative import DeclarativeStrategy, Entry
+from tantra.indicators import Sma
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent, OrderSide, OrderType
+from tantra.trade import Trade
+
 from tantra_examples._kernel.testing import ReplayResult
 from tantra_examples.cli import run_example
 from tantra_examples.jsonable import jsonable
@@ -117,8 +115,8 @@ class LongShortCrossover(DeclarativeStrategy):
     def go_long(self, bar: Bar) -> Entry:
         entry = Entry(
             self.quantity,
-            stop_loss=bar.close * (1 - self.stop_pct),
-            take_profit=bar.close * (1 + self.target_pct),
+            stop_loss=bar.close * (1 - Decimal(self.stop_pct)),
+            take_profit=bar.close * (1 + Decimal(self.target_pct)),
         )
         self._record("buy", bar, entry)
         return entry
@@ -126,8 +124,8 @@ class LongShortCrossover(DeclarativeStrategy):
     def go_short(self, bar: Bar) -> Entry:
         entry = Entry(
             self.quantity,
-            stop_loss=bar.close * (1 + self.stop_pct),
-            take_profit=bar.close * (1 - self.target_pct),
+            stop_loss=bar.close * (1 + Decimal(self.stop_pct)),
+            take_profit=bar.close * (1 - Decimal(self.target_pct)),
         )
         self._record("sell", bar, entry)
         return entry

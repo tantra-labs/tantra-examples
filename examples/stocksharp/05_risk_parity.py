@@ -44,16 +44,20 @@ from __future__ import annotations
 import random
 import sys
 from datetime import date
+from decimal import Decimal
 from typing import Any
 
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.entities import Bar, InstrumentId, Trade
-from tantra_examples._kernel.portfolio_strategy import (
+from tantra.bar import Bar
+from tantra.context import LedgerContext
+from tantra.instrument import InstrumentId
+from tantra.portfolio_strategy import (
     EveryNDays,
     InverseVolatility,
     PortfolioStrategy,
     StaticUniverse,
 )
+from tantra.trade import Trade
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.synthetic import session_ts, weekdays
 
@@ -163,7 +167,11 @@ def run(
     target_weight = allocation / symbols
     weights = []
     for i in instruments:
-        w = positions.get(i, 0.0) * closes.get(i, 0.0) / equity if equity > 0 else 0.0
+        w = (
+            float(positions.get(i, Decimal(0)) * closes.get(i, Decimal(0)) / equity)
+            if equity > 0
+            else 0.0
+        )
         weights.append({"symbol": i.symbol, "quantity": positions.get(i, 0.0), "weight": w})
 
     return {

@@ -40,12 +40,12 @@ from pathlib import Path
 from typing import Any
 
 from tantra.algo_analytics import deflated_sharpe
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.indicators import Rsi
+from tantra.order import OrderSide
 
 from tantra_examples._kernel.ai.llm.provider import ScriptedFakeLlm
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Rsi
-from tantra_examples._kernel.order import OrderSide
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.decision_guard import DecisionKind, LlmDecision
@@ -239,9 +239,9 @@ class RsiMeanReversion(Strategy):
         if rsi is None:
             return
         position = self.position(bar.instrument_id)
-        if rsi < self.oversold and position <= 0:
+        if float(rsi) < self.oversold and position <= 0:
             self.buy(bar.instrument_id, self.quantity)
-        elif rsi > self.overbought and position > 0:
+        elif float(rsi) > self.overbought and position > 0:
             self.sell(bar.instrument_id, position)
 
 
@@ -286,15 +286,17 @@ def run(
     for bar in bar_list:
         day = dt.datetime.fromtimestamp(bar.ts / 1e9, tz=dt.UTC).date().isoformat()
         for f in fills_by_date.get(day, []):
-            notional = f["quantity"] * f["price"]
+            f_qty = float(f["quantity"])
+            f_px = float(f["price"])
+            notional = f_qty * f_px
             if f["side"] == OrderSide.BUY.value:
                 equity -= notional
-                position += f["quantity"]
+                position += f_qty
             else:
                 equity += notional
-                position -= f["quantity"]
+                position -= f_qty
             n_fills += 1
-        curve.append(equity + position * bar.close)
+        curve.append(equity + position * float(bar.close))
 
     returns = [(curve[i] / curve[i - 1]) - 1.0 for i in range(1, len(curve)) if curve[i - 1] > 0]
     if not returns:

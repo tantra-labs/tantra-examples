@@ -9,8 +9,8 @@ import json
 from pathlib import Path
 
 import pytest
+from tantra.base import Strategy
 
-from tantra_examples._kernel.base import Strategy
 from tantra_examples.base import TantraExample
 from tantra_examples.screening import (
     find_catalog_path,

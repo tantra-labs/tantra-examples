@@ -49,14 +49,15 @@ import asyncio
 import sys
 from typing import Any
 
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent
+from tantra.position import Position
+
 from tantra_examples._kernel.adapters.capabilities import Capability
 from tantra_examples._kernel.adapters.errors import AdapterNotFound
 from tantra_examples._kernel.adapters.models import Product
 from tantra_examples._kernel.adapters.registry import default_registry
 from tantra_examples._kernel.adapters.testing import FakeAdapter
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderIntent
-from tantra_examples._kernel.position import Position
 from tantra_examples.cli import add_out_arg, emit_json, make_parser, require_paper_adapter
 from tantra_examples.jsonable import jsonable
 

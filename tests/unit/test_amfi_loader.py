@@ -6,9 +6,9 @@ import datetime as dt
 from pathlib import Path
 
 import pytest
+from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from tantra_examples._kernel.store import ParquetBarStore
 from tantra_examples.amfi import EXCHANGE, AmfiNavLoader, NavRow, nav_bars
 
 CODE = "120503"

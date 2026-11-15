@@ -7,10 +7,10 @@ import importlib.util
 from pathlib import Path
 
 import pytest
+from tantra.instrument import InstrumentId
+from tantra.order import OrderSide
+from tantra.trade import Trade
 
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderSide
-from tantra_examples._kernel.trade import Trade
 from tantra_examples.metrics import fills_equity_curve
 from tantra_examples.synthetic import bar, weekdays
 

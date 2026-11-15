@@ -49,7 +49,8 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
+
 from tantra_examples.base import TantraExample
 from tantra_examples.ewr import (
     DEFAULT_INITIAL_MARGIN,

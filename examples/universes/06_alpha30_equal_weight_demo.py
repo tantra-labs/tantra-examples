@@ -32,7 +32,8 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
+
 from tantra_examples.universe_lists import resolve_universe
 
 _path_04 = Path(__file__).resolve().parent / "04_alpha30_generic_rebalancer.py"

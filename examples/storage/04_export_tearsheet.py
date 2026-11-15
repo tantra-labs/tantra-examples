@@ -44,8 +44,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
+from tantra.bar import Bar
+from tantra.base import Strategy
+
 from tantra_examples.backtest import BacktestRun, canonical_hash, run_portfolio_backtest
 from tantra_examples.base import ts_to_date
 from tantra_examples.cli import add_out_arg, emit_json, make_parser

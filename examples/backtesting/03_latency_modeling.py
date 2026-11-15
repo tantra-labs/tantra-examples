@@ -34,9 +34,10 @@ import datetime as dt
 import sys
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.indicators import Sma
+
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.synthetic import bar as synth_bar

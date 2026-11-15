@@ -48,12 +48,12 @@ import sys
 from typing import Any
 
 from tantra.algo_analytics import deflated_sharpe
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.indicators import Adx, Sma
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Adx, Sma
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderIntent
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.decision_guard import guard_llm_decision
@@ -118,14 +118,16 @@ def _equity_curve_from_replay(
     for bar in bars:
         day = dt.datetime.fromtimestamp(bar.ts / 1e9, tz=dt.UTC).date().isoformat()
         for f in fills_by_day.get(day, []):
-            notional = f["quantity"] * f["price"]
+            f_qty = float(f["quantity"])
+            f_px = float(f["price"])
+            notional = f_qty * f_px
             if f["side"] == "buy":
                 equity -= notional
-                position += f["quantity"]
+                position += f_qty
             else:
                 equity += notional
-                position -= f["quantity"]
-        curve.append(equity + position * bar.close)
+                position -= f_qty
+        curve.append(equity + position * float(bar.close))
     return curve, sum(len(v) for v in fills_by_day.values())
 
 
@@ -201,7 +203,7 @@ class SmaCrossoverWithAdx(Strategy):
         adx_val = self.adx.update(bar.high, bar.low, bar.close)
         if fast_val is None or slow_val is None or adx_val is None:
             return  # warming up: no signals
-        trending = adx_val.adx >= self.adx_threshold
+        trending = float(adx_val.adx) >= self.adx_threshold
         position = self.position(bar.instrument_id)
         if (
             fast_val > slow_val

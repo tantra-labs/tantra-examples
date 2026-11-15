@@ -11,8 +11,9 @@ import pytest
 pytest.importorskip("numpy")
 pytest.importorskip("scipy")
 
-from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from tantra_examples._kernel.store import ParquetBarStore
+from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.store import ParquetBarStore
+
 from tantra_examples.amfi import EXCHANGE, NavRow, nav_bars
 
 _PATH = (

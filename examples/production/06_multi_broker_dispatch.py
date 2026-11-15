@@ -38,6 +38,10 @@ import sys
 from dataclasses import replace
 from typing import Any
 
+from tantra.base import Strategy
+from tantra.indicators import Sma
+from tantra.instrument import InstrumentId
+
 from tantra_examples._kernel.adapters.capabilities import AdapterCapabilities
 from tantra_examples._kernel.adapters.errors import AdapterError, AdapterNotFound
 from tantra_examples._kernel.adapters.models import RunMode
@@ -47,9 +51,6 @@ from tantra_examples._kernel.adapters.registry import (
     resolve_adapter,
 )
 from tantra_examples._kernel.adapters.testing import FakeAdapter
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
-from tantra_examples._kernel.instrument import InstrumentId
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.metrics import fills_equity_curve

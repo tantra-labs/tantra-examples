@@ -39,9 +39,9 @@ from typing import Any
 
 from rich.console import Console
 from rich.panel import Panel
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent, OrderSide
 
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderIntent, OrderSide
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.decision_guard import (
     DecisionKind,

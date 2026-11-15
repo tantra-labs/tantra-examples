@@ -35,9 +35,10 @@ import argparse
 import sys
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
-from tantra_examples._kernel.order import OrderSide
+from tantra.base import Strategy
+from tantra.indicators import Sma
+from tantra.order import OrderSide
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import trending_bars
@@ -73,7 +74,7 @@ class RiskManagedSma(Strategy):
 
     def on_fill(self, fill) -> None:
         sign = -1.0 if fill.side is OrderSide.BUY else 1.0
-        self._cash += sign * fill.quantity * fill.price
+        self._cash += sign * float(fill.quantity) * float(fill.price)
 
     def on_bar(self, bar, ctx: Any = None) -> None:
         close = bar.close
@@ -96,7 +97,7 @@ class RiskManagedSma(Strategy):
         drawdown = (self._peak_equity - equity) / self._peak_equity
         daily_loss = (self._day_start_equity - equity) / self._day_start_equity
         position = self.position(bar.instrument_id)
-        position_pct = abs(position * close) / equity if equity > 0 else 0
+        position_pct = abs(float(position) * float(close)) / equity if equity > 0 else 0
 
         if drawdown >= self.max_drawdown_pct:
             self._flatten_all()
@@ -117,11 +118,11 @@ class RiskManagedSma(Strategy):
         """Rough equity estimate from cash + position value."""
         equity = self._cash  # starting cash, less what buys cost, plus what sells returned
         for qty in self.ctx.positions().values():
-            equity += qty * price
+            equity += float(qty) * float(price)
         return equity
 
     def _size(self, price: float, equity: float) -> int:
-        max_qty = int(equity * self.max_position_pct / price)
+        max_qty = int(equity * self.max_position_pct / float(price))
         return max(1, max_qty)
 
     def _flatten_all(self) -> None:

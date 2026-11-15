@@ -34,11 +34,12 @@ import argparse
 import sys
 from typing import Any, ClassVar, cast, override
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Atr, Sma
-from tantra_examples._kernel.order import OrderSide
-from tantra_examples._kernel.trade import Trade
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.indicators import Atr, Sma
+from tantra.order import OrderSide
+from tantra.trade import Trade
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import get_bars_with_source, oscillating_bars
@@ -95,7 +96,7 @@ class DynamicPositionSizing(Strategy):
     @override
     def on_fill(self, fill: Trade) -> None:
         sign = -1.0 if fill.side is OrderSide.BUY else 1.0
-        self._cash += sign * fill.quantity * fill.price
+        self._cash += sign * float(fill.quantity) * float(fill.price)
 
     @override
     def on_bar(self, bar: Bar, ctx: Any = None) -> None:
@@ -120,10 +121,12 @@ class DynamicPositionSizing(Strategy):
     def _estimate_equity(self, price: float) -> float:
         equity = self._cash
         for qty in self.ctx.positions().values():
-            equity += qty * price
+            equity += float(qty) * float(price)
         return equity
 
     def compute_size(self, price: float, atr_val: float) -> int:
+        price = float(price)
+        atr_val = float(atr_val)
         equity = self._estimate_equity(price)
         if equity <= 0 or price <= 0:
             return 0

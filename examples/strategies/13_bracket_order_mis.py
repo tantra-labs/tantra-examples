@@ -32,13 +32,15 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import sys
+from decimal import Decimal
 from typing import Any, ClassVar, override
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderSide
-from tantra_examples._kernel.trade import Trade
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.instrument import InstrumentId
+from tantra.order import OrderSide
+from tantra.trade import Trade
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 
@@ -154,11 +156,11 @@ class BracketOrderMis(Strategy):
     @override
     def on_fill(self, fill: Trade) -> None:
         sign = -1.0 if fill.side is OrderSide.BUY else 1.0
-        self._cash += sign * fill.quantity * fill.price
+        self._cash += sign * float(fill.quantity) * float(fill.price)
         if fill.side is OrderSide.BUY:
             self._entry_price = fill.price
-            self._take_profit_price = fill.price * (1.0 + self.take_profit_pct)
-            self._stop_loss_price = fill.price * (1.0 - self.stop_loss_pct)
+            self._take_profit_price = fill.price * Decimal(1.0 + self.take_profit_pct)
+            self._stop_loss_price = fill.price * Decimal(1.0 - self.stop_loss_pct)
         else:
             self._entry_price = None
             self._take_profit_price = None
@@ -201,7 +203,7 @@ class BracketOrderMis(Strategy):
             # Enter trade during active morning session before 15:00 IST.
             # MIS margin calculation: buying power = cash * margin_multiplier
             buying_power = max(0.0, self._cash) * self.margin_multiplier
-            max_allowed_qty = int(buying_power / bar.close) if bar.close > 0 else 0
+            max_allowed_qty = int(buying_power / float(bar.close)) if bar.close > 0 else 0
             qty = min(int(self.quantity), max_allowed_qty)
             if qty > 0:
                 self.buy(bar.instrument_id, float(qty))

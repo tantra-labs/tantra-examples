@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib.util
+from decimal import Decimal
 from pathlib import Path
 from typing import Protocol, cast
 
@@ -41,7 +42,7 @@ def test_fills_only_once(example: ExampleModule) -> None:
     fills = cast(list[dict[str, object]], res["fills"])
     assert len(fills) == 1
     assert fills[0]["side"] == "buy"
-    assert fills[0]["quantity"] == 1.0
+    assert fills[0]["quantity"] == 1.0 or Decimal(fills[0]["quantity"]) == Decimal("1")
 
 
 def test_main_happy_path_returns_zero(

@@ -6,7 +6,8 @@ import datetime as dt
 import json
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
+from tantra.base import Strategy
+
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import bar, weekdays
 

@@ -48,10 +48,11 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
+from tantra.money import Currency, Money
+
 from tantra_examples._kernel.loader import CatalogError
-from tantra_examples._kernel.money import Currency, Money
 from tantra_examples.artifact import write_run_json
 from tantra_examples.backtest import BacktestRun, run_portfolio_backtest
 from tantra_examples.base import TantraExample, ts_to_date

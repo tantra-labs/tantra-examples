@@ -34,12 +34,13 @@ import datetime as dt
 import sys
 from typing import Any, ClassVar, override
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderSide
-from tantra_examples._kernel.trade import Trade
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.indicators import Sma
+from tantra.instrument import InstrumentId
+from tantra.order import OrderSide
+from tantra.trade import Trade
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import bar
@@ -119,11 +120,11 @@ class MultiSymbolPortfolio(Strategy):
     @override
     def on_fill(self, fill: Trade) -> None:
         sign = -1.0 if fill.side is OrderSide.BUY else 1.0
-        self._cash += sign * fill.quantity * fill.price
+        self._cash += sign * float(fill.quantity) * float(fill.price)
         sym = fill.instrument_id.symbol
         if fill.side is OrderSide.BUY:
             if sym not in self._entry_price or self.position(fill.instrument_id) <= 0:
-                self._entry_price[sym] = fill.price
+                self._entry_price[sym] = float(fill.price)
         else:
             if self.position(fill.instrument_id) <= 0:
                 _ = self._entry_price.pop(sym, None)
@@ -132,7 +133,7 @@ class MultiSymbolPortfolio(Strategy):
     def on_bar(self, bar: Bar, ctx: Any = None) -> None:
         sym = bar.instrument_id.symbol
         self._iids[sym] = bar.instrument_id
-        self._last_close[sym] = bar.close
+        self._last_close[sym] = float(bar.close)
 
         # Initialize indicators per symbol
         if sym not in self._fast_sma:
@@ -150,27 +151,27 @@ class MultiSymbolPortfolio(Strategy):
 
         # 1. Per-symbol loss cap check
         if pos > 0 and sym in self._entry_price:
-            loss_pct = (self._entry_price[sym] - bar.close) / self._entry_price[sym]
+            loss_pct = (self._entry_price[sym] - float(bar.close)) / self._entry_price[sym]
             if loss_pct >= self.symbol_max_loss_pct:
                 self.sell(bar.instrument_id, pos)
                 return
 
         # 2. SMA trend signals with per-symbol max-weight cap
         if fast_val > slow_val and pos <= 0:
-            self._allocate_symbol(bar.instrument_id, bar.close, pos)
+            self._allocate_symbol(bar.instrument_id, float(bar.close), float(pos))
         elif fast_val < slow_val and pos > 0:
             self.sell(bar.instrument_id, pos)
 
         # 3. Scheduled periodic rebalancing
         if count % self.rebalance_every == 0 and pos > 0:
-            self._rebalance_symbol(bar.instrument_id, bar.close, pos)
+            self._rebalance_symbol(bar.instrument_id, float(bar.close), float(pos))
 
     def _estimate_portfolio_value(self) -> float:
         total = self._cash
         for s, iid in self._iids.items():
             qty = self.position(iid)
             price = self._last_close.get(s, 0.0)
-            total += qty * price
+            total += float(qty) * price
         return max(total, self.capital)
 
     def _allocate_symbol(self, iid: InstrumentId, price: float, current_pos: float) -> None:

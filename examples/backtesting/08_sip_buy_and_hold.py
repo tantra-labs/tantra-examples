@@ -41,10 +41,11 @@ from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.coverage import DateInterval
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.store import ParquetBarStore, find_data_root
+from tantra.bar import Bar
+from tantra.coverage import DateInterval
+from tantra.instrument import InstrumentId
+from tantra.store import ParquetBarStore, find_data_root
+
 from tantra_examples.base import REPO_ROOT
 from tantra_examples.cli import make_parser
 from tantra_examples.metrics import curve_metrics
@@ -132,9 +133,9 @@ def run(
         total_invested += initial_corpus
         inflows[d0] = initial_corpus
 
-        units = int(cash / (bar0.open * (1.0 + fee_rate)))
+        units = int(cash / (float(bar0.open) * (1.0 + fee_rate)))
         if units > 0:
-            cost = units * bar0.open
+            cost = units * float(bar0.open)
             fee = cost * fee_rate
             cash -= cost + fee
             shares += units
@@ -166,9 +167,9 @@ def run(
             total_invested += sip_amount
             inflows[d] = inflows.get(d, 0.0) + sip_amount
 
-            units = int(cash / (bar.close * (1.0 + fee_rate)))
+            units = int(cash / (float(bar.close) * (1.0 + fee_rate)))
             if units > 0:
-                cost = units * bar.close
+                cost = units * float(bar.close)
                 fee = cost * fee_rate
                 cash -= cost + fee
                 shares += units
@@ -188,7 +189,7 @@ def run(
                     }
                 )
 
-        portfolio_val = shares * bar.close + cash
+        portfolio_val = shares * float(bar.close) + cash
         curve.append(
             {
                 "date": d.isoformat(),
@@ -223,7 +224,9 @@ def run(
         total_invested=total_invested,
     )
 
-    avg_price = (sum(i["units"] * i["price"] for i in installments) / shares) if shares > 0 else 0.0
+    avg_price = (
+        sum(i["units"] * float(i["price"]) for i in installments) / shares
+    ) if shares > 0 else 0.0
 
     summary = {
         "symbol": symbol,

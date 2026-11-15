@@ -26,7 +26,8 @@ Pitfalls::
 
 from __future__ import annotations
 
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
+
 from tantra_examples.display_style import SYMBOL, Column, render_kv, render_table
 from tantra_examples.universe_lists import UniverseUnavailable, banknifty_members
 

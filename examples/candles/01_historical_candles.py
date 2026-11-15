@@ -42,10 +42,11 @@ import datetime as dt
 import sys
 from typing import Any
 
+from tantra.instrument import InstrumentId
+
 from tantra_examples._kernel.adapters.errors import AdapterError
 from tantra_examples._kernel.adapters.registry import default_registry
 from tantra_examples._kernel.adapters.testing import FakeAdapter
-from tantra_examples._kernel.instrument import InstrumentId
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 

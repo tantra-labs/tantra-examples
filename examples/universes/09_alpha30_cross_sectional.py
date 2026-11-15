@@ -64,7 +64,8 @@ import statistics
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
+
 from tantra_examples.artifact import write_run_json
 from tantra_examples.base import TantraExample, ts_to_date
 from tantra_examples.display_style import Column, render_kv, render_table

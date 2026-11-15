@@ -8,10 +8,10 @@ import json
 from pathlib import Path
 
 import pytest
+from tantra.coverage import DateInterval
+from tantra.instrument import InstrumentId
+from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.coverage import DateInterval
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.store import ParquetBarStore
 from tantra_examples.synthetic import weekdays
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "storage" / "01_parquet_catalog.py"

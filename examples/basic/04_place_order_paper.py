@@ -44,6 +44,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent
+from tantra.trade import Trade
+
 from tantra_examples._kernel.adapters import (
     OrderReport,
     Product,
@@ -52,9 +56,6 @@ from tantra_examples._kernel.adapters import (
     resolve_execution_adapter,
 )
 from tantra_examples._kernel.adapters.testing import FakeAdapter
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderIntent
-from tantra_examples._kernel.trade import Trade
 from tantra_examples.cli import require_paper_adapter
 
 # Ensure reference fake is registered for testing and offline development

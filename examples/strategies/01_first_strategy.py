@@ -40,8 +40,9 @@ import argparse
 import sys
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
+from tantra.base import Strategy
+from tantra.indicators import Sma
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import trending_bars

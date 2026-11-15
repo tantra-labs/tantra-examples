@@ -44,10 +44,11 @@ from __future__ import annotations
 from datetime import UTC, date, datetime
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.sizing import whole_shares
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.instrument import InstrumentId
+from tantra.sizing import whole_shares
+
 from tantra_examples.universe_lists import resolve_universe
 
 try:
@@ -163,9 +164,9 @@ class UniverseEqualWeightRebalance(Strategy):
 
     def _equity(self) -> float:
         """Cash plus marked holdings from the context; the constructor capital if that is 0."""
-        equity = self.ctx.cash().to_major()
+        equity = float(self.ctx.cash().to_major())
         for iid, qty in self.ctx.positions().items():
-            equity += qty * self._last_prices.get(iid, 0.0)
+            equity += float(qty) * self._last_prices.get(iid, 0.0)
         return equity if equity > 0 else self.capital
 
     def _rebalance(self, reason: str, day: date) -> None:

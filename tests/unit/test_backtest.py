@@ -6,10 +6,10 @@ import datetime as dt
 from typing import Any
 
 import pytest
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.money import Currency, Money
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.money import Currency, Money
 from tantra_examples.backtest import run_portfolio_backtest
 from tantra_examples.synthetic import bar, weekdays
 

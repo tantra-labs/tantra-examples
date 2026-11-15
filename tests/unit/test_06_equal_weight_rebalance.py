@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -34,13 +35,15 @@ def test_run_returns_documented_json_shape(example):
     assert len(report["holdings"]) == 30
     assert {"symbol", "quantity", "close", "weight"} <= set(report["holdings"][0])
     assert {"fills", "intents"} <= set(report["result"])
-    json.dumps(report)  # fully serialisable
+    json.dumps(report, default=str)  # fully serialisable (Decimals become strings)
 
 
 def test_first_rebalance_is_equal_weight_within_one_share(example):
     report = example.run(bars=1)  # a single session: only the initial rebalance happens
     assert report["summary"]["rebalances"] == 1
-    target = report["config"]["capital"] * report["config"]["allocation"] / 30
+    target = Decimal(str(report["config"]["capital"])) * Decimal(
+        str(report["config"]["allocation"])
+    ) / 30
     for holding in report["holdings"]:
         assert holding["quantity"] > 0
         assert abs(holding["quantity"] * holding["close"] - target) <= holding["close"]
@@ -61,7 +64,7 @@ def test_deterministic_across_two_runs(example):
 def test_strategy_is_a_composed_portfolio_strategy(example):
     # Was: the TargetWeightStrategy subclass declared only ``universe``. Now no subclass exists;
     # the strategy is PortfolioStrategy composed from parts.
-    from tantra_examples._kernel.portfolio_strategy import (
+    from tantra.portfolio_strategy import (
         EqualWeight,
         EveryNDays,
         NamedUniverse,
@@ -74,7 +77,7 @@ def test_strategy_is_a_composed_portfolio_strategy(example):
     assert isinstance(strat.universe_source, NamedUniverse)
     assert isinstance(strat.weighting, EqualWeight)
     assert isinstance(strat.schedule, EveryNDays)
-    assert strat.allocation == 0.9
+    assert strat.allocation == Decimal("0.9")
 
 
 def test_inverse_vol_gives_different_valid_result(example):
@@ -84,7 +87,7 @@ def test_inverse_vol_gives_different_valid_result(example):
     assert alt["config"]["weighting"] == "inverse_vol"
     assert alt["summary"]["universe_size"] == 30
     assert alt["summary"]["n_fills"] > 0
-    assert 0 < alt["summary"]["final_cash"] < alt["config"]["capital"]
+    assert 0 < alt["summary"]["final_cash"] < Decimal(str(alt["config"]["capital"]))
     assert all(h["quantity"] >= 0 for h in alt["holdings"])
     assert [h["quantity"] for h in alt["holdings"]] != [h["quantity"] for h in base["holdings"]]
     assert json.dumps(alt, sort_keys=True, default=str) == json.dumps(

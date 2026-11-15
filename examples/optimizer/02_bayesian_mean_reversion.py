@@ -34,8 +34,9 @@ import sys
 from datetime import UTC
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Rsi
+from tantra.base import Strategy
+from tantra.indicators import Rsi
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.synthetic import oscillating_bars
 
@@ -82,7 +83,7 @@ class RsiMeanReversion(Strategy):
         # Entry: RSI oversold
         if position <= 0 and rsi_val < self.oversold:
             if len(self.recent_closes) >= self.lookback:
-                qty = int(self.capital // bar.close)
+                qty = int(self.capital // float(bar.close))
                 if qty > 0:
                     self.buy(bar.instrument_id, qty)
 
@@ -103,13 +104,14 @@ def _evaluate(bars_list: list, params: dict[str, Any]) -> dict[str, Any]:
     curve = [{"date": str(bars_list[0].ts), "value": cash, "cash": cash}]
     for fill in result.fills:
         sign = 1.0 if fill.side.value == "buy" else -1.0
-        notional = sign * fill.quantity * fill.price
+        fq, fpx = float(fill.quantity), float(fill.price)
+        notional = sign * fq * fpx
         cash -= notional
-        position += sign * fill.quantity
-        curve.append({"date": str(fill.ts), "value": cash + position * fill.price, "cash": cash})
+        position += sign * fq
+        curve.append({"date": str(fill.ts), "value": cash + position * fpx, "cash": cash})
 
     if position > 0 and result.fills:
-        last_price = result.fills[-1].price
+        last_price = float(result.fills[-1].price)
         cash += position * last_price
         curve.append({"date": str(result.fills[-1].ts + 1), "value": cash, "cash": cash})
 

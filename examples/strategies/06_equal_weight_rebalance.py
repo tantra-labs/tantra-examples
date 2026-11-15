@@ -86,17 +86,21 @@ import argparse
 import datetime as dt
 import math
 import sys
+from decimal import Decimal
 from typing import Any
 
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.entities import Bar, InstrumentId, Trade
-from tantra_examples._kernel.portfolio_strategy import (
+from tantra.bar import Bar
+from tantra.context import LedgerContext
+from tantra.instrument import InstrumentId
+from tantra.portfolio_strategy import (
     EqualWeight,
     EveryNDays,
     NamedUniverse,
     PortfolioStrategy,
     build_portfolio_strategy,
 )
+from tantra.trade import Trade
+
 from tantra_examples._kernel.testing import ReplayResult
 from tantra_examples.cli import run_example
 from tantra_examples.jsonable import jsonable
@@ -218,7 +222,7 @@ def run(
             "symbol": i.symbol,
             "quantity": positions.get(i, 0.0),
             "close": closes[i],
-            "weight": positions.get(i, 0.0) * closes[i] / equity,
+            "weight": positions.get(i, Decimal(0)) * closes[i] / equity,
         }
         for i in members
     ]
@@ -247,7 +251,9 @@ def run(
             "final_cash": strat.ctx.cash().to_major(),
             "target_weight": target,
             "max_weight_deviation": (
-                max(abs(h["weight"] - target) for h in holdings) if target is not None else None
+                max(abs(float(h["weight"]) - target) for h in holdings)
+                if target is not None
+                else None
             ),
         },
         "holdings": holdings,

@@ -74,9 +74,9 @@ from pathlib import Path
 from typing import Any
 
 from rich.console import Console
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
 from tantra_examples.cli import add_out_arg
 from tantra_examples.display_style import (  # gap 0004: display surface mirror
     SYMBOL,
@@ -518,7 +518,7 @@ def _rebalance_payload(
 ) -> dict[str, Any]:
     last_price: dict[str, float] = {}
     for b in bars:  # time-ordered, so the last write is the final close
-        last_price[b.instrument_id.symbol] = b.close
+        last_price[b.instrument_id.symbol] = float(b.close)
     last = result.equity_curve[-1] if result.equity_curve else {"value": 0.0, "cash": 0.0}
     value, cash = float(last["value"]), float(last["cash"])
     invested = float(result.total_invested) if result.equity_curve else 0.0

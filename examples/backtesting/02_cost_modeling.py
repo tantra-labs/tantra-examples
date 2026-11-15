@@ -29,13 +29,15 @@ Pitfalls::
 from __future__ import annotations
 
 import sys
+from decimal import Decimal
 from typing import Any
+
+from tantra.order import OrderSide
 
 from tantra_examples._kernel.markets.india.costs import (
     nse_equity_delivery_breakdown,
     nse_equity_delivery_fill_cost,
 )
-from tantra_examples._kernel.order import OrderSide
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 
@@ -46,11 +48,12 @@ def run(
     price: float = 2500.0,
     qty: float = 10.0,
 ) -> dict[str, Any]:
-    buy_legs = nse_equity_delivery_breakdown(OrderSide.BUY, qty, price)
-    sell_legs = nse_equity_delivery_breakdown(OrderSide.SELL, qty, price)
+    qty_dec, price_dec = Decimal(str(qty)), Decimal(str(price))
+    buy_legs = nse_equity_delivery_breakdown(OrderSide.BUY, qty_dec, price_dec)
+    sell_legs = nse_equity_delivery_breakdown(OrderSide.SELL, qty_dec, price_dec)
 
-    cost_buy = nse_equity_delivery_fill_cost(OrderSide.BUY, qty, price)
-    cost_sell = nse_equity_delivery_fill_cost(OrderSide.SELL, qty, price)
+    cost_buy = nse_equity_delivery_fill_cost(OrderSide.BUY, qty_dec, price_dec)
+    cost_sell = nse_equity_delivery_fill_cost(OrderSide.SELL, qty_dec, price_dec)
 
     return {
         "price": price,

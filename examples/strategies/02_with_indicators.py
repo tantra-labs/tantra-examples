@@ -38,9 +38,10 @@ import argparse
 import sys
 from typing import Any, ClassVar, override
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Atr, Ema, Rsi, Sma
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.indicators import Atr, Ema, Rsi, Sma
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import oscillating_bars

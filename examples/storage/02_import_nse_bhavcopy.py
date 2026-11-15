@@ -53,10 +53,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.store import ParquetBarStore
+from tantra.bar import Bar
+from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.instrument import InstrumentId
+from tantra.store import ParquetBarStore
+
 from tantra_examples.base import ts_to_date
 from tantra_examples.bhavcopy import parse_bhavcopy_csv
 from tantra_examples.cli import add_out_arg, emit_json, make_parser

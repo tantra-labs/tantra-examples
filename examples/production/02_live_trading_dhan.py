@@ -34,9 +34,10 @@ from __future__ import annotations
 import sys
 from typing import Any, ClassVar
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.base import Strategy
+from tantra.indicators import Sma
+from tantra.instrument import InstrumentId
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]

@@ -5,9 +5,9 @@ from __future__ import annotations
 import math
 
 import pytest
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent
 
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderIntent
 from tantra_examples.decision_guard import DecisionKind, guard_llm_decision, is_protective_exit
 
 SYM = InstrumentId("NIFTY", "NSE")

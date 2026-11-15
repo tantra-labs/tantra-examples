@@ -27,12 +27,14 @@ from __future__ import annotations
 
 import argparse
 import sys
+from decimal import Decimal
 from typing import Any, ClassVar, override
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.order import OrderIntent, OrderSide, OrderType
-from tantra_examples._kernel.trade import Trade
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.order import OrderIntent, OrderSide, OrderType
+from tantra.trade import Trade
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import trending_bars
@@ -144,7 +146,8 @@ class PartialFillStrategy(Strategy):
     @override
     def on_fill(self, fill: Trade) -> None:
         """Hook called when a fill executes."""
-        is_complete = (self.filled_quantity + fill.quantity) >= self.target_quantity
+        filled_chunk = float(fill.quantity)
+        is_complete = (self.filled_quantity + filled_chunk) >= self.target_quantity
         evt: dict[str, object] = {
             "event_type": "FILLED" if is_complete else "PARTIAL_FILL",
             "order_id": fill.order_id or self.active_order_id or "order-1",
@@ -152,9 +155,9 @@ class PartialFillStrategy(Strategy):
             "fill_qty": fill.quantity,
             "price": fill.price,
             "remaining_qty": max(
-                0.0, self.target_quantity - (self.filled_quantity + fill.quantity)
+                0.0, self.target_quantity - (self.filled_quantity + filled_chunk)
             ),
-            "cum_filled": self.filled_quantity + fill.quantity,
+            "cum_filled": self.filled_quantity + filled_chunk,
         }
         self.on_order_event(evt)
 
@@ -164,7 +167,7 @@ class PartialFillStrategy(Strategy):
         if not self._submitted_initial:
             self._order_counter += 1
             order_id = f"ord-{self._order_counter}"
-            limit_price = round(bar.close * 0.995, 2)  # slightly below market
+            limit_price = round(bar.close * Decimal("0.995"), 2)  # slightly below market
             self._submitted_initial = True
 
             # Emit submission event
@@ -211,7 +214,7 @@ class PartialFillStrategy(Strategy):
             and self.active_order_price is not None
             and self.remaining_quantity > 0.0
         ):
-            price_drift = abs(bar.close - self.active_order_price)
+            price_drift = abs(float(bar.close) - self.active_order_price)
             if price_drift >= self.modify_threshold:
                 new_price = round(bar.close, 2)
                 self.modify_order(bar, new_price=new_price, new_qty=self.remaining_quantity)

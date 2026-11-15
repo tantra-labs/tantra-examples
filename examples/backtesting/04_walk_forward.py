@@ -49,9 +49,9 @@ from tantra.algo_analytics.walk_forward import (
     WalkForwardResult,
     walk_forward,
 )
+from tantra.base import Strategy
+from tantra.indicators import Sma
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.metrics import curve_metrics
@@ -80,7 +80,7 @@ class SmaWalk(Strategy):
 
         position = self.position(bar.instrument_id)
         if fast_val > slow_val and position <= 0:
-            qty = int(self.capital // bar.close)
+            qty = int(self.capital // float(bar.close))
             if qty > 0:
                 self.buy(bar.instrument_id, qty)
         elif fast_val < slow_val and position > 0:
@@ -97,14 +97,15 @@ def _evaluate_replay(bars_list: list, strategy: Strategy) -> FoldStats:
     curve = [{"value": cash, "cash": cash, "date": str(bars_list[0].ts)}]
     for fill in result.fills:
         sign = 1.0 if fill.side.value == "buy" else -1.0
-        notional = sign * fill.quantity * fill.price
+        fq, fpx = float(fill.quantity), float(fill.price)
+        notional = sign * fq * fpx
         cash -= notional
-        position += sign * fill.quantity
-        curve.append({"value": cash + position * fill.price, "cash": cash, "date": str(fill.ts)})
+        position += sign * fq
+        curve.append({"value": cash + position * fpx, "cash": cash, "date": str(fill.ts)})
 
     # Close open position
     if position > 0 and result.fills:
-        last_price = result.fills[-1].price
+        last_price = float(result.fills[-1].price)
         cash += position * last_price
         curve.append({"value": cash, "cash": cash, "date": str(result.fills[-1].ts + 1)})
 

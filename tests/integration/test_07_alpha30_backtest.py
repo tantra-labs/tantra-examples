@@ -15,10 +15,10 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
+from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra_examples._kernel.loader import CatalogError, find_catalog
-from tantra_examples._kernel.store import ParquetBarStore
 from tantra_examples.synthetic import bar, weekdays
 from tantra_examples.universe_lists import resolve_universe
 

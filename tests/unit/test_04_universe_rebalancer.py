@@ -5,14 +5,15 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from tantra.bar import Bar
+from tantra.context import LedgerContext
+from tantra.instrument import InstrumentId
 
 import tantra_examples.universe_lists as core
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.instrument import InstrumentId
 
 _PATH = (
     Path(__file__).resolve().parents[2]
@@ -129,4 +130,4 @@ def test_sizing_uses_current_equity_not_constructor_capital(ex, tiny_history):
     s._price_day[InstrumentId("AAA", "NSE")] = dt.date(2024, 1, 8)
     s._rebalance("t", dt.date(2024, 1, 8))
     buys = [i for i in ledger.drain_intents() if i.instrument_id.symbol == "AAA"]
-    assert buys and buys[0].quantity == pytest.approx(200_000 * 0.98 / 2 / 100, abs=1)
+    assert buys and buys[0].quantity == pytest.approx(Decimal("980"), abs=1)

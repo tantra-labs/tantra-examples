@@ -13,9 +13,9 @@ from pathlib import Path
 from types import ModuleType
 
 import pytest
+from tantra.context import LedgerContext
 
 from tantra_examples._kernel.config import StrategyConfig
-from tantra_examples._kernel.context import LedgerContext
 from tantra_examples._kernel.loader import CatalogError, find_catalog
 
 EXAMPLE = (

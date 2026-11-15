@@ -37,9 +37,10 @@ import argparse
 import sys
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Atr, Sma
-from tantra_examples._kernel.order import OrderSide
+from tantra.base import Strategy
+from tantra.indicators import Atr, Sma
+from tantra.order import OrderSide
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import oscillating_bars
@@ -109,7 +110,7 @@ class SmaSizing(Strategy):
         if fill.side is OrderSide.BUY:
             self._entry_price = fill.price
         elif self._entry_price:
-            self._trade_returns.append(fill.price / self._entry_price - 1.0)
+            self._trade_returns.append(float(fill.price) / float(self._entry_price) - 1.0)
             self._entry_price = None
 
     def on_bar(self, bar, ctx: Any = None) -> None:
@@ -136,14 +137,14 @@ class SmaSizing(Strategy):
     def _size(self, atr_val: float, price: float) -> int:
         """Shares to buy, never more than ``equity`` can pay for (no leverage)."""
         if self.sizing == "volatility":
-            qty = max(1, int(self.equity * self.risk_pct / (atr_val * 2)))
+            qty = max(1, int(self.equity * self.risk_pct / (float(atr_val) * 2)))
         elif self.sizing == "kelly":
             recent = self._trade_returns[-self.kelly_lookback :]
             f = fractional_kelly(recent, self.kelly_fraction, self.kelly_cap, self.kelly_min_trades)
-            qty = int(self.fixed_qty) if f is None else int(self.equity * f / price)
+            qty = int(self.fixed_qty) if f is None else int(self.equity * f / float(price))
         else:
             qty = int(self.fixed_qty)
-        return min(qty, int(self.equity // price))
+        return min(qty, int(self.equity // float(price)))
 
 
 def run(

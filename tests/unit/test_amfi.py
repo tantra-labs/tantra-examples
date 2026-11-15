@@ -6,9 +6,9 @@ import dataclasses
 import datetime as dt
 
 import pytest
+from tantra.instrument import InstrumentId
 
 from tantra_examples import amfi
-from tantra_examples._kernel.instrument import InstrumentId
 from tantra_examples.amfi import NavRow, nav_bars, parse_navall
 from tantra_examples.synthetic import session_ts
 

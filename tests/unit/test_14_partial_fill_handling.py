@@ -9,11 +9,10 @@ from pathlib import Path
 from typing import Protocol, cast
 
 import pytest
-
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.entities import Trade
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.order import OrderSide
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
+from tantra.order import OrderSide
+from tantra.trade import Trade
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "strategies" / "14_partial_fill_handling.py"

@@ -5,9 +5,9 @@ from __future__ import annotations
 import datetime as dt
 
 import pytest
+from tantra.bar import Bar
+from tantra.instrument import InstrumentId
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.instrument import InstrumentId
 from tantra_examples.bars import SUPPORTED_TIMEFRAMES, aggregate, bucket_start, timeframe_seconds
 from tantra_examples.synthetic import bar, session_ts, weekdays
 

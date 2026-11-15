@@ -4,12 +4,13 @@ from __future__ import annotations
 
 import datetime as dt
 import importlib.util
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
+from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.coverage import CoverageRecord, CoverageStatus, DateInterval
-from tantra_examples._kernel.store import ParquetBarStore
 from tantra_examples.amfi import EXCHANGE, NavRow, nav_bars
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "mutual_funds" / "01_fetch_nav.py"
@@ -63,7 +64,7 @@ def test_run_with_latest_returns_the_last_seeded_nav(example, tmp_path, monkeypa
     out = example.run(scheme=CODE, latest=True)
     assert out["type"] == "latest"
     assert out["scheme"] == CODE
-    assert out["nav_point"]["nav"] == 102.5
+    assert Decimal(out["nav_point"]["nav"]) == Decimal("102.5")
     assert out["nav_point"]["date"] == "2025-01-06"
 
 

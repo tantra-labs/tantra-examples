@@ -36,9 +36,10 @@ import datetime as dt
 import sys
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
-from tantra_examples._kernel.order import OrderSide
+from tantra.base import Strategy
+from tantra.indicators import Sma
+from tantra.order import OrderSide
+
 from tantra_examples.cli import run_example
 from tantra_examples.replay_report import replay_report
 from tantra_examples.synthetic import bar
@@ -96,12 +97,12 @@ class BasketSma(Strategy):
 
     def on_fill(self, fill) -> None:
         sign = -1.0 if fill.side is OrderSide.BUY else 1.0
-        self._cash += sign * fill.quantity * fill.price
+        self._cash += sign * float(fill.quantity) * float(fill.price)
 
     def on_bar(self, bar, ctx: Any = None) -> None:
         sym = bar.instrument_id.symbol
         self._iids[sym] = bar.instrument_id
-        self._last_close[sym] = bar.close
+        self._last_close[sym] = float(bar.close)
 
         # Initialize indicators for this symbol
         if sym not in self._fast_sma:
@@ -126,11 +127,15 @@ class BasketSma(Strategy):
             self._trade_to(bar.instrument_id, bar.close, position)  # rebalance this member
 
     def _equity(self) -> float:
-        held = sum(self.position(self._iids[s]) * px for s, px in self._last_close.items())
+        held = sum(
+            float(self.position(self._iids[s])) * float(px)
+            for s, px in self._last_close.items()
+        )
         return self._cash + held
 
     def _trade_to(self, iid, price: float, position: float) -> None:
         """Buy or sell the difference between ``position`` and the equal-weight target."""
+        price = float(price)
         target = int(self._equity() / len(self.symbols) / price)
         delta = target - position
         if delta > 0:

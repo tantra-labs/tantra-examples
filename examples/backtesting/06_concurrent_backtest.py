@@ -36,8 +36,9 @@ import sys
 from datetime import UTC
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
+from tantra.base import Strategy
+from tantra.indicators import Sma
+
 from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.metrics import curve_metrics
@@ -94,19 +95,20 @@ def _backtest(bars_list: list, fast: int, slow: int, min_trades: int = 3) -> dic
     position = 0.0
     curve = [{"value": cash, "cash": cash, "date": str(bars_list[0].ts)}]
     for fill in result.fills:
-        notional = fill.quantity * fill.price
+        fq, fpx = float(fill.quantity), float(fill.price)
+        notional = fq * fpx
         if fill.side.value == "buy":
             cash -= notional
-            position += fill.quantity
+            position += fq
         else:
             cash += notional
-            position -= fill.quantity
-        equity = cash + position * fill.price
+            position -= fq
+        equity = cash + position * fpx
         curve.append({"value": equity, "cash": cash, "date": str(fill.ts)})
 
     # Close any open position at last price
     if position > 0:
-        last_price = result.fills[-1].price
+        last_price = float(result.fills[-1].price)
         cash += position * last_price
         curve.append({"value": cash, "cash": cash, "date": str(result.fills[-1].ts + 1)})
 
