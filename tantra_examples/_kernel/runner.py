@@ -47,33 +47,23 @@ Logged event types mirror ``tantra-messages::Event`` wire types exactly so that
 * ``order_filled``   - fill received from the execution port
 * ``order_cancelled`` - the port cancelled an order (WARNING level)
 """
-# mirror: kernel-verbatim port (gap 0006)
+# mirror: kernel-verbatim port (gap 0006) — Decimal-canonical wheel retarget (ex 0006)
 
 from __future__ import annotations
 
 import contextlib
 import logging
-import math
 import weakref
 from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import UTC
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
-import tantra_examples._kernel.log as _tantra_log  # noqa: F401 — triggers auto-init from VYAAPAAR_LOG_EVENTS
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.entities import (
-    Bar,
-    InstrumentId,
-    OrderIntent,
-    OrderSide,
-    OrderStatus,
-    QuoteTick,
-    Trade,
-    TradeTick,
-)
-from tantra_examples._kernel.execution import (
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.context import LedgerContext
+from tantra.execution import (
     ExecutionEvent,
     ExecutionPort,
     ExecutionPortLike,
@@ -85,9 +75,14 @@ from tantra_examples._kernel.execution import (
     order_event,
     rejection_from_event,
 )
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent, OrderSide, OrderStatus, validate_intent
+from tantra.order_state import IllegalTransition, OrderEvent, OrderState
+from tantra.tick import QuoteTick, TradeTick
+from tantra.trade import Trade
+
+import tantra_examples._kernel.log as _tantra_log  # noqa: F401 — triggers auto-init from VYAAPAAR_LOG_EVENTS
 from tantra_examples._kernel.native import native_attr
-from tantra_examples._kernel.order import validate_intent
-from tantra_examples._kernel.order_state import IllegalTransition, OrderEvent, OrderState
 from tantra_examples._kernel.risk import OrderRejected, RiskRefusal, RiskRefused, check_state
 
 if TYPE_CHECKING:
@@ -153,7 +148,7 @@ class RunResult:
     suppressed: list[SuppressedIntent] = field(default_factory=list)
 
 
-_QTY_EPS = 1e-9  # ADR 0016 tolerance, as in ``OrderState``
+_QTY_EPS = Decimal("1e-9")  # ADR 0016 tolerance, as in ``OrderState``
 
 # ``RiskStage`` is a native object (no weakref, no attributes), so owners are keyed by ``id``;
 # an entry is stale once its runner is gone (the runner holds the stage, so ids cannot be reused
@@ -237,14 +232,14 @@ class StrategyRunner:
         self._trading_state: TradingState | None = None  # None: Active (needs no extension)
         self._audit: list[RiskRefused | OrderRejected] = []
         self._orders: dict[str, tuple[InstrumentId, OrderSide]] = {}
-        self._last_px: dict[InstrumentId, float] = {}
+        self._last_px: dict[InstrumentId, Decimal] = {}
         # Latest (bid, ask) per instrument: the price collar's expected_price source.
-        self._last_quote: dict[InstrumentId, tuple[float, float]] = {}
+        self._last_quote: dict[InstrumentId, tuple[Decimal, Decimal]] = {}
         self._pre_gate: list[Rejected] = []
         self._port = adapt_port(execution)  # event stream + cancel(order_id, now), bound once
         self._now = 0
         self._states: dict[str, OrderState] = {}
-        self._released: dict[InstrumentId, float] = {}
+        self._released: dict[InstrumentId, Decimal] = {}
         self.ctx = ctx if ctx is not None else LedgerContext()
         strategy.bind(self.ctx)
         # Logger name: tantra.runner.<strategy-name>
@@ -288,10 +283,10 @@ class StrategyRunner:
         limits = self._risk_limits if self._risk is not None else None
         (limits if limits is not None else native_attr("RiskLimits")()).require_live()
 
-    def working_exposure(self, instrument_id: InstrumentId, side: OrderSide) -> float:
+    def working_exposure(self, instrument_id: InstrumentId, side: OrderSide) -> Decimal:
         """Signed open quantity (``+`` buy, ``-`` sell) of this runner's working orders on
         ``instrument_id`` and ``side`` (ADR 0019 decision 5)."""
-        total = 0.0
+        total = Decimal("0")
         for order_id, (iid, order_side) in self._orders.items():
             state = self._states.get(order_id)
             if (
@@ -336,9 +331,9 @@ class StrategyRunner:
         """The FSM state the runner tracked for ``order_id``, if it submitted it."""
         return self._states.get(order_id)
 
-    def released_quantity(self, instrument_id: InstrumentId) -> float:
+    def released_quantity(self, instrument_id: InstrumentId) -> Decimal:
         """Total quantity released for ``instrument_id`` (rejected/cancelled/expired)."""
-        return self._released.get(instrument_id, 0.0)
+        return self._released.get(instrument_id, Decimal("0"))
 
     def cancel(self, order_id: str) -> bool:
         """Ask the port to cancel ``order_id`` and book what it reports at once.
@@ -616,8 +611,8 @@ class StrategyRunner:
 
     def _book_rejection(self, rejection: OrderRejection) -> None:
         iid, qty = rejection.intent.instrument_id, rejection.intent.quantity
-        if math.isfinite(qty) and qty > 0:
-            self._released[iid] = self._released.get(iid, 0.0) + qty
+        if qty.is_finite() and qty > 0:
+            self._released[iid] = self._released.get(iid, Decimal("0")) + qty
         self._release(rejection.intent)
         self.order_rejections.append(rejection)
         event_type = "order_cancelled" if rejection.cancelled else "order_rejected"

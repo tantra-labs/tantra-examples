@@ -1,5 +1,7 @@
 """Application service DataService orchestrating gap filling and data assurance (Design.md Section 12)."""
 # ruff: noqa: E501
+# Decimal-canonical wheel retarget (ex 0006): Bar/CoverageRecord/DateInterval/InstrumentId
+# are the shipped tantra.* types; the local ``ports`` module (Wave 2) supplies BarStore.
 
 from __future__ import annotations
 
@@ -10,14 +12,15 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.coverage import (
+from tantra.bar import Bar
+from tantra.coverage import (
     CoverageRecord,
     CoverageStatus,
     DateInterval,
     plan_gaps,
 )
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.instrument import InstrumentId
+
 from tantra_examples._kernel.ports import BarStore, MarketDataProvider, validate_bar
 
 logger = logging.getLogger(__name__)

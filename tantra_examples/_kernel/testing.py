@@ -4,48 +4,38 @@
 respective instrument (or ``fill_delay`` bars later at the open), with no costs.
 Sells fill before buys within each batch to prevent insufficient funds on rebalances.
 ``BarCloseFills`` is the simulated execution port of the conformance suite
-(mirrors ``honba_sim::BarFillEngine``). Use ``tantra.backtest`` for realistic simulation.
+(mirrors ``honba_sim::BarFillEngine``): it is re-exported from the shipped
+``tantra.backtest.bar_close_fills`` (ex 0006 consolidation) instead of being
+mirrored here. Use ``tantra.backtest`` for realistic simulation.
+
+Decimal-canonical wheel retarget (ex 0006): every quantity and price is an exact
+``decimal.Decimal`` on the shipped ``tantra.bar``/``tantra.order``/``tantra.trade``
+types (zero-floats policy).
 """
 
 from __future__ import annotations
 
-import math
 from collections.abc import Iterable
 from dataclasses import dataclass, field
-from typing import Any
+from decimal import Decimal
 
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.entities import wire
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.money import Currency, Money
-from tantra_examples._kernel.order import OrderIntent, OrderSide, OrderType
-from tantra_examples._kernel.tick import QuoteTick, TradeTick
-from tantra_examples._kernel.trade import Trade
+from tantra.backtest.bar_close_fills import BarCloseFills
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.context import LedgerContext
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent, OrderSide, OrderType
+from tantra.tick import AggressorSide, QuoteTick, TradeTick
+from tantra.trade import Trade
 
-MAX_FLAT_COST = 1e9
-"""Largest accepted flat cost per fill (mirrors ``honba_sim::MAX_FLAT_COST``)."""
-
-MAX_COST_BPS = 10_000.0
-"""Largest accepted proportional cost in bps of the fill notional (100%)."""
-
-
-class FillCostsError(ValueError):
-    """Invalid ``BarCloseFills`` cost parameter (not finite, negative or above its cap)."""
-
-
-def _checked(name: str, value: float, cap: float) -> float:
-    if not (math.isfinite(value) and 0.0 <= value <= cap):
-        raise FillCostsError(f"{name} must be finite and within 0..={cap}, got {value}")
-    return float(value)
+__all__ = ["BarCloseFills", "ReplayResult", "from_wire_messages", "replay"]
 
 
 @dataclass
 class _RestingTrailingStop:
     intent: OrderIntent
-    peak: float
-    trough: float
+    peak: Decimal
+    trough: Decimal
 
 
 @dataclass
@@ -62,13 +52,13 @@ def replay(strategy: Strategy, bars: Iterable[Bar], fill_delay: int = 0) -> Repl
     result = ReplayResult()
     queue: list[tuple[int, OrderIntent]] = []  # (due bar index, intent)
     resting_stops: list[_RestingTrailingStop] = []
-    last_close: dict[InstrumentId, float] = {}
-    last_open: dict[InstrumentId, float] = {}
+    last_close: dict[InstrumentId, Decimal] = {}
+    last_open: dict[InstrumentId, Decimal] = {}
     ids: dict[int, str] = {}  # id(intent) -> replay order id
     cancelled: set[str] = set()
     ledger = strategy.ctx if isinstance(strategy.ctx, LedgerContext) else None
 
-    def settle(intent: OrderIntent, px: float, ts: int) -> None:
+    def settle(intent: OrderIntent, px: Decimal, ts: int) -> None:
         oid = ids[id(intent)]
         if oid in cancelled:
             return
@@ -100,7 +90,7 @@ def replay(strategy: Strategy, bars: Iterable[Bar], fill_delay: int = 0) -> Repl
             strategy.ctx.set_now(bar.ts)
 
         # Check resting trailing stops against this bar
-        triggered: list[tuple[OrderIntent, float]] = []
+        triggered: list[tuple[OrderIntent, Decimal]] = []
         remaining_stops: list[_RestingTrailingStop] = []
         for stop in resting_stops:
             if stop.intent.instrument_id != bar.instrument_id:
@@ -108,11 +98,11 @@ def replay(strategy: Strategy, bars: Iterable[Bar], fill_delay: int = 0) -> Repl
                 continue
             if stop.intent.side is OrderSide.SELL:
                 stop.peak = max(stop.peak, bar.high)
-                trigger_px = (
-                    stop.peak - stop.intent.trail_amount
-                    if stop.intent.trail_amount is not None
-                    else stop.peak * (1.0 - (stop.intent.trail_percent or 0.0) / 100.0)
-                )
+                if stop.intent.trail_amount is not None:
+                    trigger_px = stop.peak - stop.intent.trail_amount
+                else:
+                    pct = (stop.intent.trail_percent or Decimal("0.0")) / Decimal("100.0")
+                    trigger_px = stop.peak * (Decimal("1.0") - pct)
                 if bar.low <= trigger_px:
                     fill_px = min(bar.open, trigger_px) if bar.open <= trigger_px else trigger_px
                     triggered.append((stop.intent, fill_px))
@@ -120,11 +110,11 @@ def replay(strategy: Strategy, bars: Iterable[Bar], fill_delay: int = 0) -> Repl
                     remaining_stops.append(stop)
             else:  # BUY
                 stop.trough = min(stop.trough, bar.low)
-                trigger_px = (
-                    stop.trough + stop.intent.trail_amount
-                    if stop.intent.trail_amount is not None
-                    else stop.trough * (1.0 + (stop.intent.trail_percent or 0.0) / 100.0)
-                )
+                if stop.intent.trail_amount is not None:
+                    trigger_px = stop.trough + stop.intent.trail_amount
+                else:
+                    pct = (stop.intent.trail_percent or Decimal("0.0")) / Decimal("100.0")
+                    trigger_px = stop.trough * (Decimal("1.0") + pct)
                 if bar.high >= trigger_px:
                     fill_px = max(bar.open, trigger_px) if bar.open >= trigger_px else trigger_px
                     triggered.append((stop.intent, fill_px))
@@ -174,112 +164,13 @@ def _fill(
     strategy: Strategy,
     result: ReplayResult,
     intent: OrderIntent,
-    price: float,
+    price: Decimal,
     ts: int,
     order_id: str | None = None,
 ) -> None:
     fill = Trade(intent.instrument_id, intent.side, intent.quantity, price, ts, order_id)
     result.fills.append(fill)
     strategy.handle_fill(fill)
-
-
-class BarCloseFills:
-    """Simulated execution: every order fills in full at the latest bar close.
-
-    Fill time is ``max(order ts, previous fill ts + 1)``. This is the
-    ``"bar_close"`` fill model of the conformance fixture and mirrors Rust's
-    ``BarFillEngine``, except that an order before any bar raises instead of
-    filling at 0.0 (a known gap of the Rust engine, ADR 006).
-
-    Costs (ADR 008) default to none. With ``flat_cost`` (``0..=MAX_FLAT_COST``)
-    and ``cost_bps`` (``0..=MAX_COST_BPS``) every fill carries ``Trade.costs`` =
-    the flat leg plus ``(quantity * price) * cost_bps / 10_000``, **each leg rounded
-    to minor units once before summation** (ADR 0011), as ``Money`` in ``currency``
-    and not signed by side. Invalid values raise ``FillCostsError``; a cost that
-    cannot be represented raises ``ValueError`` instead of charging zero.
-    """
-
-    def __init__(
-        self,
-        flat_cost: float = 0.0,
-        cost_bps: float = 0.0,
-        currency: Currency = Currency.INR,
-    ) -> None:
-        self._flat_cost = _checked("flat_cost", flat_cost, MAX_FLAT_COST)
-        self._cost_bps = _checked("cost_bps", cost_bps, MAX_COST_BPS)
-        self._currency = currency
-        self._last_price: float | None = None
-        self._next_ts = 0
-        self._fills: list[Trade] = []
-        self._resting_trailing: list[tuple[str, OrderIntent, float, float]] = []
-
-    def on_event(self, event: Any, ts_init: int) -> None:
-        if isinstance(event, Bar):
-            self._last_price = event.close
-            remaining = []
-            for order_id, intent, peak, trough in self._resting_trailing:
-                if intent.instrument_id != event.instrument_id:
-                    remaining.append((order_id, intent, peak, trough))
-                    continue
-                if intent.side is OrderSide.SELL:
-                    peak = max(peak, event.high)
-                    trigger = (
-                        peak - intent.trail_amount
-                        if intent.trail_amount is not None
-                        else peak * (1.0 - (intent.trail_percent or 0.0) / 100.0)
-                    )
-                    if event.low <= trigger:
-                        px = min(event.open, trigger) if event.open <= trigger else trigger
-                        self._fill_order(order_id, intent, px, event.ts)
-                    else:
-                        remaining.append((order_id, intent, peak, trough))
-                else:
-                    trough = min(trough, event.low)
-                    trigger = (
-                        trough + intent.trail_amount
-                        if intent.trail_amount is not None
-                        else trough * (1.0 + (intent.trail_percent or 0.0) / 100.0)
-                    )
-                    if event.high >= trigger:
-                        px = max(event.open, trigger) if event.open >= trigger else trigger
-                        self._fill_order(order_id, intent, px, event.ts)
-                    else:
-                        remaining.append((order_id, intent, peak, trough))
-            self._resting_trailing = remaining
-
-    def submit(self, order_id: str, intent: OrderIntent, ts: int) -> None:
-        if self._last_price is None:
-            raise RuntimeError(f"order {order_id} submitted before any bar: no price to fill at")
-        if intent.order_type is OrderType.TRAILING_STOP:
-            self._resting_trailing.append((order_id, intent, self._last_price, self._last_price))
-            return
-        self._fill_order(order_id, intent, self._last_price, ts)
-
-    def _fill_order(self, order_id: str, intent: OrderIntent, price: float, ts: int) -> None:
-        costs = self._costs(intent.quantity, price)
-        fill_ts = max(self._next_ts, ts)
-        self._next_ts = fill_ts + 1
-        self._fills.append(
-            Trade(
-                intent.instrument_id,
-                intent.side,
-                intent.quantity,
-                price,
-                fill_ts,
-                order_id,
-                costs=costs,
-            )
-        )
-
-    def _costs(self, quantity: float, price: float) -> Money:
-        # Per leg, then sum (ADR 0011): the same float operations as Rust's FillCosts.
-        flat = Money.from_major(self._flat_cost, self._currency)
-        bps = Money.from_major(quantity * price * self._cost_bps / 10_000.0, self._currency)
-        return flat + bps
-
-    def drain_fills(self) -> list[Trade]:
-        fills, self._fills = self._fills, []
-        return fills
 
 
 def from_wire_messages(
@@ -292,6 +183,8 @@ def from_wire_messages(
     (integer nanoseconds, from the wire ``{iso, unix_nanos}`` object); the bar
     specification is dropped.
     """
+    from tantra_examples._kernel.entities import wire  # unconverted sibling (ex 0006)
+
     out: list[tuple[Bar | QuoteTick | TradeTick, int]] = []
     for message in wire.loads_many("Message", payload):
         event = message.event
@@ -321,7 +214,7 @@ def from_wire_messages(
                 event.ts_event.to_ns(),
                 event.price,
                 event.size,
-                event.aggressor_side,
+                AggressorSide(event.aggressor_side.value),
                 event.trade_id,
             )
         else:

@@ -12,11 +12,15 @@ Owner/gap: ``tantra-runtime`` (Strategy Tester session) / ``tantra-ffi``
 (wheel surface). Cited as gap ``0008-runtime-session-surface``; delete this
 file together with the engine's session retargets once the wheel provides the
 same session surface.
+
+Decimal-canonical wheel retarget (ex 0006): the financial result fields are
+exact ``decimal.Decimal`` (zero-floats policy).
 """
 
 from __future__ import annotations
 
 from collections.abc import Sequence
+from decimal import Decimal
 from typing import Any, Protocol
 
 __all__ = ["BacktestResult", "CostModel", "DataProvider", "Tantra"]
@@ -53,8 +57,8 @@ class BacktestResult(Protocol):
     """Static shape the engine algorithms read off a finished backtest run."""
 
     strategy_name: str
-    metrics: dict[str, float]
-    equity_curve: list[tuple[int, float]]
+    metrics: dict[str, Decimal]
+    equity_curve: list[tuple[int, Decimal]]
 
 
 class Tantra:
