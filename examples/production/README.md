@@ -30,9 +30,8 @@ the generated deployment files. Read it before trusting a number. For the genera
 ## The production pattern
 
 ```python
+from tantra.adapters.registry import AdapterRegistry
 from tantra_examples._kernel.session import Session, SessionConfig
-from tantra_examples._kernel.adapters.registry import AdapterRegistry
-from tantra_examples._kernel.base import Strategy
 
 # 1. Configure session (paper or live)
 config = SessionConfig(

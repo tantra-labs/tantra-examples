@@ -88,10 +88,12 @@ the harness boundary:
    - `_kernel.indicators/` (87 files) — the ported indicator registry and families
      (moving_average, trend, momentum, volatility, volume, breadth, statistical,
      support_resistance).
-   - `_kernel.adapters/` (13 files, gap 0007) — the adapter framework mirror
-     (registry, capabilities, contract, `FakeAdapter`, session, rate-limit, secrets).
    - `_kernel.ai/`, `_kernel.wire/`, `_kernel.markets/india/`, `_kernel.portfolio_strategy/`,
      `_kernel.screener/`, `_kernel.data/`, `_kernel.cli/` — further kernel mirrors.
+
+Closed with ex 0007: the adapter framework mirror (`_kernel.adapters/`) shipped to the wheel
+as `tantra.adapters` (registry, capabilities, contract, `FakeAdapter`, session, rate-limit,
+secrets) and the in-repo copy was deleted.
 
 The `_compat.D` alias lets harness code write `Decimal`-polymorphic math that falls back
 to pure `decimal.Decimal` when the `tantra` wheel is absent.
