@@ -9,7 +9,7 @@ Per workspace rule `.agents/rules/gap-tracking.md`:
 
 | # | Title | Target Scope | Status |
 |---|-------|--------------|--------|
-| — | (none) | — | — |
+| [0005](0005-categorized-examples.md) | Categorised Screening, Universe & Rotation Examples | `examples/`, `tantra_examples/` | Proposed — research `docs/research/trendlyne-screener-alerts-mcp.md`; root plan `docs/plans/0007` |
 
 ## Implemented Plans
 
