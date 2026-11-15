@@ -1,6 +1,6 @@
 # 0006 — tantra-wheel-kernel-domain-surface
 
-**Status**: open — in progress (domain-core + bar/tick/order/order_state + execution + indicators shipped)
+**Status**: open — in progress (domain-core + bar/tick/order/order_state + execution + indicators + strategy base layer + declarative/portfolio_strategy shipped)
 **Owning repo**: `tantra-ffi` (compiled `tantra` wheel; the kernel-domain engine surface
 behind it), sourced from the tamashii-class Rust engine of the ecosystem.
 
@@ -98,7 +98,10 @@ against the kernel `_REGISTRY`; the flat wheel `indicators.py` became a Decimal-
 package with legacy `SMA`/`EMA`/`RSI` aliases preserved). The remainder still needs the
 Decimal-canonical re-architecture (the mirror is float-based — kernel `Bar`,
 `Position.quantity: float`, `Trade.quantity: float`, `Instrument.lot_size: float` — and
-must never be promoted verbatim): `portfolio_strategy` (10 files), `wire`, `backtest`
-sims, and `store`. Closure = full
+must never be promoted verbatim) then landed (2026-11-15): `execution` (`tantra.execution`),
+`indicators` (the full 8-family registry, 74 kinds, parity-tested), the kernel strategy
+base layer (`tantra.base`/`tantra.context`/`sizing.whole_shares`/`entities.OrderIntent`),
+and `declarative` + `portfolio_strategy`. The remainder is `wire` and `store`/`backtest`
+sims. Closure = full
 wheel domain layer + delete `_kernel/` + retarget every `_kernel.*` import + drop the
 `[[tool.mypy.overrides]]` block.
