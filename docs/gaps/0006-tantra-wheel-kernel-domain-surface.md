@@ -1,6 +1,6 @@
 # 0006 — tantra-wheel-kernel-domain-surface
 
-**Status**: open — in progress (domain-core slice shipping)
+**Status**: open — in progress (domain-core + bar/tick/order/order_state + execution + indicators shipped)
 **Owning repo**: `tantra-ffi` (compiled `tantra` wheel; the kernel-domain engine surface
 behind it), sourced from the tamashii-class Rust engine of the ecosystem.
 
@@ -87,15 +87,18 @@ override block; the mirror accommodations evaporate with it.
 
 This 166-file mirror **is the root** of the whole cascade (0001–0008): every other gap's
 mirror imports from it. Verified state: a Decimal-canonical domain-core wheel slice
-(`money`/`position`/`trade`/`instrument`/`entities`) is **shipping in the parallel
-tantra-ffi batch** (status above reflects that), and on 2026-11-15 the wheel gained the
-next Decimal-canonical slices: `tantra.bar` (`Bar`), `tantra.tick` (`AggressorSide` /
-`QuoteTick` / `TradeTick`), `tantra.order` (`OrderSide`/`OrderType`/`TimeInForce`/
-`OrderStatus`/`validate_intent`/`OrderIntent`), and `tantra.order_state` (the `OrderEvent`
-/ `OrderState` FSM, mirror-parity transition table). The remainder still needs the
+(`money`/`position`/`trade`/`instrument`/`entities`) shipped in the parallel
+tantra-ffi batch (2026-11-15), followed by `tantra.bar` (`Bar`), `tantra.tick`,
+`tantra.order` (`OrderSide`/`OrderType`/`TimeInForce`/`OrderStatus`/`validate_intent`/
+`OrderIntent`), `tantra.order_state` (the `OrderEvent`/`OrderState` FSM), and — in the
+2026-11-15 continuation — the **`execution` slice** (`tantra.execution`, the ADR 0019
+`ExecutionPort` contract, Decimal `Fill.cum_qty` + new `Money.from_minor`) and the
+**`indicators` slice** (the full 8-family registry, 74 registered kinds, parity-tested
+against the kernel `_REGISTRY`; the flat wheel `indicators.py` became a Decimal-canonical
+package with legacy `SMA`/`EMA`/`RSI` aliases preserved). The remainder still needs the
 Decimal-canonical re-architecture (the mirror is float-based — kernel `Bar`,
 `Position.quantity: float`, `Trade.quantity: float`, `Instrument.lot_size: float` — and
-must never be promoted verbatim): `execution`, `indicators` (**87 files**),
-`portfolio_strategy`, `session`, `wire`, `backtest` sims, and `store`. Closure = full
+must never be promoted verbatim): `portfolio_strategy` (10 files), `wire`, `backtest`
+sims, and `store`. Closure = full
 wheel domain layer + delete `_kernel/` + retarget every `_kernel.*` import + drop the
 `[[tool.mypy.overrides]]` block.
