@@ -22,8 +22,9 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
 
+from tantra.quant import covariance_matrix, mean, returns, solve_linear_system
+
 from tantra_examples import Bar, SampleInstruments, synthetic_bars
-from tantra_examples.quant import covariance_matrix, mean, returns, solve_linear_system
 
 EPS = Decimal("1e-9")
 ANNUALIZATION = Decimal(252)

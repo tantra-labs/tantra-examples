@@ -8,7 +8,7 @@ proposed change is run through ``tantra_examples.decision_guard.guard_llm_decisi
 (typed LlmDecision guard rules: reduce-only, no quantity increases, fail-closed),
 then both the base and the ADX-filtered strategy are re-evaluated out-of-sample
 on a held-out walk-forward test slice (replay on the same fold geometry as
-Phase 2's ``tantra_examples.optimizer.algo_analytics.walk_forward``).
+Phase 2's ``tantra.algo_analytics.walk_forward``).
 
 Deflation: the improvement is assessed with the Deflated Sharpe Ratio over
 bootstrap trials of the return series, so a lucky OOS bounce isn't mistaken for
@@ -47,6 +47,8 @@ import random
 import sys
 from typing import Any
 
+from tantra.algo_analytics import deflated_sharpe
+
 from tantra_examples._kernel.bar import Bar
 from tantra_examples._kernel.base import Strategy
 from tantra_examples._kernel.indicators import Adx, Sma
@@ -56,7 +58,6 @@ from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.decision_guard import guard_llm_decision
 from tantra_examples.jsonable import jsonable
-from tantra_examples.optimizer.algo_analytics import deflated_sharpe
 from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]

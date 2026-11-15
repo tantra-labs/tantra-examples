@@ -6,8 +6,8 @@ import datetime as dt
 
 import pytest
 
-from tests.unit.conftest import SCREEN_ASOF
 from tantra_examples.screening import graham
+from tests.unit.conftest import SCREEN_ASOF
 
 FY = dt.date(2023, 12, 31)
 

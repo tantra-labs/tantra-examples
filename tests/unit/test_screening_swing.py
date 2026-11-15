@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import datetime as dt
 
-from tests.unit.conftest import SCREEN_ASOF
 from tantra_examples.screening import screen_swing_setups
+from tests.unit.conftest import SCREEN_ASOF
 
 STALE_LAST = SCREEN_ASOF - dt.timedelta(days=40)
 

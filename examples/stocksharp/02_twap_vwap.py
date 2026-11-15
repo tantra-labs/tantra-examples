@@ -45,9 +45,9 @@ import random
 import sys
 from typing import Any
 
+from tantra.sizing import freeze_limit_qty, slice_order, verify_slices
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.options import freeze_limit_qty, verify_slices
-from tantra_examples.options import slice_order as _ref_slice_order
 
 __all__ = ["main", "run"]
 
@@ -142,7 +142,7 @@ def run(
     ]
 
     verify_slices(qtys, freeze_limit)
-    ref_slices = _ref_slice_order(parent_qty, freeze_limit)
+    ref_slices = slice_order(parent_qty, freeze_limit)
 
     return {
         "config": {

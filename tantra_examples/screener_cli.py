@@ -74,9 +74,7 @@ class ScreenerCLIExample(TantraExample):
         """Locate the 1D Parquet catalog (``--data-dir`` if given, else the workspace data root)."""
         if self.data_dir:
             return find_catalog_path(self.data_dir)
-        candidate = (
-            Path.cwd() / "tantra-data" / "data" / "catalog" / self.timeframe / self.exchange
-        )
+        candidate = Path.cwd() / "tantra-data" / "data" / "catalog" / self.timeframe / self.exchange
         return candidate if candidate.is_dir() else find_catalog_path()
 
     def resolve_asof(self, catalog_dir: Path) -> dt.date:

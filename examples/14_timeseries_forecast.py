@@ -19,8 +19,9 @@ import math
 from dataclasses import dataclass
 from decimal import ROUND_HALF_UP, Decimal
 
+from tantra.quant import ols, std_dev
+
 from tantra_examples import SampleInstruments, synthetic_bars
-from tantra_examples.quant import ols, std_dev
 
 DECIMAL_8 = Decimal("0.00000001")
 ALPHA = Decimal("0.5")

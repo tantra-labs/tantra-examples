@@ -41,8 +41,9 @@ from __future__ import annotations
 import sys
 from typing import Any
 
+from tantra.sizing import freeze_limit_qty, slice_order, verify_slices
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.options import freeze_limit_qty, slice_order, verify_slices
 
 __all__ = ["main", "run"]
 
@@ -54,8 +55,8 @@ PLANNED_FREEZE_LIMIT = 1800  # planned NIFTY options freeze limit, contracts
 def _te_slicer_available() -> bool:
     """True when the tantra-exec slicer package can be imported.
 
-    # stand-in for docs/gaps/0005-tantra-exec-freeze-slicer-mirror.md: no real
-    # freeze-slicer package installed, always falls back to the local mirror
+    # ex 0005 closed: the wheel ``tantra.sizing`` is now the canonical slicer;
+    # the optional ``tantra_te_slicer`` probe remains for the future exec crate.
     """
     try:
         __import__(TE_SLICER_MODULE)
@@ -74,7 +75,7 @@ def _slice_with_te_slicer(total_quantity: int, freeze_limit: int) -> tuple[list[
         slices = [int(s) for s in slice_order_te(total_quantity, freeze_limit)]
         return slices, "tantra_te_slicer"
     except (ImportError, AttributeError, OSError, ValueError, TypeError):  # offline / no slicer
-        return slice_order(total_quantity, freeze_limit), "tantra_examples.options"
+        return slice_order(total_quantity, freeze_limit), "tantra.sizing"
 
 
 def run(

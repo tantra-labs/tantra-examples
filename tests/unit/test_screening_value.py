@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
-from tests.unit.conftest import SCREEN_ASOF
 from tantra_examples.screening import value
+from tests.unit.conftest import SCREEN_ASOF
 
 
 @pytest.fixture(autouse=True)

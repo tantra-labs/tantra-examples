@@ -39,13 +39,13 @@ parameters inevitably fit noise. WFO forces a temporal separation:
 
 ## Tantra WFO Implementation
 
-### Function: `tantra_examples.optimizer.algo_analytics.walk_forward.walk_forward`
+### Function: `tantra.algo_analytics.walk_forward.walk_forward`
 
 ```python
-from tantra_examples.optimizer.algo_analytics.walk_forward import (
+from tantra.algo_analytics.walk_forward import (
     walk_forward,
     WalkForwardGates,
-)  # gap 0001: algo_analytics engine mirror
+)  # ex 0001 closed: wheel surface
 
 result = walk_forward(
     strategy=my_strategy,
@@ -263,10 +263,11 @@ python examples/backtesting/04_walk_forward.py \
 WFO produces the fold-level IS/OOS fitness values needed for PBO:
 
 ```python
-from tantra_examples.optimizer.algo_analytics.walk_forward import (
+from tantra.algo_analytics.walk_forward import (
     walk_forward,
-)  # gap 0001: algo_analytics engine mirror
-from tantra_examples.optimizer import compute_pbo_cscv, compute_dsr
+)  # ex 0001 closed: wheel surface
+# PBO / DSR are demonstrated in examples/optimizer/03_deflated_sharpe_analysis.py
+# (compute_pbo_cscv / compute_dsr are local to that example script).
 
 wf = walk_forward(strategy, ...)
 
@@ -307,5 +308,5 @@ pytest -q tests/unit/test_04_walk_forward.py
 1. Pardo, R. (2008). *The Evaluation and Optimization of Trading Strategies*. Wiley.
 2. López de Prado, M. (2018). *Advances in Financial Machine Learning*. Wiley.
    Chapter 12: Walk-Forward Analysis.
-3. Tantra `tantra_examples.optimizer.algo_analytics.walk_forward` module.
+3. Tantra `tantra.algo_analytics.walk_forward` module.
 4. Tantra `tantra-ya-enhancer/src/walk_forward.rs` (Rust implementation).

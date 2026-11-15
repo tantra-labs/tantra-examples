@@ -32,15 +32,16 @@ import sys
 from datetime import UTC
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Atr, Rsi, Sma
-from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.optimizer import (
+from tantra.optimizer import (
     ParetoPoint,
     extract_pareto_frontier,
     plot_pareto,
     sharpe_sortino_dd,
 )
+
+from tantra_examples._kernel.base import Strategy
+from tantra_examples._kernel.indicators import Atr, Rsi, Sma
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.synthetic import oscillating_bars
 
 __all__ = ["main", "run"]

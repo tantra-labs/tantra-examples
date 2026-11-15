@@ -34,10 +34,11 @@ import sys
 from dataclasses import dataclass
 from typing import Any
 
-from tantra_examples.cli import add_out_arg, emit_json, make_parser
-from tantra_examples.optimizer.algo_analytics.deflated_sharpe import (
-    deflated_sharpe,  # gap 0001: algo_analytics engine mirror
+from tantra.algo_analytics.deflated_sharpe import (
+    deflated_sharpe,  # ex 0001 closed: wheel surface
 )
+
+from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]
 

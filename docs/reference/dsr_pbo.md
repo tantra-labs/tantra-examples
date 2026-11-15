@@ -13,7 +13,7 @@ in the Tantra platform:
 
 Both are implemented in:
 - Rust: `tantra-ya-enhancer/src/overfitting_guardrails.rs`
-- Python: `tantra_examples.optimizer.algo_analytics.deflated_sharpe` and walk-forward fold analysis
+- Python: `tantra.algo_analytics.deflated_sharpe` and walk-forward fold analysis
 
 ---
 
@@ -80,9 +80,9 @@ Where:
 ### Usage in Tantra
 
 ```python
-from tantra_examples.optimizer.algo_analytics.deflated_sharpe import (
+from tantra.algo_analytics.deflated_sharpe import (
     deflated_sharpe,
-)  # gap 0001: algo_analytics engine mirror
+)  # ex 0001 closed: wheel surface
 
 # Basic usage
 dsr = deflated_sharpe(
@@ -94,7 +94,8 @@ dsr = deflated_sharpe(
 )
 
 # With automatic moment estimation from returns
-from tantra_examples.optimizer import compute_dsr
+# compute_dsr is demonstrated in examples/optimizer/03_deflated_sharpe_analysis.py
+# (compute_dsr / compute_pbo_cscv are local to that example script).
 
 dsr_result = compute_dsr(
     observed_sharpe=2.5,
@@ -147,7 +148,8 @@ alternates IS/OOS blocks, ensuring no temporal leakage.
 ### Usage in Tantra
 
 ```python
-from tantra_examples.optimizer import compute_pbo_cscv
+# compute_pbo_cscv is demonstrated in examples/optimizer/03_deflated_sharpe_analysis.py
+# (compute_dsr / compute_pbo_cscv are local to that example script).
 
 # From walk-forward folds
 pbo_result = compute_pbo_cscv(
@@ -159,13 +161,13 @@ pbo_result = compute_pbo_cscv(
 
 ### Integration with Walk-Forward Analysis
 
-The walk-forward analysis (`tantra_examples.optimizer.algo_analytics.walk_forward`) produces
+The walk-forward analysis (`tantra.algo_analytics.walk_forward`) produces
 in-sample and out-of-sample Sharpe ratios per fold. These can be fed directly
 into the PBO calculator:
 
 ```python
-from tantra_examples.optimizer.algo_analytics.walk_forward import walk_forward  # gap 0001: algo_analytics engine mirror
-from tantra_examples.optimizer import compute_pbo_cscv
+from tantra.algo_analytics.walk_forward import walk_forward  # ex 0001 closed: wheel surface
+# compute_pbo_cscv is demonstrated in examples/optimizer/03_deflated_sharpe_analysis.py
 
 wf_result = walk_forward(strategy, symbol="RELIANCE", start="2020-01-01", ...)
 
@@ -252,4 +254,4 @@ for deterministic, offline testing. For real analysis:
    Chapter 14: Backtest Overfitting.
 
 3. Tantra `tantra-ya-enhancer` crate: `overfitting_guardrails.rs`
-4. Tantra Python: `tantra_examples.optimizer.algo_analytics.deflated_sharpe`
+4. Tantra Python: `tantra.algo_analytics.deflated_sharpe`

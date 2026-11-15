@@ -9,11 +9,13 @@ F&O circular, so this module collects the option-specific pieces used by
   SEBI-NSE circular in force),
 * ICCL-style settlement assumptions for index options (European, cash settled,
   premium/MTM T+1),
-* SEBI single-order freeze limit read from the instrument master, and
-* deterministic order slicing plus a verifier that every slice is ≤ the limit.
+* Greek risk bounds for hedging checks.
 
-All functions are pure — no I/O, no wall clock — so the examples stay offline
-and deterministic.
+SEBI single-order freeze-limit slicing moved to the wheel surface
+``tantra.sizing`` (``freeze_limit_qty`` / ``slice_order`` / ``verify_slices``) —
+ex 0005 closed. This module keeps only the option-specific cost/settlement and
+Greek helpers; all functions are pure — no I/O, no wall clock — so the examples
+stay offline and deterministic.
 """
 
 from __future__ import annotations
@@ -57,74 +59,6 @@ def fno_turnover(price: float | Decimal, quantity: float | Decimal) -> Decimal:
 
 
 # ---------------------------------------------------------------------------
-# Freeze limits (SEBI single-order freeze quantity)
-# ---------------------------------------------------------------------------
-#
-# NIFTY options freeze limit is planned at 1,800 contracts. It is set by SEBI and
-# revised by circular, so it must be read from the instrument master (lot size /
-# tick size / freeze quantity travel together in the contract spec), never
-# hard-coded in a strategy.  These helpers read it when an instrument master is
-# reachable and fall back to the planned default so the example stays offline.
-
-
-def _freeze_limit_from_master(symbol: str, exchange: str) -> int | None:
-    """Best-effort freeze limit from the tantra instrument master.
-
-    Returns ``None`` when nothing is installed/reachable offline.
-    """
-    try:  # tantra client instrument registry, when available
-        # Kernel-owner gap: 0006-tantra-wheel-kernel-domain-surface (optional wheel surface).
-        from tantra.client import get_instrument
-
-        inst = get_instrument(symbol, exchange)
-        if inst is not None:
-            limit = getattr(inst, "freeze_limit_qty", None) or getattr(inst, "freeze_limit", None)
-            if limit is not None:
-                return int(limit)
-    except (ImportError, AttributeError, OSError, ValueError, TypeError):  # offline store
-        return None
-    return None
-
-
-def freeze_limit_qty(symbol: str = "NIFTY", exchange: str = "NSE") -> int:
-    """Freeze-limit quantity for an instrument.
-
-    Reads the instrument master first; falls back to the planned 1,800 NIFTY
-    contracts when no master is reachable (offline / synthetic runs).
-    """
-    master = _freeze_limit_from_master(symbol, exchange)
-    if master is not None and master > 0:
-        return master
-    return 1800
-
-
-def slice_order(total_quantity: int, freeze_limit_qty: int) -> list[int]:
-    """Split ``total_quantity`` into child slices each ≤ the freeze limit.
-
-    Deterministic: whole slices of exactly the limit, then a final remainder slice.
-    Every slice is a positive lot multiple when both inputs are.
-    """
-    if total_quantity <= 0:
-        raise ValueError("total_quantity must be positive")
-    if freeze_limit_qty <= 0:
-        raise ValueError("freeze_limit_qty must be positive")
-    slices: list[int] = []
-    remaining = total_quantity
-    while remaining > 0:
-        size = min(freeze_limit_qty, remaining)
-        slices.append(size)
-        remaining -= size
-    return slices
-
-
-def verify_slices(slices: list[int], freeze_limit_qty: int) -> None:
-    """Raise ``ValueError`` when any slice exceeds the freeze limit."""
-    for index, size in enumerate(slices):
-        if size > freeze_limit_qty:
-            raise ValueError(f"slice {index} ({size}) exceeds freeze limit {freeze_limit_qty}")
-
-
-# ---------------------------------------------------------------------------
 # Greek risk bounds
 # ---------------------------------------------------------------------------
 
@@ -163,8 +97,5 @@ __all__ = [
     "GreekRiskBounds",
     "check_greek_bounds",
     "fno_turnover",
-    "freeze_limit_qty",
     "option_sell_stt",
-    "slice_order",
-    "verify_slices",
 ]

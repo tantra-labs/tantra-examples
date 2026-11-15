@@ -21,7 +21,7 @@ import random
 from dataclasses import dataclass
 from decimal import Decimal
 
-from tantra_examples.quant import mean, ols, std_dev
+from tantra.quant import mean, ols, std_dev
 
 
 @dataclass(frozen=True, slots=True)

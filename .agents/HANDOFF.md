@@ -1,11 +1,24 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
-* Verified the 8-gap dependency cascade rooted in the 166-file `_kernel` mirror (gaps
-  0001–0008); wrote `docs/design/gap-cascade-kernel-mirror.md`.
-* Blocker analysis added to gap docs 0002/0003/0004/0006/0007/0008; the independent
-  surfaces (algo_analytics, freeze-slicer) are shipping in the parallel tantra-ffi batch.
-* Next step = re-point the examples consumers once the wheel ships.
+* **Gaps 0001 + 0005 CLOSED (2026-11-15, T9.3 + T9.7)** — the owning wheel surfaces shipped
+  in `tantra-ffi` (`d79d31b` + `6ac14dd`): `tantra.algo_analytics` + `tantra.quant` +
+  `tantra.optimizer` (ex 0001) and `tantra.sizing` freeze-slicing `freeze_limit_qty` /
+  `slice_order` / `verify_slices` (ex 0005). This repo then **deleted the mirrors**
+  (`tantra_examples/optimizer/` package + `quant.py`; the freeze-slicing block in
+  `tantra_examples/options/__init__.py`) and **retargeted every consumer** to the wheel:
+  `examples/backtesting/04/05`, `ai_research/10/12`, `optimizer/01/02/03`,
+  `options/06/07`, `stocksharp/02`, flat `12/14/15`, `tests/unit/test_02_twap_vwap` +
+  `test_07_large_qty_options_slicer`, and the `docs/reference/*.md` module paths.
+* **ex 0006 (the kernel-domain root) STARTED** — Decimal-canonical domain-core slice shipped
+  in the wheel (`tantra.money` / `position` / `trade` / `instrument` / `entities`); the rest
+  of `_kernel/` remains and is the next slices. Status: in progress.
+* **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
+  `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/
+  0007/0008 carry `open — blocked` status with precise blockers; 0006 `in progress`.
+* **Gates**: full `pytest` green except one pre-existing environmental failure
+  (`test_mutual_fund_screener_execution` needs the 1D NSE catalog on disk); `ruff check` +
+  `ruff format --check` clean (incl. pre-existing I001/SIM102 in untouched files fixed).
 
 ## Phase / Slice Status
 * **Honba staged port (plan 0002)** — **ALL 9 STAGES COMPLETE (Stages 0–8)**; recorded Implemented in `docs/plans/README.md` (commit `bbfa692`). Plan doc cleaned up per gap-tracking §4.

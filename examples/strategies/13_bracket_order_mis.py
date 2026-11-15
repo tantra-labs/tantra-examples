@@ -197,16 +197,15 @@ class BracketOrderMis(Strategy):
                 self.sell(bar.instrument_id, pos)
                 return
 
-        elif pos == 0:
-            # Enter trade during active morning session before 15:00 IST
-            if not self._entered_today and ist_time < dt.time(15, 0):
-                # MIS margin calculation: buying power = cash * margin_multiplier
-                buying_power = max(0.0, self._cash) * self.margin_multiplier
-                max_allowed_qty = int(buying_power / bar.close) if bar.close > 0 else 0
-                qty = min(int(self.quantity), max_allowed_qty)
-                if qty > 0:
-                    self.buy(bar.instrument_id, float(qty))
-                    self._entered_today = True
+        elif pos == 0 and not self._entered_today and ist_time < dt.time(15, 0):
+            # Enter trade during active morning session before 15:00 IST.
+            # MIS margin calculation: buying power = cash * margin_multiplier
+            buying_power = max(0.0, self._cash) * self.margin_multiplier
+            max_allowed_qty = int(buying_power / bar.close) if bar.close > 0 else 0
+            qty = min(int(self.quantity), max_allowed_qty)
+            if qty > 0:
+                self.buy(bar.instrument_id, float(qty))
+                self._entered_today = True
 
     @property
     def exit_reason(self) -> str | None:

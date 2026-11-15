@@ -1,7 +1,7 @@
 # 08 Options – chain, Greeks, and strategy backtests
 
 Options examples use Tantra's option chain (`OptionChain`, `OptionContract`) and
-Greeks engine (`tantra_examples.quant` / `tantra_examples.options`). They hand-roll their legs directly —
+Greeks engine (`tantra.quant` / `tantra_examples.options`). They hand-roll their legs directly —
 there is no `Strategy` subclass. All runs are offline and deterministic, on
 synthetic or recorded chain data by default; no network or wall clock is involved.
 Catalog equivalents live in `tantra-strategies/options/*`.

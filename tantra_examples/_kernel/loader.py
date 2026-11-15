@@ -212,9 +212,7 @@ def find_catalog(
             candidate = base.parent / CATALOG_DIRNAME
             if _is_catalog(candidate):
                 return candidate.resolve()
-    raise CatalogError(
-        f"tantra-strategies catalog not found: pass its path or set ${CATALOG_ENV}."
-    )
+    raise CatalogError(f"tantra-strategies catalog not found: pass its path or set ${CATALOG_ENV}.")
 
 
 _SKIPPED_DIRS = frozenset({"node_modules", "__pycache__", "venv", "site-packages", "build", "dist"})

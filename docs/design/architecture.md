@@ -127,8 +127,8 @@ to pure `decimal.Decimal` when the `tantra` wheel is absent.
 | `pipeline/` | Composable in-code strategy pipeline DSL (`ScreenerStep >> Filter >> Sizer >> Harness` via `>>` / `|`): screeners (multibagger/value/dividend), filters (fundamental quality, market regime, liquidity), signals, sizing (fixed SIP / equal-weight / inverse-vol), execution harnesses, stream I/O, manifests. |
 | `screening/` | Point-in-time screener engine over the Parquet catalog + `fundamentals.duckdb` (multibagger, value & dividend, Graham, net-net, mutual-funds, swing A+ setups) + path discovery (`VYAAPAAR_DATA_DIR` seam, gap 0003). |
 | `ewr/` | Equal-weight rebalancing simulator (`simulate`, `rebalance_orders`, sizing, schedule, reporting) over a shared cash pool with T+1/T+2 settlement and margin tracking. |
-| `options/` | Options-microstructure helpers: option-premium STT on sell, ICCL T+1 settlement, SEBI freeze-limit read + `slice_order` / `verify_slices` (gap 0005), Greek risk bounds. |
-| `optimizer/` | Pareto-frontier extraction/plotting + `algo_analytics/` engine mirrors (gap 0001): `walk_forward`, `folds`, `monte_carlo`, `plateau`, `deflated_sharpe`, `metrics` (Sharpe/Sortino). |
+| `options/` | Options-microstructure helpers: option-premium STT on sell, ICCL T+1 settlement, Greek risk bounds. SEBI freeze-limit slicing lives in the wheel (`tantra.sizing`, ex 0005 closed). |
+| `optimizer/` | Removed 2026-11-15 (ex 0001 closed): Pareto-frontier helpers moved to `tantra.optimizer` and the `algo_analytics` engine moved to `tantra.algo_analytics` in the wheel. |
 | `ai_replay/` | SHA-256 prompt cache + Journal v1 NDJSON decision-replay helpers (`PromptCache`, `verify_journal`). |
 | `_kernel/` | The kernel mirror (gaps 0002–0008), detailed in §5. |
 

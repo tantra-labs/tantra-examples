@@ -267,7 +267,7 @@ def run(
         eval_result = _evaluate(bars_list, params)
         all_results.append(eval_result)
 
-    from tantra_examples.optimizer import ParetoPoint, extract_pareto_frontier, plot_pareto
+    from tantra.optimizer import ParetoPoint, extract_pareto_frontier, plot_pareto
 
     pareto = extract_pareto_frontier(all_results)
 

@@ -6,9 +6,9 @@ import datetime as dt
 
 import pytest
 
-from tests.unit.conftest import SCREEN_ASOF
 from tantra_examples.screening import graham, momentum, value
 from tantra_examples.screening.dispatch import run_screener
+from tests.unit.conftest import SCREEN_ASOF
 
 STALE_LAST = SCREEN_ASOF - dt.timedelta(days=40)
 

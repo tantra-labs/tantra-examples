@@ -7,8 +7,7 @@ import json
 from pathlib import Path
 
 import pytest
-
-from tantra_examples.options import freeze_limit_qty
+from tantra.sizing import freeze_limit_qty
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "stocksharp" / "02_twap_vwap.py"
 
