@@ -25,7 +25,7 @@ promoted verbatim.
 | 0003 | data nav/loaders | tantra-data | `_kernel.bar` (float Bar), `_kernel.instrument`, `_kernel.data`, `_kernel.screener` | blocked | re-point `amfi.py`/`bhavcopy.py`/`_kernel/{data,screener}` to `tantra_data` once the Decimal `bar`/`instrument` surface lands (API rewrite, not a straight re-point) |
 | 0004 | display/universes/client | tantra-ffi / tantra-market | `universe_lists.py` → `_kernel.instrument`; `_kernel/markets/india/costs.py` → `_kernel.money` | partial | wheel `tantra.display` / `tantra.markets.india` / `tantra.universes` after the domain-core slice; `tantra.client` (REST) is a separate future surface |
 | 0005 | freeze-slicer | tantra-exec / tantra-ffi | none (pure Decimal) | ✅ shipped in the wheel (2026-11-15) | `tantra.sizing` freeze-slicing; `options/__init__.py` mirror removed; imports retargeted |
-| 0006 | kernel-domain (the root) | tantra-ffi | the whole `_kernel/` tree | in progress (domain-core + bar/tick/order/order_state + execution + indicators + base layer + declarative/portfolio_strategy + wire shipped) | Decimal-canonical wheel domain layer; delete `_kernel/`; retarget every `_kernel.*` import; drop the `[[tool.mypy.overrides]]` block |
+| 0006 | kernel-domain (the root) | tantra-ffi | the whole `_kernel/` tree | in progress (**all wheel slices shipped**; closure = retarget `_kernel.*` → wheel + delete mirror) | Decimal-canonical wheel domain layer; delete `_kernel/`; retarget every `_kernel.*` import; drop the `[[tool.mypy.overrides]]` block |
 | 0007 | adapters-framework | tantra-adapters (framework) / tantra-ffi (`tantra.adapters`) | the `_kernel` domain web (`bar`, `instrument`, `order`, `order_state`, `position`, `tick`, `trade`, `money`, `execution`, `entities`, `wire`) | blocked | `tantra.adapters` framework namespace + the domain core; `tantra-adapters` ships the broker ACL (different API), so no straight re-point; drop the `rest.py`/`gateway.py` exclusion once `tantra.client` ships |
 | 0008 | session | tantra-runtime / tantra-ffi | `_kernel` protocol types | blocked | runtime Strategy Tester session orchestrator over the lakehouse (next-open fills, NSE costs, T+1); delete `_kernel/session.py`; retarget the three `algo_analytics` consumers |
 
@@ -42,7 +42,10 @@ promoted verbatim.
    kinds, `tantra.indicators` registry package), then the kernel strategy base
    layer (`tantra.base`/`tantra.context`/`whole_shares`, shipped 2026-11-15),
    then `declarative` + `portfolio_strategy` (shipped 2026-11-15), then `wire`
-   (`tantra.wire`, pydantic, shipped 2026-11-15), then `store` / `backtest` sims.
+   (`tantra.wire`, pydantic, shipped 2026-11-15), then `store` (`tantra.coverage` +
+   `tantra.store`, Decimal128) and `backtest` sims (`tantra.backtest`, all
+   shipped 2026-11-15). **Closure**: re-point `_kernel.*` imports to the wheel and
+   delete the mirror.
 3. ex 0004 — display / universes / India market pack on top of the domain core.
 4. ex 0003 — re-point data loaders to `tantra_data`.
 5. ex 0002 — `tantra.ai` on top of the screener/wire slices.

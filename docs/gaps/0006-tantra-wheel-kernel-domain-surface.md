@@ -1,6 +1,6 @@
 # 0006 — tantra-wheel-kernel-domain-surface
 
-**Status**: open — in progress (domain-core + bar/tick/order/order_state + execution + indicators + strategy base layer + declarative/portfolio_strategy + wire shipped)
+**Status**: open — in progress (all wheel slices shipped: domain-core + bar/tick/order/order_state + execution + indicators + strategy base layer + declarative/portfolio_strategy + wire + store + backtest sims; closure = retarget + delete mirror)
 **Owning repo**: `tantra-ffi` (compiled `tantra` wheel; the kernel-domain engine surface
 behind it), sourced from the tamashii-class Rust engine of the ecosystem.
 
@@ -101,8 +101,10 @@ Decimal-canonical re-architecture (the mirror is float-based — kernel `Bar`,
 must never be promoted verbatim) then landed (2026-11-15): `execution` (`tantra.execution`),
 `indicators` (the full 8-family registry, 74 kinds, parity-tested), the kernel strategy
 base layer (`tantra.base`/`tantra.context`/`sizing.whole_shares`/`entities.OrderIntent`),
-`declarative` + `portfolio_strategy`, and `wire` (`tantra.wire`, faithful pydantic port of
-the ADR 006 f64 wire contract; pydantic added as a wheel optional dep). The remainder is
-`store`/`backtest` sims. Closure = full
-wheel domain layer + delete `_kernel/` + retarget every `_kernel.*` import + drop the
+`declarative` + `portfolio_strategy`, `wire` (`tantra.wire`, faithful pydantic port of
+the ADR 006 f64 wire contract; pydantic added as a wheel optional dep), `store`
+(`tantra.coverage` + `tantra.store`, Decimal128 parquet), and the backtest sims
+(`tantra.backtest`: impact/opening_auction/next-open/l2/bar_close, all Decimal, native
+machinery stripped, India packs gap-0004-cited). **All wheel slices are now shipped**;
+closure = delete `_kernel/` + retarget every `_kernel.*` import + drop the
 `[[tool.mypy.overrides]]` block.
