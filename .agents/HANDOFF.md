@@ -1,6 +1,10 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **Gap 0007 CLOSED (2026-11-15, ex 0007 closure)** — wheel `tantra.adapters` shipped
+  (tantra-ffi `437eddf5`); `_kernel/adapters/` mirror (13 modules) deleted; 18 consumers
+  retargeted; adapters unit tests green; full unit suite unchanged (re-measured
+  841 passed / 72 failed / 3 errors / 41 skipped, identical to baseline — no new failures).
 * **Gaps 0001 + 0005 CLOSED (2026-11-15, T9.3 + T9.7)** — the owning wheel surfaces shipped
   in `tantra-ffi` (`d79d31b` + `6ac14dd`): `tantra.algo_analytics` + `tantra.quant` +
   `tantra.optimizer` (ex 0001) and `tantra.sizing` freeze-slicing `freeze_limit_qty` /
@@ -49,7 +53,7 @@
   touched files, unit run = 838 passed / 72 failed (pre-existing float-rooted, e.g.
   `metrics.fills_equity_curve`) / 3 errors (`test_07_run_via_client`, `httpx` optional dep absent)
   / 50 skipped. Status: shipped-mirror deletion complete; the remaining `_kernel` files are
-  other-gap mirrors (0002/0003/0004/0007/0008) — ex 0006 stays open for the compiled risk/
+  other-gap mirrors (0002/0003/0004/0008) — ex 0006 stays open for the compiled risk/
   trading-state surface.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
   `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/
@@ -65,7 +69,7 @@
 
 ## Decisions & Discoveries
 * **Pytest import mode & test structure**: `pythonpath = ["."]` in `pyproject.toml` + empty `__init__.py` in `tests/`, `tests/unit/`, `tests/integration/` lets `pytest -q` run from the repo root and resolves module-name collisions between unit and integration tests.
-* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (adapters/ai/calendar/cli/config/data/greeks/loader/log/manifest/markets/option/ports/screener/service/session + kept evaluator/risk/runner/testing/portfolio) still mirror the not-yet-shipped surfaces.
+* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (ai/calendar/cli/config/data/greeks/loader/log/manifest/markets/option/ports/screener/service/session + kept evaluator/risk/runner/testing/portfolio) still mirror the not-yet-shipped surfaces.
 * **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` + `pipeline/io.py` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
 * **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
 * **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.

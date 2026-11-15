@@ -37,8 +37,9 @@ import sys
 from collections import Counter
 from typing import Any
 
-from tantra_examples._kernel.adapters.registry import default_registry
-from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra.adapters.registry import default_registry
+from tantra.adapters.testing import FakeAdapter
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 

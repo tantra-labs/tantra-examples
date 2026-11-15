@@ -10,8 +10,8 @@ import math
 from pathlib import Path
 
 import pytest
+from tantra.adapters.testing import FakeAdapter
 
-from tantra_examples._kernel.adapters.testing import FakeAdapter
 from tantra_examples.bars import SUPPORTED_TIMEFRAMES, bucket_start, timeframe_seconds
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "candles" / "03_custom_aggregation.py"

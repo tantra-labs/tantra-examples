@@ -42,11 +42,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from tantra.adapters.errors import AdapterNotFound
 from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.adapters.errors import AdapterNotFound
 from tantra_examples.amfi import EXCHANGE, NavRow, NavSkip, nav_bars, parse_navall
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable

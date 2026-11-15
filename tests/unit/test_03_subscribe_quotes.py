@@ -8,10 +8,9 @@ import json
 from pathlib import Path
 
 import pytest
+from tantra.adapters.errors import AdapterError
+from tantra.adapters.models import StreamMode
 from tantra.instrument import InstrumentId
-
-from tantra_examples._kernel.adapters.errors import AdapterError
-from tantra_examples._kernel.adapters.models import StreamMode
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "basic" / "03_subscribe_quotes.py"
 

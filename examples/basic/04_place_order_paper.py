@@ -44,18 +44,18 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from tantra.instrument import InstrumentId
-from tantra.order import OrderIntent
-from tantra.trade import Trade
-
-from tantra_examples._kernel.adapters import (
+from tantra.adapters import (
     OrderReport,
     Product,
     available_adapters,
     register_adapter,
     resolve_execution_adapter,
 )
-from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra.adapters.testing import FakeAdapter
+from tantra.instrument import InstrumentId
+from tantra.order import OrderIntent
+from tantra.trade import Trade
+
 from tantra_examples.cli import require_paper_adapter
 
 # Ensure reference fake is registered for testing and offline development

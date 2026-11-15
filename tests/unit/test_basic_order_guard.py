@@ -6,9 +6,9 @@ import importlib.util
 from pathlib import Path
 
 import pytest
+from tantra.adapters.errors import AdapterNotFound
 from tantra.instrument import InstrumentId
 
-from tantra_examples._kernel.adapters.errors import AdapterNotFound
 from tantra_examples.cli import ALLOW_LIVE_ORDERS_ENV, require_paper_adapter
 
 ROOT = Path(__file__).resolve().parents[2] / "examples"

@@ -43,13 +43,13 @@ import asyncio
 import sys
 from typing import Any
 
+from tantra.adapters.capabilities import Capability
+from tantra.adapters.errors import AdapterNotFound, CapabilityError
+from tantra.adapters.models import StreamMode
+from tantra.adapters.registry import default_registry
+from tantra.adapters.testing import FakeAdapter
 from tantra.instrument import InstrumentId
 
-from tantra_examples._kernel.adapters.capabilities import Capability
-from tantra_examples._kernel.adapters.errors import AdapterNotFound, CapabilityError
-from tantra_examples._kernel.adapters.models import StreamMode
-from tantra_examples._kernel.adapters.registry import default_registry
-from tantra_examples._kernel.adapters.testing import FakeAdapter
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable
 

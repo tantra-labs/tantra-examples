@@ -46,12 +46,12 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
+from tantra.adapters.errors import AdapterNotFound
 from tantra.bar import Bar
 from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.adapters.errors import AdapterNotFound
 from tantra_examples._kernel.ports import validate_bar
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.jsonable import jsonable

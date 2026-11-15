@@ -41,13 +41,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.adapters import (
+from tantra.adapters import (
     AdapterNotFound,
     available_adapters,
     register_adapter,
     resolve_adapter,
 )
-from tantra_examples._kernel.adapters.testing import FakeAdapter
+from tantra.adapters.testing import FakeAdapter
 
 # Ensure reference fake is registered for testing and offline development
 if "fake" not in available_adapters():
