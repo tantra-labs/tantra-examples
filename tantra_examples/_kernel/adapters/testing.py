@@ -105,7 +105,7 @@ _SUPPORTED: frozenset[Capability] = frozenset(
 def _load_instruments_from_store() -> tuple[Instrument, ...]:
     """Dynamically load instruments from tantra-data lakehouse (DuckDB or catalog)."""
     try:
-        from tantra_examples._kernel.store import find_data_root
+        from tantra.store import find_data_root
 
         data_root = find_data_root()
         db_path = data_root / "fundamentals.duckdb"
@@ -248,7 +248,8 @@ class FakeAdapter(Adapter):
         self._require_instrument(instrument_id)
         if timeframe.lower() == "1d":
             try:
-                from tantra_examples._kernel.store import DateInterval, ParquetBarStore
+                from tantra.coverage import DateInterval
+                from tantra.store import ParquetBarStore
 
                 store = ParquetBarStore()
                 start_date = start.date() if isinstance(start, dt.datetime) else start
@@ -257,8 +258,8 @@ class FakeAdapter(Adapter):
                 if real_bars:
                     start_ns = int(start.timestamp() * 1e9)
                     end_ns = int(end.timestamp() * 1e9)
-                    # The mirror store still serves ``_kernel.bar`` floats; convert to the
-                    # shipped Decimal ``tantra.bar.Bar`` exactly (ex 0006 closure).
+                    # The wheel store serves Decimal-canonical ``tantra.bar.Bar``;
+                    # re-validate the decimals exactly (ex 0006 closure).
                     matching = [
                         Bar(
                             instrument_id=b.instrument_id,
@@ -565,7 +566,8 @@ class FakeAdapter(Adapter):
             return self._series(instrument_id)[self._cursor(instrument_id) % 4]
         if instrument_id in self._instruments:
             try:
-                from tantra_examples._kernel.store import DateInterval, ParquetBarStore
+                from tantra.coverage import DateInterval
+                from tantra.store import ParquetBarStore
 
                 store = ParquetBarStore()
                 now_date = dt.date(2026, 1, 1)
@@ -578,7 +580,7 @@ class FakeAdapter(Adapter):
                     ),
                 )
                 if bars:
-                    # The mirror store serves ``_kernel.bar`` floats; convert exactly.
+                    # The wheel store serves Decimal-canonical ``tantra.bar.Bar``.
                     close = Decimal(str(bars[-1].close))
                     tick = Decimal("0.05")
                     return (close - tick, close + tick)

@@ -1,12 +1,12 @@
 """Pre-trade risk for Python (ADR 0018).
 
-A thin face on the Rust risk gate: the types are the native ones
-(``_kernel.native``), so the rules, their order and the numbers they report are
-identical to the Rust engine and to the shared golden vectors. The engine
-behind them is ``tantra-risk``, the authoritative gate (SEBI algo ids, the
-order-to-trade ratio breaker, price bands, freeze limits, kill switches).
-Importing this module does not need the extension; the first attribute access
-does (see :mod:`_kernel.native`).
+A thin face on the Rust risk gate: the authoritative engine is ``tantra-risk``
+(SEBI algo ids, the order-to-trade ratio breaker, price bands, freeze limits,
+kill switches). The wheel ships no compiled risk engine (gap
+0006-tantra-wheel-kernel-domain-surface), so the native ``RiskEngine`` /
+``RiskLimits`` / ``TradingState`` / ``RiskStage`` / ``Command`` types are
+absent: every access raises ``RuntimeError`` from :func:`_native_attr` and the
+probing callers fall back to the pure-Python rules below.
 
 * :class:`RiskLimits`: per-run limits (``max_notional``, ``order_rate``);
   :meth:`RiskLimits.from_dict` is the one parser of the ``[risk]`` config
@@ -29,7 +29,7 @@ from dataclasses import dataclass, field
 from decimal import Decimal
 from typing import Any
 
-from tantra_examples._kernel.native import native_attr
+import tantra
 
 __all__ = [
     "Command",  # noqa: F822 - lazy, see __getattr__
@@ -61,9 +61,28 @@ _POSITION_EPS = Decimal("1e-9")
 decimal in the Rust gate itself)."""
 
 
+def _native_attr(name: str) -> Any:
+    """Wheel native-surface attribute by name (ex 0006 closure).
+
+    The wheel ships only the version constants; every other name (the compiled
+    risk-engine classes) does not exist there, so this raises ``RuntimeError``
+    (never ``AttributeError``) and the probing callers fall back to the
+    pure-Python path, exactly as they treated a missing kernel extension (gap
+    0006-tantra-wheel-kernel-domain-surface).
+    """
+    if name == "SCHEMA_VERSION":
+        return tantra.SCHEMA_VERSION
+    if name == "API_VERSION":
+        return tantra.API_VERSION
+    raise RuntimeError(
+        f"the tantra wheel ships no compiled {name}; see "
+        "tantra-examples/docs/gaps/0006-tantra-wheel-kernel-domain-surface.md"
+    )
+
+
 def __getattr__(name: str) -> Any:
     if name in _NATIVE:
-        return native_attr(name)
+        return _native_attr(name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
@@ -76,20 +95,21 @@ def limits_from_config(config: Mapping[str, Any]) -> Any:
     or an invalid value.
 
     Return type is ``Any``: :class:`RiskLimits` only exists as a dynamic
-    ``native_attr`` proxy (gap 0006), not a statically importable name.
+    ``_native_attr`` proxy (gap 0006), not a statically importable name.
     """
     table = config.get("risk")
-    return native_attr("RiskLimits").from_dict({} if table is None else dict(table))
+    return _native_attr("RiskLimits").from_dict({} if table is None else dict(table))
 
 
 def check_order(order: Any, now: Any = None) -> None:
     """Check one order against the gate.
 
-    Raises :class:`_kernel.native.RiskRefusalError` when the gate refuses the
-    order; the exception carries the stable rule code (``sebi_otr_breach``,
+    Raises :class:`RuntimeError` when the wheel ships no compiled risk engine
+    (gap 0006): the refusal carries the missing-surface reason. The live gate
+    raised ``RiskRefusalError`` with the stable rule code (``sebi_otr_breach``,
     ``price_band_violation``, ...) and the refusal as JSON.
     """
-    engine = native_attr("RiskEngine")()
+    engine = _native_attr("RiskEngine")()
     engine.register_algo(getattr(order, "algo_id", ""))
     engine.check_order(order, now)
 
@@ -98,8 +118,8 @@ def check_order(order: Any, now: Any = None) -> None:
 class RiskRefusal:
     """A refused order, in the audit-record shape the runner writes.
 
-    The live refusal raised by the gate is ``_kernel.native.RiskRefusalError``;
-    this record is what the audit trail keeps.
+    The live refusal raised by the gate is ``RiskRefusalError``; this record is
+    what the audit trail keeps.
     """
 
     code: str
@@ -118,8 +138,7 @@ def check_state(
     stays within ``[min(position, 0), max(position, 0)]`` (a flat position
     refuses everything). Quantities and positions are exact ``Decimal``;
     the small tolerance below absorbs legacy float-sourced positions during the
-    transition, while the gate itself (``_kernel.native.RiskEngine``) is exact
-    decimal.
+    transition, while the gate itself (``tantra-risk``) is exact decimal.
     """
     state = str(trading_state)
     if state == "halted":

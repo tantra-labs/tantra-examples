@@ -37,7 +37,20 @@
   `base` (wheel `Bar`/`InstrumentId`/`DateInterval`/`ParquetBarStore`), `decision_guard`
   (wheel `OrderIntent`/`OrderSide`/`OrderType`, float→Decimal boundary at `float(intent.quantity)`).
   `catalog` + `screening/nl_support` untouched (only kept modules `_kernel.loader`/`evaluator`).
-  The rest of `_kernel/` remains as later-wave slices. Status: in progress.
+  **Wave 5b (final, ex 0006 closure)**: deleted the shipped `_kernel` mirror — 17 root modules
+  (`bar`/`base`/`context`/`coverage`/`declarative`/`entities`/`execution`/`instrument`/`money`/
+  `order`/`order_state`/`position`/`sizing`/`store`/`tick`/`trade`/`native`) + the `indicators`/
+  `portfolio_strategy`/`wire`/`backtest` subpackages — rewrote `_kernel/__init__.py` as a wheel
+  facade (`tantra.{bar,instrument,money,order,position,tick,trade}` + kept `_kernel.portfolio`),
+  fixed the last `_kernel.*` straggler imports (`evaluator`→`tantra.wire.screener`,
+  `risk`/`runner`→local `_native_attr` reading wheel `SCHEMA_VERSION`/`API_VERSION`,
+  `testing`→`tantra.wire`, `adapters.testing`→`tantra.store`+`tantra.coverage`), and dropped the
+  `[[tool.mypy.overrides]]` block. Verified: `_kernel` import + facade checks pass, ruff clean on
+  touched files, unit run = 838 passed / 72 failed (pre-existing float-rooted, e.g.
+  `metrics.fills_equity_curve`) / 3 errors (`test_07_run_via_client`, `httpx` optional dep absent)
+  / 50 skipped. Status: shipped-mirror deletion complete; the remaining `_kernel` files are
+  other-gap mirrors (0002/0003/0004/0007/0008) — ex 0006 stays open for the compiled risk/
+  trading-state surface.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
   `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/
   0007/0008 carry `open — blocked` status with precise blockers; 0006 `in progress`.
@@ -52,7 +65,7 @@
 
 ## Decisions & Discoveries
 * **Pytest import mode & test structure**: `pythonpath = ["."]` in `pyproject.toml` + empty `__init__.py` in `tests/`, `tests/unit/`, `tests/integration/` lets `pytest -q` run from the repo root and resolves module-name collisions between unit and integration tests.
-* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` is a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. `native.py` pins `SCHEMA_VERSION=8`, `API_VERSION="v1"`, `STRATEGY_API_VERSION="1.0.0"`. `pyproject.toml` `[[tool.mypy.overrides]]` disables `override` for `_kernel.indicators.*`, `_kernel.declarative`, `_kernel.portfolio_strategy.*`.
+* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (adapters/ai/calendar/cli/config/data/greeks/loader/log/manifest/markets/option/ports/screener/service/session + kept evaluator/risk/runner/testing/portfolio) still mirror the not-yet-shipped surfaces.
 * **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` + `pipeline/io.py` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
 * **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
 * **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.

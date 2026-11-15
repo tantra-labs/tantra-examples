@@ -183,7 +183,7 @@ def from_wire_messages(
     (integer nanoseconds, from the wire ``{iso, unix_nanos}`` object); the bar
     specification is dropped.
     """
-    from tantra_examples._kernel.entities import wire  # unconverted sibling (ex 0006)
+    import tantra.wire as wire  # wheel wire surface (ex 0006 closure)
 
     out: list[tuple[Bar | QuoteTick | TradeTick, int]] = []
     for message in wire.loads_many("Message", payload):

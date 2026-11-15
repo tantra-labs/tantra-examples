@@ -60,6 +60,7 @@ from datetime import UTC
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
+import tantra
 from tantra.bar import Bar
 from tantra.base import Strategy
 from tantra.context import LedgerContext
@@ -82,7 +83,6 @@ from tantra.tick import QuoteTick, TradeTick
 from tantra.trade import Trade
 
 import tantra_examples._kernel.log as _tantra_log  # noqa: F401 — triggers auto-init from VYAAPAAR_LOG_EVENTS
-from tantra_examples._kernel.native import native_attr
 from tantra_examples._kernel.risk import OrderRejected, RiskRefusal, RiskRefused, check_state
 
 if TYPE_CHECKING:
@@ -161,11 +161,11 @@ _WORKING = (OrderStatus.SUBMITTED, OrderStatus.ACCEPTED, OrderStatus.PARTIALLY_F
 class _FallbackActiveState:
     """Pure-Python stand-in for ``TradingState.ACTIVE`` (native surface absent).
 
-    TODO(tamashii-migration): the kernel extension is not built in this checkout
-    (``tantra_examples/_kernel/native.py`` pins the surface), so ``TradingState``
-    is absent. Every consumer of the default "active" state here only needs ``str()``
-    ("active", the wire spelling), so this stands in for it until a tantra-runtime
-    crate owns trading-state (plan.md M1+).
+    The wheel ships no compiled trading-state class (gap
+    0006-tantra-wheel-kernel-domain-surface), so ``TradingState`` is absent.
+    Every consumer of the default "active" state here only needs ``str()``
+    ("active", the wire spelling), so this stands in for it until a
+    tantra-runtime crate owns trading-state (plan.md M1+).
     """
 
     def __str__(self) -> str:
@@ -175,9 +175,29 @@ class _FallbackActiveState:
 _FALLBACK_ACTIVE = _FallbackActiveState()
 
 
+def _native_attr(name: str) -> Any:
+    """Wheel native-surface attribute by name (ex 0006 closure).
+
+    The wheel ships only the version constants; ``TradingState`` and
+    ``RiskLimits`` (the compiled trading-state/risk classes) do not exist
+    there, so this raises ``RuntimeError`` (never ``AttributeError``) and the
+    probing call sites below fall back to the pure-Python path, exactly as they
+    treated a missing kernel extension (gap
+    0006-tantra-wheel-kernel-domain-surface).
+    """
+    if name == "SCHEMA_VERSION":
+        return tantra.SCHEMA_VERSION
+    if name == "API_VERSION":
+        return tantra.API_VERSION
+    raise RuntimeError(
+        f"the tantra wheel ships no compiled {name}; see "
+        "tantra-examples/docs/gaps/0006-tantra-wheel-kernel-domain-surface.md"
+    )
+
+
 def _active() -> TradingState:
     try:
-        return native_attr("TradingState").ACTIVE
+        return _native_attr("TradingState").ACTIVE
     except (ImportError, RuntimeError):
         return _FALLBACK_ACTIVE
 
@@ -268,7 +288,7 @@ class StrategyRunner:
 
         Rust: ``Handler::on_trading_state``. Orders already sent are not affected.
         """
-        if not isinstance(state, native_attr("TradingState")):
+        if not isinstance(state, _native_attr("TradingState")):
             raise TypeError(f"expected a TradingState, got {state!r}")
         self._trading_state = state
 
@@ -281,7 +301,7 @@ class StrategyRunner:
         """The live-run guard (ADR 0018 decision 8): ``ValueError`` unless the runner's stage
         was built with both ``max_notional`` and ``order_rate`` (see ``risk_limits``)."""
         limits = self._risk_limits if self._risk is not None else None
-        (limits if limits is not None else native_attr("RiskLimits")()).require_live()
+        (limits if limits is not None else _native_attr("RiskLimits")()).require_live()
 
     def working_exposure(self, instrument_id: InstrumentId, side: OrderSide) -> Decimal:
         """Signed open quantity (``+`` buy, ``-`` sell) of this runner's working orders on

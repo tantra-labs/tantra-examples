@@ -69,13 +69,3 @@ warn_redundant_casts = true
 no_implicit_optional = true
 ignore_missing_imports = true
 exclude = [".venv", "site", "build"]
-
-# mirror accommodation (gap 0006): the indicator registry's typed ``update``
-# specializations conflict with the base ``Indicator`` protocol by design.
-[[tool.mypy.overrides]]
-module = [
-    "tantra_examples._kernel.indicators.*",
-    "tantra_examples._kernel.declarative",
-    "tantra_examples._kernel.portfolio_strategy.*",
-]
-disable_error_code = ["override"]

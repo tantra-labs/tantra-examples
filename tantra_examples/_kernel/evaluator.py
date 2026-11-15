@@ -12,16 +12,16 @@ from typing import Any
 # owning kernel; the tantra wheel exposes none of it, so the series math runs on the
 # fresh canonical ``tantra_examples.sdk`` indicators (same SMA/Wilder-RSI semantics,
 # one implementation per repo). Same-shape adapters below. Kernel-owner gap:
-# 0006-tantra-wheel-kernel-domain-surface. The screener wire models are still the
-# ``_kernel.wire`` mirror (converted in a later wave).
+# 0006-tantra-wheel-kernel-domain-surface. The screener wire models ship in the
+# wheel's ``tantra.wire.screener`` (ex 0006 closure).
 from tantra.bar import Bar
-
-from tantra_examples._kernel.wire.screener import (
+from tantra.wire.screener import (
     FilterOp,
     MetricRef,
     ScreenerFilterGroup,
     ScreenerFilterPredicate,
 )
+
 from tantra_examples.sdk import RSI, SMA
 
 
