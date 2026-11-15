@@ -5,7 +5,8 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any
 
-from tantra_examples._kernel.base import Strategy
+from tantra.base import Strategy
+
 from tantra_examples._kernel.testing import replay
 from tantra_examples.jsonable import jsonable
 

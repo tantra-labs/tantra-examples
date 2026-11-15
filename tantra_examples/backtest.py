@@ -14,32 +14,34 @@ import json
 from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
-from tantra_examples._compat import D
-
-# Grafted deterministic engine runs on the mirrored kernel simulator/runner
-# (`_kernel.backtest.simulated`, `_kernel.runner`: gap 0006) with the India
-# cost/settlement mirror (gap 0004) - deleted when the wheel ships the same.
-from tantra_examples._kernel.backtest.simulated import (
+# Grafted deterministic engine runs on the wheel simulator/runner
+# (`tantra.backtest`, `tantra_examples._kernel.runner`: gap 0006) with the India
+# cost/settlement mirror (`tantra_examples._kernel.markets.india`: gap 0004) -
+# deleted when the wheel ships the same.
+from tantra.backtest import (
     FillCostFn as SimFillCostFn,
 )
-from tantra_examples._kernel.backtest.simulated import (
+from tantra.backtest import (
     NextOpenExecution,
     SessionOpen,
     group_sessions,
     make_simulator,
 )
-from tantra_examples._kernel.bar import Bar
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.context import LedgerContext
-from tantra_examples._kernel.instrument import InstrumentId
+from tantra.bar import Bar
+from tantra.base import Strategy
+from tantra.context import LedgerContext
+from tantra.instrument import InstrumentId
+from tantra.money import Currency, Money
+from tantra.order import OrderIntent, OrderSide
+
+from tantra_examples._compat import D
 from tantra_examples._kernel.markets.india.costs import (
     nse_equity_delivery_fill_cost as _kernel_nse_equity_delivery_fill_cost,
 )
-from tantra_examples._kernel.money import Currency, Money
-from tantra_examples._kernel.order import OrderIntent, OrderSide
+from tantra_examples._kernel.markets.india.settlement import settlement_days_for
 from tantra_examples._kernel.runner import StrategyRunner
 from tantra_examples.base import ts_to_date
 from tantra_examples.data import Bar as FreshBar
@@ -248,8 +250,20 @@ class OrderEvent:
     kind: str  # "suppressed_warmup" | "released_unfunded" | "released_no_position" | ...
 
 
-def _major(minor: int) -> float:
+def _major(minor: int) -> Decimal:
+    """Integer minor units (paise) -> the wheel's Decimal major-unit ``Money.amount``."""
     return Money.from_minor(minor, INR).to_major()
+
+
+def _minor(amount: Money | Decimal) -> int:
+    """Major-unit ``Money`` (or amount) -> integer minor units (INR paise), half-up.
+
+    The wheel engine keeps ``Money`` in Decimal major units (rust_decimal parity);
+    every public ``*_minor`` field of :class:`BacktestRun` is projected back to
+    integer paise here so existing callers see the old integer contract.
+    """
+    major = amount.amount if isinstance(amount, Money) else amount
+    return int((major * Decimal(100)).to_integral_value(rounding=ROUND_HALF_UP))
 
 
 class CanonicalOrderLedger(LedgerContext):
@@ -282,7 +296,7 @@ class BacktestRun:
     fills: list[FillRecord] = field(default_factory=list)
     order_events: list[OrderEvent] = field(default_factory=list)
     curve: list[dict[str, Any]] = field(default_factory=list)
-    final_positions: dict[str, float] = field(default_factory=dict)
+    final_positions: dict[str, Decimal] = field(default_factory=dict)
     fees_minor: int = 0
     traded_notional_minor: int = 0
     warmup_sessions: int = 0
@@ -295,20 +309,20 @@ class BacktestRun:
         return [
             {
                 "date": p["date"],
-                "value": _major(p["equity_minor"]),
-                "cash": _major(p["cash_minor"]),
+                "value": float(_major(p["equity_minor"])),
+                "cash": float(_major(p["cash_minor"])),
             }
             for p in self.curve
         ]
 
     def metrics(self) -> dict[str, Any]:
         curve = self.float_curve()
-        capital = _major(self.capital_minor)
+        capital = float(_major(self.capital_minor))
         kinds = [e.kind for e in self.order_events]
         last = self.curve[-1]
         return {
             **curve_metrics(curve, capital),
-            **exposure_metrics(curve, _major(self.traded_notional_minor)),
+            **exposure_metrics(curve, float(_major(self.traded_notional_minor))),
             "final_equity_minor": last["equity_minor"],
             "final_cash_minor": last["cash_minor"],
             "positions_value_minor": last["positions_value_minor"],
@@ -367,6 +381,10 @@ def run_portfolio_backtest(
     """
     if test_start > test_end:
         raise ValueError(f"test_start {test_start} is after test_end {test_end}")
+    if settlement_days is None:
+        # The wheel simulator needs an explicit cycle until the India market pack ships
+        # (tantra_examples/docs/gaps/0004-*); the mirror knows it as of ``test_start``.
+        settlement_days = settlement_days_for(exchange, as_of=test_start)
     kept = [b for b in bars if ts_to_date(b.ts) <= test_end]
     events = group_sessions(kept)
     session_days = [ts_to_date(e.ts) for e, _ in events if isinstance(e, SessionOpen)]
@@ -386,7 +404,7 @@ def run_portfolio_backtest(
     ctx = CanonicalOrderLedger(cash=Money.from_minor(capital_minor, INR))
     runner = StrategyRunner(strategy, port, ctx=ctx, warmup_bars=n_warmup)
     run = BacktestRun(capital_minor=capital_minor, settlement_days=port.settlement_days)
-    closes: dict[InstrumentId, float] = {}
+    closes: dict[InstrumentId, Decimal] = {}
     day: dt.date | None = None
 
     def mark() -> None:
@@ -399,10 +417,10 @@ def run_portfolio_backtest(
         run.curve.append(
             {
                 "date": day.isoformat(),
-                "equity_minor": (port.cash + positions_value).amount,
-                "cash_minor": port.cash.amount,
-                "available_cash_minor": port.available_cash.amount,
-                "positions_value_minor": positions_value.amount,
+                "equity_minor": _minor(port.cash + positions_value),
+                "cash_minor": _minor(port.cash),
+                "available_cash_minor": _minor(port.available_cash),
+                "positions_value_minor": _minor(positions_value),
             }
         )
 
@@ -422,7 +440,7 @@ def run_portfolio_backtest(
 
     submitted = {s.order_id: s for s in runner.intents}
     for f in runner.fills:
-        notional = Money.mul_qty(f.quantity, f.price, INR).amount
+        notional = Money.mul_qty(f.quantity, f.price, INR)
         sub = submitted.get(f.order_id or "")
         run.fills.append(
             FillRecord(
@@ -433,8 +451,8 @@ def run_portfolio_backtest(
                 side=f.side.value,
                 quantity=f.quantity,
                 price=f.price,
-                notional_minor=notional,
-                cost_minor=f.costs.amount,
+                notional_minor=_minor(notional),
+                cost_minor=_minor(f.costs),
                 submitted_date=ts_to_date(sub.ts_init).isoformat() if sub else "",
             )
         )
@@ -462,8 +480,8 @@ def run_portfolio_backtest(
         run.order_events.append(
             _event(last_ts, order_id, sub.intent, sub.intent.quantity, "unfilled_at_end")
         )
-    run.fees_minor = port.fees.amount
-    run.traded_notional_minor = port.traded_notional.amount
+    run.fees_minor = _minor(port.fees)
+    run.traded_notional_minor = _minor(port.traded_notional)
     run.final_positions = {iid.symbol: qty for iid, qty in port.positions.items()}
     run.rejections = len(runner.rejections)
     return run

@@ -21,7 +21,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from tantra_examples._kernel.base import Parameter, Strategy
+from tantra.base import Parameter, Strategy
 
 __all__ = [
     "SipPortfolioStrategy",
