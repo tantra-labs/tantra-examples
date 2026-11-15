@@ -20,12 +20,13 @@ does (see :mod:`_kernel.native`).
   ``Command.state(TradingState.REDUCING)``.
 * :func:`limits_from_config`: reads ``[risk]`` from a run's parsed TOML table.
 """
-# mirror: kernel-verbatim port (gap 0006)
+# mirror: kernel-verbatim port (gap 0006) — Decimal-canonical wheel retarget (ex 0006)
 
 from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from decimal import Decimal
 from typing import Any
 
 from tantra_examples._kernel.native import native_attr
@@ -55,9 +56,9 @@ _NATIVE = frozenset(
     }
 )
 
-_POSITION_EPS = 1e-9
-"""The legacy ledger keeps positions as floats, so the reduce-only rule needs
-a tolerance. The Rust gate itself is exact decimal."""
+_POSITION_EPS = Decimal("1e-9")
+"""Tolerance for the reduce-only rule (legacy float-sourced positions were exact
+decimal in the Rust gate itself)."""
 
 
 def __getattr__(name: str) -> Any:
@@ -107,7 +108,7 @@ class RiskRefusal:
 
 
 def check_state(
-    side: Any, quantity: float, position: float, trading_state: Any
+    side: Any, quantity: Decimal, position: Decimal, trading_state: Any
 ) -> RiskRefusal | None:
     """The trading-state rules: ``Halted`` refuses everything, ``Reducing`` refuses
     anything that would open the position further.
@@ -115,11 +116,9 @@ def check_state(
     ``position`` is the signed position plus the same-side working remainder.
     While ``Reducing`` an order passes only if ``position + sign * quantity``
     stays within ``[min(position, 0), max(position, 0)]`` (a flat position
-    refuses everything).
-
-    This is the last float-based rule in the Python SDK: the legacy ledger
-    keeps positions as floats, so the tolerance below is the same one the
-    legacy domain used. The gate itself (``_kernel.native.RiskEngine``) is exact
+    refuses everything). Quantities and positions are exact ``Decimal``;
+    the small tolerance below absorbs legacy float-sourced positions during the
+    transition, while the gate itself (``_kernel.native.RiskEngine``) is exact
     decimal.
     """
     state = str(trading_state)
@@ -127,12 +126,14 @@ def check_state(
         return RiskRefusal("risk_trading_halted", "trading_halted", {"rule": "trading_halted"})
     if state != "reducing":
         return None
-    sign = 1.0 if getattr(side, "value", side) == "BUY" else -1.0
-    after = position + sign * quantity
+    sign = Decimal("1") if str(getattr(side, "value", side)).upper() == "BUY" else Decimal("-1")
+    qty = Decimal(str(quantity))
+    pos = Decimal(str(position))
+    after = pos + sign * qty
     if (
-        abs(position) > _POSITION_EPS
-        and after >= min(position, 0.0) - _POSITION_EPS
-        and after <= max(position, 0.0) + _POSITION_EPS
+        abs(pos) > _POSITION_EPS
+        and after >= min(pos, Decimal("0")) - _POSITION_EPS
+        and after <= max(pos, Decimal("0")) + _POSITION_EPS
     ):
         return None
     return RiskRefusal(
@@ -140,9 +141,9 @@ def check_state(
         "reduce_only",
         {
             "rule": "reduce_only",
-            "position": position,
+            "position": pos,
             "side": getattr(side, "value", side),
-            "quantity": quantity,
+            "quantity": qty,
         },
     )
 

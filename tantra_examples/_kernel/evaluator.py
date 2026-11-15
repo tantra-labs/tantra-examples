@@ -7,12 +7,15 @@ from collections.abc import Sequence
 from decimal import Decimal
 from typing import Any
 
+# Bars are the wheel's Decimal-canonical ``tantra.bar.Bar`` (ex 0006 retarget).
 # The kernel evaluator's Sma/Rsi come from the undergraduate indicator tree in the
 # owning kernel; the tantra wheel exposes none of it, so the series math runs on the
 # fresh canonical ``tantra_examples.sdk`` indicators (same SMA/Wilder-RSI semantics,
 # one implementation per repo). Same-shape adapters below. Kernel-owner gap:
-# 0006-tantra-wheel-kernel-domain-surface.
-from tantra_examples._kernel.bar import Bar
+# 0006-tantra-wheel-kernel-domain-surface. The screener wire models are still the
+# ``_kernel.wire`` mirror (converted in a later wave).
+from tantra.bar import Bar
+
 from tantra_examples._kernel.wire.screener import (
     FilterOp,
     MetricRef,
@@ -23,46 +26,46 @@ from tantra_examples.sdk import RSI, SMA
 
 
 class Sma:
-    """Streaming SMA over floats mirroring the kernel ``Sma`` adapter API."""
+    """Streaming SMA over Decimal mirroring the kernel ``Sma`` adapter API."""
 
     def __init__(self, period: int = 5) -> None:
         self._sma = SMA(period)
 
-    def update(self, x: float) -> float | None:
+    def update(self, x: Decimal) -> Decimal | None:
         d = Decimal(str(x)) if not isinstance(x, Decimal) else x
         self._sma.update(d)
         if self._sma.ready:
-            return float(self._sma.value)
+            return self._sma.value
         return None
 
     @property
-    def value(self) -> float | None:
+    def value(self) -> Decimal | None:
         if self._sma.ready:
-            return float(self._sma.value)
+            return self._sma.value
         return None
 
 
 class Rsi:
-    """Streaming Wilder RSI over floats mirroring the kernel ``Rsi`` adapter API."""
+    """Streaming Wilder RSI over Decimal mirroring the kernel ``Rsi`` adapter API."""
 
     def __init__(self, period: int = 14) -> None:
         self._rsi = RSI(period)
 
-    def update(self, x: float) -> float | None:
+    def update(self, x: Decimal) -> Decimal | None:
         d = Decimal(str(x)) if not isinstance(x, Decimal) else x
         self._rsi.update(d)
         if self._rsi.ready:
-            return float(self._rsi.value)
+            return self._rsi.value
         return None
 
     @property
-    def value(self) -> float | None:
+    def value(self) -> Decimal | None:
         if self._rsi.ready:
-            return float(self._rsi.value)
+            return self._rsi.value
         return None
 
 
-def _compute_series(metric_key: str, bars: Sequence[Bar]) -> list[float | None]:
+def _compute_series(metric_key: str, bars: Sequence[Bar]) -> list[Decimal | None]:
     """Compute series of metric values for each bar in chronological order."""
     if not bars:
         return []
@@ -81,7 +84,7 @@ def _compute_series(metric_key: str, bars: Sequence[Bar]) -> list[float | None]:
         return [b.volume for b in bars]
 
     if key_lower == "price_52_week_low":
-        res: list[float | None] = []
+        res: list[Decimal | None] = []
         for i in range(len(bars)):
             window = bars[max(0, i - 251) : i + 1]
             res.append(min(b.low for b in window))
@@ -123,9 +126,24 @@ def extract_metrics_from_bars(metric_keys: Sequence[str], bars: Sequence[Bar]) -
     return values
 
 
+def _as_decimal(value: Any) -> Any:
+    """Coerce a numeric operand to ``Decimal`` for exact comparison; leave others alone."""
+    if isinstance(value, (Decimal, bool)) or value is None:
+        return value
+    if isinstance(value, (int, float, str)):
+        try:
+            return Decimal(str(value))
+        except (ValueError, ArithmeticError):
+            return value
+    return value
+
+
 def _compare(lhs: Any, op: FilterOp, rhs: Any) -> bool:
     if lhs is None or rhs is None:
         return False
+
+    lhs = _as_decimal(lhs)
+    rhs = _as_decimal(rhs)
 
     if op == FilterOp.EQ:
         return bool(lhs == rhs)
@@ -141,6 +159,10 @@ def _compare(lhs: Any, op: FilterOp, rhs: Any) -> bool:
         return bool(lhs <= rhs)
     if op == FilterOp.BETWEEN:
         if isinstance(rhs, (list, tuple)) and len(rhs) == 2:
+            lo = _as_decimal(rhs[0])
+            hi = _as_decimal(rhs[1])
+            if isinstance(lo, Decimal) and isinstance(hi, Decimal):
+                return bool(lo <= lhs <= hi)
             return bool(rhs[0] <= lhs <= rhs[1])
         return False
     if op == FilterOp.IN:
@@ -189,24 +211,32 @@ def evaluate_predicate_on_bars(
     lhs_prev = lhs_series[-2] if len(lhs_series) >= 2 else None
 
     if pred.op == FilterOp.CROSSES_ABOVE:
+        l_curr = _as_decimal(lhs_curr)
+        r_curr = _as_decimal(rhs_curr)
+        l_prev = _as_decimal(lhs_prev)
+        r_prev = _as_decimal(rhs_prev)
         if not (
-            isinstance(lhs_curr, (int, float))
-            and isinstance(rhs_curr, (int, float))
-            and isinstance(lhs_prev, (int, float))
-            and isinstance(rhs_prev, (int, float))
+            isinstance(l_curr, Decimal)
+            and isinstance(r_curr, Decimal)
+            and isinstance(l_prev, Decimal)
+            and isinstance(r_prev, Decimal)
         ):
             return False
-        return bool(lhs_prev <= rhs_prev and lhs_curr > rhs_curr)
+        return bool(l_prev <= r_prev and l_curr > r_curr)
 
     if pred.op == FilterOp.CROSSES_BELOW:
+        l_curr = _as_decimal(lhs_curr)
+        r_curr = _as_decimal(rhs_curr)
+        l_prev = _as_decimal(lhs_prev)
+        r_prev = _as_decimal(rhs_prev)
         if not (
-            isinstance(lhs_curr, (int, float))
-            and isinstance(rhs_curr, (int, float))
-            and isinstance(lhs_prev, (int, float))
-            and isinstance(rhs_prev, (int, float))
+            isinstance(l_curr, Decimal)
+            and isinstance(r_curr, Decimal)
+            and isinstance(l_prev, Decimal)
+            and isinstance(r_prev, Decimal)
         ):
             return False
-        return bool(lhs_prev >= rhs_prev and lhs_curr < rhs_curr)
+        return bool(l_prev >= r_prev and l_curr < r_curr)
 
     return _compare(lhs_curr, pred.op, rhs_curr)
 

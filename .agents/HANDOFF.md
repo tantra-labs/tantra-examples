@@ -11,8 +11,11 @@
   `options/06/07`, `stocksharp/02`, flat `12/14/15`, `tests/unit/test_02_twap_vwap` +
   `test_07_large_qty_options_slicer`, and the `docs/reference/*.md` module paths.
 * **ex 0006 (the kernel-domain root) STARTED** — Decimal-canonical domain-core slice shipped
-  in the wheel (`tantra.money` / `position` / `trade` / `instrument` / `entities`); the rest
-  of `_kernel/` remains and is the next slices. Status: in progress.
+  in the wheel (`tantra.money` / `position` / `trade` / `instrument` / `entities`); **Wave 1**
+  retargeted the financial leaf modules to the wheel — `markets/india/costs` (Decimal rates +
+  wheel `Money` fill costs), `portfolio` (`Account`/`Portfolio` on Decimal-major `Money`),
+  `risk.check_state` (Decimal), `evaluator` (wheel `Bar` series math); the rest of `_kernel/`
+  remains as later-wave slices. Status: in progress.
 * **Blocker analysis + dependency map**: verified the 8-gap cascade rooted in the 166-file
   `_kernel` mirror (`docs/design/gap-cascade-kernel-mirror.md`); gap docs 0002/0003/0004/
   0007/0008 carry `open — blocked` status with precise blockers; 0006 `in progress`.

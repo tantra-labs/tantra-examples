@@ -14,28 +14,16 @@ References
 - NSE circulars on transaction charges, IPFT, STT
 - Stamp duty (Maharashtra / central schedule for delivery)
 """
-# mirror: kernel-verbatim port (gap 0004)
+# mirror: kernel-verbatim port (gap 0004) — Decimal-canonical wheel retarget (ex 0006)
 
 from __future__ import annotations
 
-import dataclasses
 from dataclasses import dataclass
+from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum, auto
-from typing import TYPE_CHECKING
 
-from tantra_examples._kernel.money import Currency, Money
-
-if TYPE_CHECKING:
-    from tantra_examples._kernel.order import OrderSide
-else:
-    try:
-        from tantra_examples._kernel.order import OrderSide
-    except ImportError:  # standalone / test without full package
-        from enum import Enum as _Enum
-
-        class OrderSide(_Enum):  # type: ignore[no-redef]
-            BUY = "BUY"
-            SELL = "SELL"
+from tantra.money import Currency, Money
+from tantra.order import OrderSide
 
 
 # ---------------------------------------------------------------------------
@@ -52,16 +40,16 @@ class Segment(Enum):
 class CostBreakdown:
     """Itemised costs for one fill (settlement currency = INR)."""
 
-    brokerage: float
-    stt: float
-    exchange: float
-    sebi: float
-    ipft: float
-    stamp_duty: float
-    gst: float
+    brokerage: Decimal
+    stt: Decimal
+    exchange: Decimal
+    sebi: Decimal
+    ipft: Decimal
+    stamp_duty: Decimal
+    gst: Decimal
 
     @property
-    def total(self) -> float:
+    def total(self) -> Decimal:
         return (
             self.brokerage
             + self.stt
@@ -77,24 +65,27 @@ class CostBreakdown:
 # Rate tables (2025-26)
 # ---------------------------------------------------------------------------
 # Equity delivery (CNC)
-_EQ_DEL_STT_SELL = 0.0010  # 0.10 % on sell
-_EQ_DEL_STAMP_BUY = 0.00015  # 0.015 % on buy
-_EQ_DEL_EXCH = 0.0000297  # NSE transaction charge
-_EQ_DEL_SEBI = 0.000001  # ₹10 / crore
-_EQ_DEL_IPFT = 0.000001  # approx
-_EQ_DEL_BROKERAGE_PCT = 0.0003  # 0.03 %
-_EQ_DEL_BROKERAGE_CAP = 20.0  # ₹20 per order
+_EQ_DEL_STT_SELL = Decimal("0.0010")  # 0.10 % on sell
+_EQ_DEL_STAMP_BUY = Decimal("0.00015")  # 0.015 % on buy
+_EQ_DEL_EXCH = Decimal("0.0000297")  # NSE transaction charge
+_EQ_DEL_SEBI = Decimal("0.000001")  # ₹10 / crore
+_EQ_DEL_IPFT = Decimal("0.000001")  # approx
+_EQ_DEL_BROKERAGE_PCT = Decimal("0.0003")  # 0.03 %
+_EQ_DEL_BROKERAGE_CAP = Decimal("20.0")  # ₹20 per order
 
 # Equity intraday (MIS)
-_EQ_INT_STT_SELL = 0.00025  # 0.025 % on sell
-_EQ_INT_STAMP_BUY = 0.00003  # 0.003 % on buy
-_EQ_INT_EXCH = 0.0000297
-_EQ_INT_SEBI = 0.000001
-_EQ_INT_IPFT = 0.000001
-_EQ_INT_BROKERAGE_PCT = 0.0003
-_EQ_INT_BROKERAGE_CAP = 20.0
+_EQ_INT_STT_SELL = Decimal("0.00025")  # 0.025 % on sell
+_EQ_INT_STAMP_BUY = Decimal("0.00003")  # 0.003 % on buy
+_EQ_INT_EXCH = Decimal("0.0000297")
+_EQ_INT_SEBI = Decimal("0.000001")
+_EQ_INT_IPFT = Decimal("0.000001")
+_EQ_INT_BROKERAGE_PCT = Decimal("0.0003")
+_EQ_INT_BROKERAGE_CAP = Decimal("20.0")
 
-_GST_RATE = 0.18
+_GST_RATE = Decimal("0.18")
+
+# CostBreakdown field order (same as the dataclass declaration).
+_COST_FIELDS = ("brokerage", "stt", "exchange", "sebi", "ipft", "stamp_duty", "gst")
 
 
 # ---------------------------------------------------------------------------
@@ -102,9 +93,9 @@ _GST_RATE = 0.18
 # ---------------------------------------------------------------------------
 def nse_equity_delivery_cost(
     side: OrderSide,
-    quantity: float,
-    price: float,
-) -> float:
+    quantity: Decimal,
+    price: Decimal,
+) -> Decimal:
     """Total transaction cost (INR) for one NSE equity *delivery* fill.
 
     Parameters
@@ -118,7 +109,7 @@ def nse_equity_delivery_cost(
 
     Returns
     -------
-    float
+    Decimal
         Total cost in INR (always ≥ 0).
     """
     return nse_equity_delivery_breakdown(side, quantity, price).total
@@ -126,8 +117,8 @@ def nse_equity_delivery_cost(
 
 def nse_equity_delivery_breakdown(
     side: OrderSide,
-    quantity: float,
-    price: float,
+    quantity: Decimal,
+    price: Decimal,
 ) -> CostBreakdown:
     """Itemised NSE equity delivery costs (each leg shown to 4 decimals)."""
     return _rounded(_delivery_legs(side, quantity, price))
@@ -137,11 +128,19 @@ def _is_buy(side: OrderSide) -> bool:
     return side is OrderSide.BUY or str(side).upper().endswith("BUY")
 
 
-def _delivery_legs(side: OrderSide, quantity: float, price: float) -> CostBreakdown:
+def _delivery_legs(side: OrderSide, quantity: Decimal, price: Decimal) -> CostBreakdown:
     """Unrounded delivery legs; GST is on the unrounded taxable legs."""
     notional = abs(quantity * price)
     if notional <= 0:
-        return CostBreakdown(0, 0, 0, 0, 0, 0, 0)
+        return CostBreakdown(
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+        )
     is_buy = _is_buy(side)
     brokerage = min(_EQ_DEL_BROKERAGE_PCT * notional, _EQ_DEL_BROKERAGE_CAP)
     exchange = _EQ_DEL_EXCH * notional
@@ -149,42 +148,55 @@ def _delivery_legs(side: OrderSide, quantity: float, price: float) -> CostBreakd
     ipft = _EQ_DEL_IPFT * notional
     return CostBreakdown(
         brokerage=brokerage,
-        stt=0.0 if is_buy else _EQ_DEL_STT_SELL * notional,
+        stt=Decimal("0") if is_buy else _EQ_DEL_STT_SELL * notional,
         exchange=exchange,
         sebi=sebi,
         ipft=ipft,
-        stamp_duty=_EQ_DEL_STAMP_BUY * notional if is_buy else 0.0,
+        stamp_duty=_EQ_DEL_STAMP_BUY * notional if is_buy else Decimal("0"),
         gst=_GST_RATE * (brokerage + exchange + sebi + ipft),
     )
 
 
 def _rounded(legs: CostBreakdown) -> CostBreakdown:
-    return CostBreakdown(*(round(getattr(legs, f.name), 4) for f in dataclasses.fields(legs)))
+    return CostBreakdown(
+        *(
+            getattr(legs, name).quantize(Decimal("0.0001"), rounding=ROUND_HALF_UP)
+            for name in _COST_FIELDS
+        )
+    )
 
 
 def nse_equity_intraday_cost(
     side: OrderSide,
-    quantity: float,
-    price: float,
-) -> float:
+    quantity: Decimal,
+    price: Decimal,
+) -> Decimal:
     """Total cost for one NSE equity *intraday* (MIS) fill."""
     return nse_equity_intraday_breakdown(side, quantity, price).total
 
 
 def nse_equity_intraday_breakdown(
     side: OrderSide,
-    quantity: float,
-    price: float,
+    quantity: Decimal,
+    price: Decimal,
 ) -> CostBreakdown:
     """Itemised NSE equity intraday costs (each leg shown to 4 decimals)."""
     return _rounded(_intraday_legs(side, quantity, price))
 
 
-def _intraday_legs(side: OrderSide, quantity: float, price: float) -> CostBreakdown:
+def _intraday_legs(side: OrderSide, quantity: Decimal, price: Decimal) -> CostBreakdown:
     """Unrounded intraday legs; GST is on the unrounded taxable legs."""
     notional = abs(quantity * price)
     if notional <= 0:
-        return CostBreakdown(0, 0, 0, 0, 0, 0, 0)
+        return CostBreakdown(
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+            Decimal("0"),
+        )
     is_buy = _is_buy(side)
     brokerage = min(_EQ_INT_BROKERAGE_PCT * notional, _EQ_INT_BROKERAGE_CAP)
     exchange = _EQ_INT_EXCH * notional
@@ -192,11 +204,11 @@ def _intraday_legs(side: OrderSide, quantity: float, price: float) -> CostBreakd
     ipft = _EQ_INT_IPFT * notional
     return CostBreakdown(
         brokerage=brokerage,
-        stt=0.0 if is_buy else _EQ_INT_STT_SELL * notional,
+        stt=Decimal("0") if is_buy else _EQ_INT_STT_SELL * notional,
         exchange=exchange,
         sebi=sebi,
         ipft=ipft,
-        stamp_duty=_EQ_INT_STAMP_BUY * notional if is_buy else 0.0,
+        stamp_duty=_EQ_INT_STAMP_BUY * notional if is_buy else Decimal("0"),
         gst=_GST_RATE * (brokerage + exchange + sebi + ipft),
     )
 
@@ -204,16 +216,16 @@ def _intraday_legs(side: OrderSide, quantity: float, price: float) -> CostBreakd
 def cost_for_segment(
     segment: Segment,
     side: OrderSide,
-    quantity: float,
-    price: float,
-) -> float:
+    quantity: Decimal,
+    price: Decimal,
+) -> Decimal:
     """Dispatch to the correct schedule by segment."""
     if segment is Segment.EQUITY_DELIVERY:
         return nse_equity_delivery_cost(side, quantity, price)
     if segment is Segment.EQUITY_INTRADAY:
         return nse_equity_intraday_cost(side, quantity, price)
     # F&O schedules can be added later; return 0 for now so callers don't break
-    return 0.0
+    return Decimal("0")
 
 
 def _fill_cost_money(legs: CostBreakdown) -> Money:
@@ -233,7 +245,7 @@ def _fill_cost_money(legs: CostBreakdown) -> Money:
     return total
 
 
-def nse_equity_delivery_fill_cost(side: OrderSide, quantity: float, price: float) -> Money:
+def nse_equity_delivery_fill_cost(side: OrderSide, quantity: Decimal, price: Decimal) -> Money:
     """NSE equity delivery (CNC) cost of one fill as INR ``Money``, each leg rounded once.
 
     The ``(side, quantity, price) -> Money`` shape is the simulator's fill-cost function
@@ -242,13 +254,6 @@ def nse_equity_delivery_fill_cost(side: OrderSide, quantity: float, price: float
     return _fill_cost_money(_delivery_legs(side, quantity, price))
 
 
-def nse_equity_intraday_fill_cost(side: OrderSide, quantity: float, price: float) -> Money:
+def nse_equity_intraday_fill_cost(side: OrderSide, quantity: Decimal, price: Decimal) -> Money:
     """NSE equity intraday (MIS) cost of one fill as INR ``Money``, each leg rounded once."""
     return _fill_cost_money(_intraday_legs(side, quantity, price))
-
-
-# The simulator's native backend costs fills inside Rust under these pack names (ADR 0016,
-# chunk 3b); it finds them through this marker. The Rust schedules are checked equal to the
-# two functions above over a grid and a random sweep (``test_next_open_sim_native``).
-nse_equity_delivery_fill_cost.native_cost_pack = "india.equity.delivery"  # type: ignore[attr-defined]
-nse_equity_intraday_fill_cost.native_cost_pack = "india.equity.intraday"  # type: ignore[attr-defined]

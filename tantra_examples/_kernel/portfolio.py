@@ -4,19 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from tantra_examples._kernel.instrument import InstrumentId
-from tantra_examples._kernel.money import Currency, Money
-from tantra_examples._kernel.position import Position
+from tantra.instrument import InstrumentId
+from tantra.money import Currency, Money
+from tantra.position import Position
 
 
 @dataclass(slots=True)
 class Account:
-    """A named account holding integer ``Money`` cash and positions (ADR 0011).
+    """A named account holding Decimal-major ``Money`` cash and positions.
 
     Mirrors ``honba_entities::Account``: credits and debits are ``Money`` in the
-    account's currency, exact in minor units; a currency mismatch raises
-    ``ValueError`` and leaves the balance unchanged. As before, amounts must be
-    ``>= 0`` and a debit may not overdraw the account.
+    account's currency, exact ``Decimal`` major units (``tantra.money.Money``);
+    a currency mismatch raises ``ValueError`` and leaves the balance unchanged.
+    As before, amounts must be ``>= 0`` and a debit may not overdraw the account.
     """
 
     name: str
