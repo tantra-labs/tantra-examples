@@ -5,15 +5,16 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
-import duckdb
 import pytest
 from tantra.coverage import DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore, find_data_root
 
 from tantra_examples.base import REPO_ROOT
+from tantra_examples.provision.dummy import write_symbol_parquet
 
 _PATH = (
     Path(__file__).resolve().parents[2] / "examples" / "universes" / "09_alpha30_cross_sectional.py"
@@ -48,6 +49,16 @@ def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     assert bars, "synthetic RELIANCE.NSE catalog must yield bars"
 
 
+def _d(v: float) -> Decimal:
+    """Exact decimal conversion (zero floats in financial values)."""
+    return Decimal(str(v)).quantize(Decimal("0.0000000001"))
+
+
+def _ts(day: dt.date) -> int:
+    """Epoch-ns for the 09:15 session-open bar (golden lakehouse timestamp)."""
+    return int(dt.datetime.combine(day, dt.time(9, 15), tzinfo=dt.UTC).timestamp()) * 1_000_000_000
+
+
 def _write_symbol_parquet(
     nse_dir: Path,
     symbol: str,
@@ -56,24 +67,20 @@ def _write_symbol_parquet(
     *,
     year: int = 2024,
 ) -> None:
-    """Write one symbol's yearly parquet file the lakehouse layout expects."""
-    sym_dir = nse_dir / symbol
-    sym_dir.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-    con.execute(
-        "CREATE TABLE b (ts BIGINT, open DOUBLE, high DOUBLE, low DOUBLE, "
-        "close DOUBLE, volume DOUBLE)"
-    )
-    for day, close in zip(days, closes, strict=True):
-        ts = (
-            int(dt.datetime.combine(day, dt.time(9, 15), tzinfo=dt.UTC).timestamp()) * 1_000_000_000
+    """Fold onto the canonical provisioner writer (decimal128, plan 0004)."""
+    rows = [
+        (
+            _ts(day),
+            _d(close),
+            _d(close + 0.5),
+            _d(close - 0.5),
+            _d(close),
+            Decimal("1000000.0"),
         )
-        con.execute(
-            "INSERT INTO b VALUES (?, ?, ?, ?, ?, ?)",
-            [ts, close, close + 0.5, close - 0.5, close, 1e6],
-        )
-    con.execute(f"COPY b TO '{sym_dir / f'{year}.parquet'}' (FORMAT PARQUET)")
-    con.close()
+        for day, close in zip(days, closes, strict=True)
+    ]
+    (nse_dir / symbol).mkdir(parents=True, exist_ok=True)
+    write_symbol_parquet(nse_dir / symbol / f"{year}.parquet", rows)
 
 
 def _synthetic_catalog(tmp_path: Path, symbols: list[str], asof: dt.date) -> Path:

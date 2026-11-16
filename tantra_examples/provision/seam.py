@@ -58,3 +58,14 @@ def ensure_data_root(
 
 
 __all__ = ["choose_mode", "ensure_data_root"]
+
+
+if __name__ == "__main__":
+    # Interactive runtime seam (plan 0004 M6): prompt for a provisioning
+    # choice when a data root is absent. This is the user-facing entry the
+    # plan calls for (not a new CLI surface — it is the examples' runtime
+    # prompt calling the provision library / HTTP service in-process).
+    job = ensure_data_root()
+    print(f"{job.mode.value}: {job.status} -> {job.root}")
+    if job.error:
+        print(f"error: {job.error}")

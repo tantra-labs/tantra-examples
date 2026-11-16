@@ -5,19 +5,30 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
-import duckdb
 import pytest
 from tantra.coverage import DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore, find_data_root
 
 from tantra_examples.base import REPO_ROOT
+from tantra_examples.provision.dummy import write_symbol_parquet
 from tantra_examples.synthetic import bar as synth_bar
 from tantra_examples.synthetic import weekdays as weekdays_func
 
 _PATH = Path(__file__).resolve().parents[2] / "examples" / "backtesting" / "08_sip_buy_and_hold.py"
+
+
+def _d(v: float) -> Decimal:
+    """Exact decimal conversion (zero floats in financial values)."""
+    return Decimal(str(v)).quantize(Decimal("0.0000000001"))
+
+
+def _ts(day: dt.date) -> int:
+    """Epoch-ns for the 09:15 session-open bar (golden lakehouse timestamp)."""
+    return int(dt.datetime.combine(day, dt.time(9, 15), tzinfo=dt.UTC).timestamp()) * 1_000_000_000
 
 
 @pytest.fixture(scope="module")
@@ -27,29 +38,6 @@ def example():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
-
-
-def _write_symbol_parquet(
-    nse_dir: Path, symbol: str, days: list[dt.date], closes: list[float]
-) -> None:
-    """Write ``<nse_dir>/<SYMBOL>/2025.parquet`` in the lakehouse layout."""
-    sym_dir = nse_dir / symbol
-    sym_dir.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-    con.execute(
-        "CREATE TABLE b (ts BIGINT, open DOUBLE, high DOUBLE, low DOUBLE, "
-        "close DOUBLE, volume DOUBLE)"
-    )
-    for day, close in zip(days, closes, strict=True):
-        ts = (
-            int(dt.datetime.combine(day, dt.time(9, 15), tzinfo=dt.UTC).timestamp()) * 1_000_000_000
-        )
-        con.execute(
-            "INSERT INTO b VALUES (?, ?, ?, ?, ?, ?)",
-            [ts, close, close + 0.5, close - 0.5, close, 1e6],
-        )
-    con.execute(f"COPY b TO '{sym_dir / '2025.parquet'}' (FORMAT PARQUET)")
-    con.close()
 
 
 @pytest.fixture
@@ -65,7 +53,19 @@ def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     nse_dir = root / "catalog" / "1D" / "NSE"
     days = weekdays_func(dt.date(2025, 1, 1), 260)  # ~1 year of daily bars
     closes = [100.0 + i * 0.1 for i in range(len(days))]
-    _write_symbol_parquet(nse_dir, "ALPHAETF", days, closes)
+    rows = [
+        (
+            _ts(day),
+            _d(close),
+            _d(close + 0.5),
+            _d(close - 0.5),
+            _d(close),
+            Decimal("1000000.0"),
+        )
+        for day, close in zip(days, closes, strict=True)
+    ]
+    (nse_dir / "ALPHAETF").mkdir(parents=True, exist_ok=True)
+    write_symbol_parquet(nse_dir / "ALPHAETF" / "2025.parquet", rows)
     monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(root))
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(
