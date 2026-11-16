@@ -1,7 +1,7 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
-* **T13 Thrust B DONE (2026-11-16, plan 0003 / root plan 0006 T13.6)**: renamed the remaining
+* **T13 COMPLETE (2026-11-16, plan 0003 / root plan 0006 T13.6–T13.7)**: renamed the remaining
   harness `tantra_examples/_kernel/` → `tantra_examples/harness/` via `git mv` (history preserved
   for all 9 files). `harness/__init__.py` rewritten as a pure app-layer facade (only harness names:
   `StrategyConfig`, `Catalog*`/loader, `EventFilter`/log, `StrategyManifest`/manifest,
@@ -12,12 +12,19 @@
   `architecture.md` (§2 “one world”, §3 rows, §4, §5 rewritten as “The Application Harness”),
   `code-migration-map.md` + `gap-cascade-kernel-mirror.md` + `docs/gaps|plans/README.md` note the
   rename, and the strategies/backtesting README code snippets now import from `tantra.base`,
-  `tantra.indicators`, `tantra_examples.harness.testing`. Plan 0003 marked **Implemented-pending**
-  (T13 gate + T13.7 follow-on consolidation candidates still open). Verified: unit suite
-  916 passed / 50 skipped / 0 failed, ruff clean on touched files, 6 example import-smokes pass.
-  Commit `1acabfb9` (local, not pushed). Thrust A (the wheel lift that deleted the
-  six domain modules `_kernel/{portfolio,risk,greeks,option,evaluator,calendar}.py`) was already
-  complete before this batch; the facade now exposes no wheel names at all.
+  `tantra.indicators`, `tantra_examples.harness.testing`. Plan 0003 **Implemented** (index updated;
+  root plan 0006 closed). **Gate (T13.7)**: `tests/unit` = **909 passed / 51 skipped / 6 pre-existing
+  failures** — the 6 `test_06_multi_broker_dispatch` failures reproduce **identically on pre-T13
+  HEAD `1d89fd9`** (verified in a detached worktree) and are environmental, not from T13: the
+  installed `tantra_adapters` package exposes real broker entry points (`zerodha`/`angelone`/…), so
+  the example's `register_adapter("zerodha", lambda **kwargs: PaperBrokerAdapter(...))` fallback is
+  skipped and `resolve_adapter(broker, config=…)` calls the real adapter's constructor, which
+  rejects the `config` kwarg. Run-order dependent (can pass if an earlier test registers a
+  compatible factory). ruff `check` + `format --check` clean; 6 example import-smokes pass. Commits
+  `25cb5df` (Thrust A), `1acabfb9` (Thrust B), `3c2e5ae` (docs), `f07f8e1` (`.venv` gitignore),
+  all local (not pushed). Thrust A (the wheel lift that deleted the six domain modules
+  `_kernel/{portfolio,risk,greeks,option,evaluator,calendar}.py`) was already complete before this
+  batch; the facade now exposes no wheel names at all.
 * **Unit suite fully green (2026-11-15)**: all 73 pre-existing float-rooted failures + 3 errors fixed
   (tests/unit: **916 passed / 51 skipped**, exit 0; wheel suite in tantra-ffi: **464 passed**). Root
   cause throughout: examples/tests mixed Python `float` with the Decimal-canonical wheel
@@ -166,10 +173,14 @@
 
 ## Immediate Next Step
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.
-* All 8 gaps (0001–0008) are closed and the `_kernel` mirror is fully dismantled; the shared
-  example harness was renamed to `tantra_examples/harness/` (plan 0003, root plan 0006 Thrust B,
-  commit `1acabfb9`, 2026-11-16). **Plan 0003 = Implemented-pending**: the T13
-  gate sign-off and the T13.7 follow-on consolidation candidates are the next work; otherwise
+* All 8 gaps (0001–0008) are closed; the `_kernel` mirror is fully dismantled and the harness was
+  renamed to `tantra_examples/harness/` (plan 0003, root plan 0006 Thrust B, commits `25cb5df` +
+  `1acabfb9`, 2026-11-16). **T13 complete — plan 0003 Implemented, root plan 0006 closed.**
+  Remaining candidates (recorded, NOT required to close): `harness/runner.py` `StrategyRunner` vs
+  the wheel `tantra.backtest.session`; `harness/service.py` `DataService` vs `tantra_data`'s
+  service layer; `harness/testing.py` `replay` as a future wheel backtest-replay helper; and the
+  end-to-end Decimal conversion of `metrics.fills_equity_curve` + its consumers (conversion must
+  ship curve AND consumers together — a partial rework was reverted 2026-11-15). Otherwise
   example-side maintenance (keep every numbered script runnable and its `tests/unit/` regression
   green) or whatever the orchestrator assigns next.
 
