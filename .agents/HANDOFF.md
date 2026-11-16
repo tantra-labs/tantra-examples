@@ -1,6 +1,31 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **All 51 unit-suite skips fixed (2026-11-16) — `tests/unit` now 967 passed / 1 skipped** (was
+  916 passed / 51 skipped). The 50 fixable skips fell into 4 roots: (1) missing optional deps
+  (`numpy`+`scipy` installed into the wheel venv; `test_04_portfolio_optimization` also needed a
+  Decimal-quantize fix in `tantra_data.loaders.amfi.nav_bars` and a float-cast at the numpy
+  boundary in `examples/mutual_funds/04_portfolio_optimization.py`); (2) `test_screening_import`
+  reworked to exercise the missing-`tantra_data` path via a `sys.meta_path` blocker; (3) the
+  tantra-strategies catalog was missing `registry.json` + `tools/validate_chain.py` — shipped in
+  the provider repo (see tantra-strategies HANDOFF) un-skipping the 28 pipeline chain/manifest
+  tests; (4) the 1D NSE catalog tests got a deterministic synthetic lakehouse —
+  `tests/unit/synthetic_lakehouse.py` (price catalog + `fundamentals.duckdb`) behind the
+  `VYAAPAAR_DATA_DIR` seam via a shared `_real_catalog` fixture in `tests/unit/conftest.py`,
+  un-skipping test_08/09/10 + test_screening_cli. Also fixed a wheel-API regression in
+  `examples/production/06_multi_broker_dispatch.py` (paper mocks now registered unconditionally
+  `replace=True`; `available_adapters` import dropped) and re-gated two integration suites on
+  their true prerequisites (test_07 runnable-catalog strategy; test_run_chain 1D data catalog).
+  **1 remaining skip** is honest: `test_mutual_fund_screener_execution` — the
+  `tantra_data.store.mutual_funds` store surface doesn't exist yet (filed tantra-data gap 0023).
+  Gates: `ruff check` + `ruff format --check` clean; integration green.
+* **Plan 0004 PROPOSED (2026-11-16, scope only, no implementation)**: a data-provisioning
+  **microservice** offering `download` (delegates to tantra-data ingest CLIs) / `dummy` (the fold
+  of `tests/unit/synthetic_lakehouse.py` — one canonical synthetic source) / `monte-carlo`
+  (seeded-or-truly-random GBM) for the three datasets (NSE 1D catalog, fundamentals,
+  mutual_funds) — `docs/plans/0004-data-provisioning-microservice-scope.md`. Decision: no new
+  CLI; the service (HTTP) serves the interactive choice. Tests re-point to the provisioner's
+  dummy mode over time.
 * **T13 COMPLETE (2026-11-16, plan 0003 / root plan 0006 T13.6–T13.7)**: renamed the remaining
   harness `tantra_examples/_kernel/` → `tantra_examples/harness/` via `git mv` (history preserved
   for all 9 files). `harness/__init__.py` rewritten as a pure app-layer facade (only harness names:

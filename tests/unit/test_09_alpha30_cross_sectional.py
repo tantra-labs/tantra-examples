@@ -30,24 +30,31 @@ def example():
 
 
 @pytest.fixture
-def _default_catalog() -> None:
-    """Skip when the real NSE 1D catalog isn't present locally.
+def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Build a deterministic synthetic 1D NSE catalog for ``main()``'s store run.
 
-    ``main()``'s catalog-mode run (triggered by ``--start``/``--end``) reads the real data
-    root (no synthetic ``bars=`` override); that root is the absent ``tantra-data``
-    checkout here (the real NSE catalog is absent; see the ``VYAAPAAR_DATA_DIR`` offline seam).
+    Replaces the skip (the real ``tantra-data`` lakehouse is absent here) with a
+    synthetic lakehouse under ``tmp_path``: ``$VYAAPAAR_DATA_DIR`` points the
+    store's data root there, so the same ``main()`` invocation reads the synthetic
+    parquet at ``<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet``.
     """
+    root = tmp_path / "data_root"
+    symbols = ["RELIANCE", "HINDALCO", "SAIL", "VEDL", "ASHOKLEY", "BHEL", "NATIONALUM"]
+    _write_lakehouse_catalog(root, symbols, dt.date(2023, 1, 2), dt.date(2024, 12, 31))
+    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(root))
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(dt.date(2023, 1, 2), dt.date(2024, 12, 31) + dt.timedelta(days=1))
     bars = store.read(InstrumentId("RELIANCE", "NSE"), "1D", interval)
-    if not bars:
-        pytest.skip(
-            "RELIANCE.NSE 1D catalog not available locally (offline seam: real catalog absent)"
-        )
+    assert bars, "synthetic RELIANCE.NSE catalog must yield bars"
 
 
 def _write_symbol_parquet(
-    nse_dir: Path, symbol: str, closes: list[float], days: list[dt.date]
+    nse_dir: Path,
+    symbol: str,
+    closes: list[float],
+    days: list[dt.date],
+    *,
+    year: int = 2024,
 ) -> None:
     """Write one symbol's yearly parquet file the lakehouse layout expects."""
     sym_dir = nse_dir / symbol
@@ -65,13 +72,13 @@ def _write_symbol_parquet(
             "INSERT INTO b VALUES (?, ?, ?, ?, ?, ?)",
             [ts, close, close + 0.5, close - 0.5, close, 1e6],
         )
-    con.execute(f"COPY b TO '{sym_dir / '2024.parquet'}' (FORMAT PARQUET)")
+    con.execute(f"COPY b TO '{sym_dir / f'{year}.parquet'}' (FORMAT PARQUET)")
     con.close()
 
 
 def _synthetic_catalog(tmp_path: Path, symbols: list[str], asof: dt.date) -> Path:
-    """``<tmp>/1D/NSE/<SYMBOL>/2024.parquet`` with bars rising through ``asof``."""
-    nse_dir = tmp_path / "1D" / "NSE"
+    """``<tmp>/catalog/1D/NSE/<SYMBOL>/2024.parquet`` with bars rising through ``asof``."""
+    nse_dir = tmp_path / "catalog" / "1D" / "NSE"
     days: list[dt.date] = []
     d = dt.date(2024, 1, 2)
     while d <= asof:
@@ -83,6 +90,28 @@ def _synthetic_catalog(tmp_path: Path, symbols: list[str], asof: dt.date) -> Pat
         drift = 0.0004 * (i + 1)  # distinct personalities so factor ranking is meaningful
         closes = [100.0 * (1.0 + drift) ** j for j in range(len(days))]
         _write_symbol_parquet(nse_dir, symbol, closes, days)
+    return nse_dir
+
+
+def _write_lakehouse_catalog(root: Path, symbols: list[str], start: dt.date, end: dt.date) -> Path:
+    """Write ``<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet`` for every year in the
+    window, each symbol with a distinct deterministic drift so the cross-sectional
+    factor ranking is meaningful."""
+    nse_dir = root / "catalog" / "1D" / "NSE"
+    days: list[dt.date] = []
+    d = start
+    while d <= end:
+        if d.weekday() < 5:
+            days.append(d)
+        d += dt.timedelta(days=1)
+    assert len(days) >= 200, f"only {len(days)} sessions in {start}..{end}"
+    for i, symbol in enumerate(symbols):
+        drift = 0.0004 * (i + 1)  # distinct personalities so factor ranking is meaningful
+        closes = [100.0 * (1.0 + drift) ** j for j in range(len(days))]
+        for year in range(start.year, end.year + 1):
+            year_days = [day for day in days if day.year == year]
+            year_closes = [c for day, c in zip(days, closes, strict=True) if day.year == year]
+            _write_symbol_parquet(nse_dir, symbol, year_closes, year_days, year=year)
     return nse_dir
 
 

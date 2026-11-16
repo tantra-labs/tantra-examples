@@ -13,7 +13,6 @@ from tantra.base import Strategy
 
 from tantra_examples.base import TantraExample
 from tantra_examples.screening import (
-    find_catalog_path,
     get_latest_market_date,
     screen_multibaggers,
     screen_value_and_dividend,
@@ -35,20 +34,6 @@ def example():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
-
-
-@pytest.fixture
-def _real_catalog() -> Path:
-    """The real 1D NSE catalog, or skip (real catalog absent; ``VYAAPAAR_DATA_DIR`` seam).
-
-    These tests check real screening/fundamentals behaviour (point-in-time
-    sparsity of 2023 data, real symbols) rather than synthetic fixtures, so they
-    need the actual ``tantra-data`` catalog checkout, absent in this workspace.
-    """
-    try:
-        return find_catalog_path()
-    except FileNotFoundError as exc:
-        pytest.skip(f"1D NSE catalog not available (offline seam: real catalog absent): {exc}")
 
 
 def test_inheritance(example):

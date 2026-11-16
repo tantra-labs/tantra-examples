@@ -101,7 +101,10 @@ def run(
         returns_dict[s] = returns_dict[s][-min_len:]
 
     n = len(schemes)
-    returns_matrix = np.array([returns_dict[s] for s in schemes])  # n x T
+    # The store returns exact Decimals; numpy needs float64 arrays, so the daily
+    # returns are converted here at the statistical boundary (the allocation
+    # weights and portfolio stats that come out are dimensionless).
+    returns_matrix = np.array([[float(v) for v in returns_dict[s]] for s in schemes])  # n x T
 
     # Expected returns and covariance
     mu = np.mean(returns_matrix, axis=1) * 252  # annualize

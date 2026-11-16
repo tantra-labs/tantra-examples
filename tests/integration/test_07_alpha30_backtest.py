@@ -19,6 +19,7 @@ from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.markets.india.universes import resolve_universe
 from tantra.store import ParquetBarStore
 
+from tantra_examples.catalog import load_named
 from tantra_examples.harness.loader import CatalogError, find_catalog
 from tantra_examples.synthetic import bar, weekdays
 
@@ -32,7 +33,12 @@ MISSING = "IDEA"  # one member deliberately has no bars
 
 def _catalog_or_skip() -> Path:
     try:
-        return find_catalog(search_from=SCRIPT)
+        catalog = find_catalog(search_from=SCRIPT)
+        # The catalog must also actually ship the runnable ``equal_weight`` strategy
+        # (strategy.py + config.toml in the loader's layout); until tantra-strategies
+        # provides it (tracked by tantra-strategies/docs/gaps/0007), skip honestly.
+        load_named("equal_weight", strategies_dir=catalog, search_from=SCRIPT)
+        return catalog
     except CatalogError as exc:
         pytest.skip(str(exc))
 

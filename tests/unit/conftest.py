@@ -9,9 +9,13 @@ from pathlib import Path
 import duckdb
 import pytest
 
+from tests.unit.synthetic_lakehouse import build_lakehouse
+
 Bar = tuple[dt.date, float, float, float, float, float]  # (date, open, high, low, close, volume)
 
 SCREEN_ASOF = dt.date(2024, 6, 28)
+
+_DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
 
 
 def sessions(end: dt.date, n: int) -> list[dt.date]:
@@ -84,8 +88,28 @@ def data_env(catalog_dir: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     production shape ``<root>/catalog/1D/NSE`` plus ``fundamentals.duckdb`` when the
     ``fund_db``/``fund`` fixtures also ran (they share the same ``tmp_path``).
     """
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(catalog_dir.parents[2]))
+    monkeypatch.setenv(_DATA_DIR_ENV, str(catalog_dir.parents[2]))
     return catalog_dir.parents[2]
+
+
+@pytest.fixture(scope="session")
+def lakehouse_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Synthetic NSE data root (price catalog + fundamentals DuckDB), built once.
+
+    Stand-in for the absent ``tantra-data`` checkout (gap 0003): the layout mirrors
+    ``<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet`` plus ``<root>/fundamentals.duckdb``
+    (see ``tests/unit/synthetic_lakehouse.py`` for the deterministic rows).
+    """
+    root = tmp_path_factory.mktemp("synthetic-lakehouse")
+    build_lakehouse(root)
+    return root
+
+
+@pytest.fixture
+def _real_catalog(lakehouse_root: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """The synthetic 1D NSE catalog with ``VYAAPAAR_DATA_DIR`` resolved to its root."""
+    monkeypatch.setenv(_DATA_DIR_ENV, str(lakehouse_root))
+    return lakehouse_root / "catalog" / "1D" / "NSE"
 
 
 @pytest.fixture

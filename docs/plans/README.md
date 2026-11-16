@@ -9,7 +9,7 @@ Per workspace rule `.agents/rules/gap-tracking.md`:
 
 | # | Title | Target Scope | Status |
 |---|-------|--------------|--------|
-| *(none — all plans implemented)* | | | |
+| [0004](0004-data-provisioning-microservice-scope.md) | Data-Provisioning Microservice (download / dummy / Monte-Carlo) — scope only, no implementation (2026-11-16 decision) | new service component; `examples/`, `tantra_examples/`, `tests/` (canonical dummy-mode fixture fold) | Proposed |
 
 ## Implemented Plans
 

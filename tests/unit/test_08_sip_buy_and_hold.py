@@ -7,6 +7,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import duckdb
 import pytest
 from tantra.coverage import DateInterval
 from tantra.instrument import InstrumentId
@@ -28,23 +29,50 @@ def example():
     return module
 
 
-@pytest.fixture
-def _default_catalog() -> None:
-    """Skip when the ``ALPHAETF.NSE`` 1D catalog isn't present locally.
+def _write_symbol_parquet(
+    nse_dir: Path, symbol: str, days: list[dt.date], closes: list[float]
+) -> None:
+    """Write ``<nse_dir>/<SYMBOL>/2025.parquet`` in the lakehouse layout."""
+    sym_dir = nse_dir / symbol
+    sym_dir.mkdir(parents=True, exist_ok=True)
+    con = duckdb.connect()
+    con.execute(
+        "CREATE TABLE b (ts BIGINT, open DOUBLE, high DOUBLE, low DOUBLE, "
+        "close DOUBLE, volume DOUBLE)"
+    )
+    for day, close in zip(days, closes, strict=True):
+        ts = (
+            int(dt.datetime.combine(day, dt.time(9, 15), tzinfo=dt.UTC).timestamp()) * 1_000_000_000
+        )
+        con.execute(
+            "INSERT INTO b VALUES (?, ?, ?, ?, ?, ?)",
+            [ts, close, close + 0.5, close - 0.5, close, 1e6],
+        )
+    con.execute(f"COPY b TO '{sym_dir / '2025.parquet'}' (FORMAT PARQUET)")
+    con.close()
 
-    ``main()``'s default run reads the real data root (no synthetic ``bars=``
-    override); that root is the absent ``tantra-data`` checkout here
-    (the real NSE catalog is absent; see the ``VYAAPAAR_DATA_DIR`` offline seam).
+
+@pytest.fixture
+def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Build a deterministic synthetic ``ALPHAETF.NSE`` 1D catalog for ``main()``.
+
+    ``main()``'s default run reads the data root resolved by ``find_data_root``;
+    pointing ``$VYAAPAAR_DATA_DIR`` at a synthetic lakehouse under ``tmp_path``
+    (``<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet``) replaces the absent real
+    ``tantra-data`` catalog (the previous offline-seam skip).
     """
+    root = tmp_path / "data_root"
+    nse_dir = root / "catalog" / "1D" / "NSE"
+    days = weekdays_func(dt.date(2025, 1, 1), 260)  # ~1 year of daily bars
+    closes = [100.0 + i * 0.1 for i in range(len(days))]
+    _write_symbol_parquet(nse_dir, "ALPHAETF", days, closes)
+    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(root))
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(
         dt.date(2025, 1, 1), dt.datetime.now(tz=dt.UTC).date() + dt.timedelta(days=1)
     )
     bars = store.read(InstrumentId("ALPHAETF", "NSE"), "1D", interval)
-    if not bars:
-        pytest.skip(
-            "ALPHAETF.NSE 1D catalog not available locally (offline seam: real catalog absent)"
-        )
+    assert bars, "synthetic ALPHAETF.NSE catalog must yield bars"
 
 
 @pytest.fixture

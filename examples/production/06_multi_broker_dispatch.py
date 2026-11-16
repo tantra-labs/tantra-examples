@@ -43,7 +43,6 @@ from tantra.adapters.capabilities import AdapterCapabilities
 from tantra.adapters.errors import AdapterError, AdapterNotFound
 from tantra.adapters.models import RunMode
 from tantra.adapters.registry import (
-    available_adapters,
     register_adapter,
     resolve_adapter,
 )
@@ -84,17 +83,20 @@ class PaperBrokerAdapter(FakeAdapter):
         return replace(base, name=self._broker_name)
 
 
-if "zerodha" not in available_adapters():
-    register_adapter(
-        "zerodha",
-        lambda **kwargs: PaperBrokerAdapter("zerodha", kwargs.get("config")),
-    )
+# Paper-mode mocks are registered unconditionally (``replace=True``) so this example is
+# deterministic and offline even when the real broker adapters (tantra-adapters wheel) are
+# installed: a real adapter would need live credentials and would not be constructible here.
+register_adapter(
+    "zerodha",
+    lambda **kwargs: PaperBrokerAdapter("zerodha", kwargs.get("config")),
+    replace=True,
+)
 
-if "angelone" not in available_adapters():
-    register_adapter(
-        "angelone",
-        lambda **kwargs: PaperBrokerAdapter("angelone", kwargs.get("config")),
-    )
+register_adapter(
+    "angelone",
+    lambda **kwargs: PaperBrokerAdapter("angelone", kwargs.get("config")),
+    replace=True,
+)
 
 
 # Brokers the dispatch covers, in the order the plan names them (Zerodha, Upstox, Angel One).

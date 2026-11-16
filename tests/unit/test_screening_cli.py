@@ -11,7 +11,6 @@ from pathlib import Path
 import pytest
 
 from tantra_examples.screener_cli import ScreenerCLIExample
-from tantra_examples.screening.paths import find_catalog_path
 
 _ROOT = Path(__file__).resolve().parents[2] / "examples"
 
@@ -62,20 +61,6 @@ def net_net_script():
 @pytest.fixture(scope="module")
 def mf_script():
     return _load("screening_06_mutual_fund", "screening/07_mutual_fund_screener.py")
-
-
-@pytest.fixture
-def _real_catalog() -> Path:
-    """The real 1D NSE catalog, or skip (real catalog absent; ``VYAAPAAR_DATA_DIR`` seam).
-
-    These tests exercise the real catalog-resolution path rather than a synthetic
-    fixture, so they need the actual ``tantra-data`` catalog checkout, absent in
-    this workspace.
-    """
-    try:
-        return find_catalog_path()
-    except FileNotFoundError as exc:
-        pytest.skip(f"1D NSE catalog not available (offline seam: real catalog absent): {exc}")
 
 
 _CANDIDATES = [
@@ -188,7 +173,10 @@ def test_screener_stream_feeds_backtester_parser():
 
 
 def test_mutual_fund_screener_execution(mf_script, capsys, _real_catalog):
-    pytest.importorskip("tantra_data", reason="mutual-fund screener needs the [mutual-funds] extra")
+    pytest.importorskip(
+        "tantra_data.store.mutual_funds",
+        reason=("tantra_data.store.mutual_funds not shipped yet (tantra-data provider gap)"),
+    )
     example = mf_script.MutualFundScreenerExample()
     example.stream_format = "symbols"
     example.category = "Equity:Flexi Cap"

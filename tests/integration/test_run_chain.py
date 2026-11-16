@@ -17,6 +17,7 @@ import pytest
 
 from tantra_examples.harness.loader import CatalogError
 from tantra_examples.pipeline.chain import ChainError, load_chain, run_chain, validate
+from tantra_examples.screening import find_catalog_path
 
 EX = Path(__file__).resolve().parents[2] / "examples"
 CHAIN = EX / "screening" / "chains" / "quality_value.toml"
@@ -28,6 +29,11 @@ def _need_catalog() -> None:
         validate([{"uses": "size.equal_weight"}])
     except CatalogError as exc:
         pytest.skip(f"tantra-strategies catalog not available: {exc}")
+    # Running a chain screens the real 1D NSE Parquet catalog, absent offline.
+    try:
+        find_catalog_path()
+    except FileNotFoundError as exc:
+        pytest.skip(f"1D NSE catalog not available (offline seam: real catalog absent): {exc}")
 
 
 def _script():
