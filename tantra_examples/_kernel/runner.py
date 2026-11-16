@@ -24,11 +24,11 @@ port's ``submit``. The request carries ``position`` = the context position plus 
 working exposure on the same side (``working_exposure``), ``reference_price`` = the last bar
 close or trade price seen (updated before the strategy sees the event), ``trading_state`` (see
 ``set_trading_state``) and ``ts`` = ``ts_init`` in ns. A refusal never reaches the port and
-consumes its order id; it is audited (``audit``: :class:`~_kernel.risk.RiskRefused`, then
-:class:`~_kernel.risk.OrderRejected`), applies ``Initialized -> Rejected`` and queues a
+consumes its order id; it is audited (``audit``: :class:`~tantra.risk.RiskRefused`, then
+:class:`~tantra.risk.OrderRejected`), applies ``Initialized -> Rejected`` and queues a
 ``Rejected`` event, reason = the ``ErrorCode`` wire spelling (``risk_*``), ahead of the next
 drain, so the strategy and ``order_rejections`` see it like a venue reject. Without a stage the
-runner still enforces ``Halted`` and reduce-only (:func:`~_kernel.risk.check_state`). A stage
+runner still enforces ``Halted`` and reduce-only (:func:`~tantra.risk.check_state`). A stage
 serves one runner, and a runner whose port already gates (``holds_risk_stage``) takes none.
 
 Warm-up gate (``StrategyManifest.warmup_bars``): a *driving bar* is a ``Bar`` event whose
@@ -79,14 +79,14 @@ from tantra.execution import (
 from tantra.instrument import InstrumentId
 from tantra.order import OrderIntent, OrderSide, OrderStatus, validate_intent
 from tantra.order_state import IllegalTransition, OrderEvent, OrderState
+from tantra.risk import OrderRejected, RiskRefusal, RiskRefused, check_state
 from tantra.tick import QuoteTick, TradeTick
 from tantra.trade import Trade
 
 import tantra_examples._kernel.log as _tantra_log  # noqa: F401 — triggers auto-init from VYAAPAAR_LOG_EVENTS
-from tantra_examples._kernel.risk import OrderRejected, RiskRefusal, RiskRefused, check_state
 
 if TYPE_CHECKING:
-    from tantra_examples._kernel.risk import RiskLimits, RiskStage, TradingState
+    from tantra.risk import RiskLimits, RiskStage, TradingState
 
 __all__ = [
     "ExecutionPort",
@@ -211,7 +211,7 @@ class StrategyRunner:
 
     ``warmup_bars`` defaults to the strategy's ``warmup_bars`` class attribute (0).
 
-    ``risk`` puts a :class:`~_kernel.risk.RiskStage` in front of the port (see the module docs).
+    ``risk`` puts a :class:`~tantra.risk.RiskStage` in front of the port (see the module docs).
     The native stage does not expose its limits, so ``risk_limits`` (the ``RiskLimits`` it was
     built with) is what :meth:`require_live_limits` checks; omitted, it counts as no limits.
     """

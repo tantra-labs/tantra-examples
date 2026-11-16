@@ -32,8 +32,8 @@ import datetime as dt
 import sys
 from typing import Any
 
-from tantra_examples._kernel.greeks import bs_price
-from tantra_examples._kernel.option import OptionKind
+from tantra.options import OptionKind, bs_price
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]

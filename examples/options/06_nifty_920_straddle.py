@@ -53,10 +53,9 @@ import sys
 from decimal import Decimal as D
 from typing import Any
 
+from tantra.options import OptionKind, bs_price
 from tantra.sizing import freeze_limit_qty
 
-from tantra_examples._kernel.greeks import bs_price
-from tantra_examples._kernel.option import OptionKind
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.options import (
     ICCL_CLEARING_CORPORATION,

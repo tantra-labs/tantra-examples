@@ -33,8 +33,8 @@ import sys
 from typing import Any
 
 from tantra.instrument import InstrumentId
+from tantra.options import OptionChain, OptionContract, OptionKind, OptionStyle
 
-from tantra_examples._kernel.option import OptionChain, OptionContract, OptionKind, OptionStyle
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 
 __all__ = ["main", "run"]

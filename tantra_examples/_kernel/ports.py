@@ -12,11 +12,10 @@ from collections.abc import Sequence
 from typing import Any, Protocol
 
 from tantra.bar import Bar
+from tantra.calendar import ist_midnight_ns
 from tantra.coverage import CoverageRecord, DateInterval
 from tantra.instrument import InstrumentId
 from tantra.wire.screener import ScreenerScanRequest, ScreenerScanResponse
-
-from tantra_examples._kernel.calendar import ist_midnight_ns
 
 
 def validate_bar(bar: Bar) -> bool:

@@ -1,10 +1,9 @@
 """Domain models for the tantra kernel (pure domain models, no I/O).
 
-Ex 0006 closure: every model is re-exported from the tantra wheel's
-Decimal-canonical surface (``tantra.bar``, ``tantra.instrument``,
-``tantra.money``, ``tantra.order``, ``tantra.position``, ``tantra.tick``,
-``tantra.trade``); the only in-repo models left are the ``_kernel.portfolio``
-aggregates (``Account`` / ``Portfolio``).
+Ex 0006 / root plan 0006 (T13) closure: every model is re-exported from the
+tantra wheel's Decimal-canonical surface (``tantra.bar``, ``tantra.instrument``,
+``tantra.money``, ``tantra.order``, ``tantra.portfolio``, ``tantra.position``,
+``tantra.tick``, ``tantra.trade``).
 """
 
 from tantra.bar import Bar
@@ -21,10 +20,7 @@ from tantra.position import Position
 from tantra.tick import AggressorSide, QuoteTick, TradeTick
 from tantra.trade import Trade
 
-from tantra_examples._kernel.portfolio import Account, Portfolio
-
 __all__ = [
-    "Account",
     "AggressorSide",
     "Bar",
     "Currency",
@@ -37,7 +33,6 @@ __all__ = [
     "OrderSide",
     "OrderStatus",
     "OrderType",
-    "Portfolio",
     "Position",
     "QuoteTick",
     "TimeInForce",

@@ -2,7 +2,7 @@
 
 Alpha 30 is not a strategy, it is a *universe* (a parameter). The strategy is "hold every
 member of a universe at an equal weight and rebalance periodically". The portfolio layer
-(``_kernel.portfolio_strategy``) splits that into swappable parts, and ``PortfolioStrategy``
+(``tantra.portfolio_strategy``) splits that into swappable parts, and ``PortfolioStrategy``
 wires them together::
 
     Universe -> Selector -> WeightingScheme -> RebalanceSchedule -> PortfolioStrategy

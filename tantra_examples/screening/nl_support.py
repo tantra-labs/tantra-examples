@@ -19,8 +19,7 @@ from decimal import Decimal
 from typing import Any
 
 from tantra.ai.llm.provider import LlmPort, ScriptedFakeLlm
-
-from tantra_examples._kernel.evaluator import extract_metrics_from_bars
+from tantra.metrics import extract_metrics_from_bars
 
 __all__ = [
     "KNOWN_METRICS",

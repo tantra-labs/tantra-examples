@@ -3,7 +3,7 @@
 Strategy: extend ``04_backtest_iron_condor.py`` — sell an OTM put spread and an
 OTM call spread (4 legs, net credit), then delta-hedge the position intraday on
 a simulated spot path: each bar, re-price the 4 legs with
-``tantra_examples._kernel.greeks.bs_greeks`` (the same math as
+``tantra.options.bs_greeks`` (the same math as
 ``02_greeks_calculation``), sum net delta/gamma/vega, and when ``|net delta|``
 breaches the Greek risk bound (0.25 underlying units by default) trade the
 underlying futures to flatten delta. Gamma/vega breaches are logged but not
@@ -47,8 +47,8 @@ import sys
 from decimal import Decimal as D
 from typing import Any
 
-from tantra_examples._kernel.greeks import bs_greeks, bs_price
-from tantra_examples._kernel.option import OptionKind
+from tantra.options import OptionKind, bs_greeks, bs_price
+
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
 from tantra_examples.options import (
     GreekRiskBounds,
