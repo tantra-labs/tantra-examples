@@ -8,7 +8,7 @@ Teach the new screening, QVM, universe and alert surfaces through runnable examp
 examples package off its private universe mirror and string-built SQL onto tantra-data readers.
 
 References: research [`trendlyne-screener-alerts-mcp.md`](../../../docs/research/trendlyne-screener-alerts-mcp.md);
-root roadmap [`0007`](../../../docs/plans/0007-screener-taxonomy-and-alerts.md).
+root roadmap [`0010`](../../../docs/plans/0010-screener-taxonomy-and-alerts.md).
 Depends on: [tantra-data 0007](../../../tantra-data/docs/plans/0007-instrument-master-index-membership.md),
 [tantra-data 0008](../../../tantra-data/docs/plans/0008-screen-dsl-catalog-qvm.md),
 [tantra-strategies 0002](../../../tantra-strategies/docs/plans/0002-universe-screen-context.md).
