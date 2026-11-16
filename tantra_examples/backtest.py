@@ -18,7 +18,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 # Grafted deterministic engine runs on the wheel simulator/runner
-# (`tantra.backtest`, `tantra_examples._kernel.runner`: gap 0006) with the India
+# (`tantra.backtest`, `tantra_examples.harness.runner`: gap 0006) with the India
 # cost/settlement wheel surface (`tantra.markets.india` costs + settlement).
 from tantra.backtest import (
     FillCostFn as SimFillCostFn,
@@ -34,16 +34,16 @@ from tantra.base import Strategy
 from tantra.context import LedgerContext
 from tantra.instrument import InstrumentId
 from tantra.markets.india.costs import (
-    nse_equity_delivery_fill_cost as _kernel_nse_equity_delivery_fill_cost,
+    nse_equity_delivery_fill_cost as _fill_cost_nse_equity_delivery,
 )
 from tantra.markets.india.settlement import settlement_days_for
 from tantra.money import Currency, Money
 from tantra.order import OrderIntent, OrderSide
 
 from tantra_examples._compat import D
-from tantra_examples._kernel.runner import StrategyRunner
 from tantra_examples.base import ts_to_date
 from tantra_examples.data import Bar as FreshBar
+from tantra_examples.harness.runner import StrategyRunner
 from tantra_examples.metrics import (
     PerformanceMetrics,
     Trade,
@@ -370,7 +370,7 @@ def run_portfolio_backtest(
     test_end: dt.date,
     capital_minor: int,
     settlement_days: int | None = None,
-    costs: SimFillCostFn = _kernel_nse_equity_delivery_fill_cost,
+    costs: SimFillCostFn = _fill_cost_nse_equity_delivery,
     exchange: str = "NSE",
 ) -> BacktestRun:
     """Run ``strategy`` over ``bars``; trade and account only within ``[test_start, test_end]``.

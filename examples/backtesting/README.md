@@ -33,9 +33,9 @@ performance. Read it before trusting a number. For the general treatment see
 ## The common pattern
 
 ```python
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma
-from tantra_examples._kernel.testing import replay
+from tantra.base import Strategy
+from tantra.indicators import Sma
+from tantra_examples.harness.testing import replay
 from tantra_examples.metrics import curve_metrics
 
 
@@ -103,7 +103,7 @@ pytest tests/unit -q -k "first_backtest or cost_modeling or latency_modeling or 
 ## From here to production backtests
 
 The same `Strategy` subclass works with:
-- `_kernel.testing.replay` (these examples — bar-close fills, no settlement)
+- `tantra_examples.harness.testing.replay` (these examples — bar-close fills, no settlement)
 - `tantra.backtest.session.Tantra.backtest` (event-driven, next-open fills, India costs, T+N settlement)
 - `tantra.adapters` + a broker (paper/live; `tantra.client` REST is a future wheel surface)
 

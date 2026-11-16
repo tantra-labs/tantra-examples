@@ -38,7 +38,8 @@ if TYPE_CHECKING:
 
 # ``STRATEGY_API_VERSION`` is not exposed by the compiled wheel (gap
 # ``0006-tantra-wheel-kernel-domain-surface``); pinned here from the owning engine's
-# ``manifest.rs`` (the ``_kernel.native`` stand-in pinned the same ``"1.0.0"``).
+# ``manifest.rs`` (the former native stand-in pinned the same ``"1.0.0"``; the package
+# was renamed to ``tantra_examples.harness`` under root plan 0006 T13 Thrust B).
 STRATEGY_API_VERSION = "1.0.0"
 
 __all__ = [

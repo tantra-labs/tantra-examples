@@ -1,7 +1,7 @@
 """strategies/12_buy_and_hold_lifecycle: a minimal buy and hold lifecycle strategy.
 
 Demonstrates the lifecycle hooks: ``on_start``, ``on_bar``, and ``on_stop``.
-Subclass ``_kernel.base.Strategy`` and implement these methods.
+Subclass ``tantra.base.Strategy`` and implement these methods.
 
 Run::
 

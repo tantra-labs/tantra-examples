@@ -1,6 +1,23 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **T13 Thrust B DONE (2026-11-16, plan 0003 / root plan 0006 T13.6)**: renamed the remaining
+  harness `tantra_examples/_kernel/` → `tantra_examples/harness/` via `git mv` (history preserved
+  for all 9 files). `harness/__init__.py` rewritten as a pure app-layer facade (only harness names:
+  `StrategyConfig`, `Catalog*`/loader, `EventFilter`/log, `StrategyManifest`/manifest,
+  `BarStore`/ports, `StrategyRunner`/runner, `DataService`, `replay`/testing — no wheel domain
+  re-exports). Every `tantra_examples._kernel.*` import retargeted (harness internal, `backtest.py`,
+  `sip_plan.py`, `replay_report.py`, `catalog.py`, 27 test files, ~25 example scripts); the
+  `_kernel` name is **deleted repo-wide** (Step 6 grep: 0 matches in `*.py`). Docs swept:
+  `architecture.md` (§2 “one world”, §3 rows, §4, §5 rewritten as “The Application Harness”),
+  `code-migration-map.md` + `gap-cascade-kernel-mirror.md` + `docs/gaps|plans/README.md` note the
+  rename, and the strategies/backtesting README code snippets now import from `tantra.base`,
+  `tantra.indicators`, `tantra_examples.harness.testing`. Plan 0003 marked **Implemented-pending**
+  (T13 gate + T13.7 follow-on consolidation candidates still open). Verified: unit suite
+  916 passed / 50 skipped / 0 failed, ruff clean on touched files, 6 example import-smokes pass.
+  Commit `COMMIT_HASH_PLACEHOLDER` (local, not pushed). Thrust A (the wheel lift that deleted the
+  six domain modules `_kernel/{portfolio,risk,greeks,option,evaluator,calendar}.py`) was already
+  complete before this batch; the facade now exposes no wheel names at all.
 * **Unit suite fully green (2026-11-15)**: all 73 pre-existing float-rooted failures + 3 errors fixed
   (tests/unit: **916 passed / 51 skipped**, exit 0; wheel suite in tantra-ffi: **464 passed**). Root
   cause throughout: examples/tests mixed Python `float` with the Decimal-canonical wheel
@@ -23,12 +40,12 @@
   - Gates: `ruff check .` clean, `ruff format --check .` clean, `pytest tests/unit -q` exit 0
     (916 passed / 51 skipped; the only functional skip is the mutual-fund screener needing the real
     1D NSE catalog).
-* **T13 PLANNED (docs only, 2026-11-15)**: plan `docs/plans/0003-tantra-examples-harness-dismantle.md`
-  filed (Proposed) — rename the remaining `_kernel/` harness to `tantra_examples/harness/`
-  (config/loader/log/manifest/ports/runner/service/testing), retarget ~60 `_kernel.*` import
-  sites, delete `_kernel/`, gate + follow-on candidates (root plan 0006, Thrust B; track
-  T13.6–T13.7). Depends on the Thrust A wheel lift (`tantra-ffi` plan 0002). No development
-  started; awaits approval.
+* **T13 PLANNED → Thrust B DONE (2026-11-15 planned, executed 2026-11-16)**: plan
+  `docs/plans/0003-tantra-examples-harness-dismantle.md` was filed (Proposed) for the harness
+  rename `_kernel/` → `tantra_examples/harness/` (config/loader/log/manifest/ports/runner/service/
+  testing), ~60 `_kernel.*` import sites, deleting `_kernel/`, gate + follow-on candidates (root
+  plan 0006, Thrust B; T13.6–T13.7). **Executed** — see the top batch entry (commit
+  `COMMIT_HASH_PLACEHOLDER`); plan 0003 is now **Implemented-pending** (T13 gate sign-off remains).
 * **Gap 0008 CLOSED (2026-11-15)**: wheel `tantra.backtest.session` shipped; `_kernel/session.py`
   deleted; the `_kernel/` mirror is fully dismantled — only the shared harness remains.
 * **Gap 0008 CLOSED (2026-11-15, ex 0008 closure — the last gap; all 8 closed)** — the
@@ -141,7 +158,7 @@
 
 ## Decisions & Discoveries
 * **Pytest import mode & test structure**: `pythonpath = ["."]` in `pyproject.toml` + empty `__init__.py` in `tests/`, `tests/unit/`, `tests/integration/` lets `pytest -q` run from the repo root and resolves module-name collisions between unit and integration tests.
-* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (calendar/config/evaluator/greeks/loader/log/manifest/option/portfolio/ports/risk/runner/service/testing) are the shared example harness, all built on the wheel — no mirrors remain after the ex 0008 closure deleted `session.py`.
+* **Kernel mirror is the wheel-missing stand-in**: `tantra_examples/_kernel/` was a 166-file kernel-verbatim mirror (indicators 87, portfolio_strategy 10, adapters 13) cited against gaps 0002–0008. The ex 0006 closure (Wave 5b) deleted the shipped modules and the `[[tool.mypy.overrides]]` block; `SCHEMA_VERSION`/`API_VERSION` now come from the wheel (`tantra.SCHEMA_VERSION`/`tantra.API_VERSION`). The remaining `_kernel` files (calendar/config/evaluator/greeks/loader/log/manifest/option/portfolio/ports/risk/runner/service/testing) were the shared example harness, all built on the wheel — no mirrors remained after the ex 0008 closure deleted `session.py`; under plan 0003 Thrust B (2026-11-16) the surviving harness modules were renamed to `tantra_examples/harness/`.
 * **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` re-exporting `tantra.cli.data` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
 * **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
 * **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.
@@ -149,10 +166,13 @@
 
 ## Immediate Next Step
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.
-* All 8 gaps (0001–0008) are closed — no `_kernel` mirror/stub remains (only the shared
-  example harness). Next work is example-side maintenance (keep every numbered script runnable
-  and its `tests/unit/` regression green) or whatever the orchestrator assigns next.
+* All 8 gaps (0001–0008) are closed and the `_kernel` mirror is fully dismantled; the shared
+  example harness was renamed to `tantra_examples/harness/` (plan 0003, root plan 0006 Thrust B,
+  commit `COMMIT_HASH_PLACEHOLDER`, 2026-11-16). **Plan 0003 = Implemented-pending**: the T13
+  gate sign-off and the T13.7 follow-on consolidation candidates are the next work; otherwise
+  example-side maintenance (keep every numbered script runnable and its `tests/unit/` regression
+  green) or whatever the orchestrator assigns next.
 
 ## Operating Invariants
-* Zero floats in financial math (documented exceptions: BS internals example 13; grafted `metrics.py` stats; kernel-mirror float domain, gap 0006). Deterministic offline runs; tests live in `tests/` only.
+* Zero floats in financial math (documented exceptions: BS internals example 13; grafted `metrics.py` stats). Deterministic offline runs; tests live in `tests/` only.
 * Canonical verification: `pytest -q && ruff check . && ruff format --check . && mypy tantra_examples && make check`.

@@ -47,9 +47,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-# mirror accommodation (gap 0006): kernel-mirrored loader, no wheel equivalent yet
-from tantra_examples._kernel.loader import CatalogError
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+
+# mirror accommodation (gap 0006): kernel-mirrored loader, no wheel equivalent yet
+from tantra_examples.harness.loader import CatalogError
 from tantra_examples.pipeline.chain import (
     ChainError,
     describe_all,

@@ -2,7 +2,7 @@
 
 Tantra has two fill models for bar data: ``bar_close`` (the decision bar's close, the single-price
 conformance model) and ``next_open`` (daily, next session's open, simulated by
-``_kernel.backtest.simulated.NextOpenExecution``). This example runs the same strategy under both
+``tantra.backtest.NextOpenExecution``). This example runs the same strategy under both
 and under a third stress case, ``open_after_2_bars`` (``fill_delay=2``: the open two bars after the
 signal), and compares fill prices. The engine has no next-close model.
 
@@ -38,8 +38,8 @@ from tantra.bar import Bar
 from tantra.base import Strategy
 from tantra.indicators import Sma
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.synthetic import bar as synth_bar
 from tantra_examples.synthetic import weekdays as weekdays_func
 

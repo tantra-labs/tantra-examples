@@ -7,7 +7,7 @@ from typing import Any
 
 from tantra.base import Strategy
 
-from tantra_examples._kernel.testing import replay
+from tantra_examples.harness.testing import replay
 from tantra_examples.jsonable import jsonable
 
 __all__ = ["replay_report"]

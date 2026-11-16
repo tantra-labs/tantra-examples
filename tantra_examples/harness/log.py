@@ -30,7 +30,7 @@ Environment
 
 Discover available events at any time::
 
-    python -m tantra_examples._kernel.log
+    python -m tantra_examples.harness.log
 """
 # mirror: kernel-verbatim port (gap 0006)
 
@@ -78,7 +78,7 @@ _WIRE_EVENT_DESCRIPTIONS: dict[str, str] = {
 # ---------------------------------------------------------------------------
 # Strategy layer — EVENT_* convention
 # ---------------------------------------------------------------------------
-# Built-in events emitted by _kernel.base.Strategy
+# Built-in events emitted by tantra.base.Strategy
 _BUILTIN_STRATEGY_EVENTS: dict[str, str] = {
     "EVENT_BUY": "Strategy issued a buy order (auto-emitted by Strategy.buy())",
     "EVENT_SELL": "Strategy issued a sell order (auto-emitted by Strategy.sell())",
@@ -95,7 +95,7 @@ def register_event(name: str, description: str = "") -> None:
 
     Call once at module level in your strategy file::
 
-        from tantra_examples._kernel.log import register_event
+        from tantra_examples.harness.log import register_event
         register_event("EVENT_SIGNAL_CROSS", "EMA crossover signal triggered")
 
     Parameters
@@ -103,7 +103,7 @@ def register_event(name: str, description: str = "") -> None:
     name : str
         Event name — must start with ``EVENT_`` (convention enforced).
     description : str
-        Human-readable description shown by ``python -m tantra_examples._kernel.log``.
+        Human-readable description shown by ``python -m tantra_examples.harness.log``.
     """
     if not name.startswith("EVENT_"):
         raise ValueError(f"Custom event names must start with 'EVENT_', got: {name!r}")
@@ -262,7 +262,7 @@ def setup_event_logging(
     --------
     Log everything::
 
-        from tantra_examples._kernel.log import setup_event_logging
+        from tantra_examples.harness.log import setup_event_logging
         setup_event_logging()
 
     Log fills and membership changes only::

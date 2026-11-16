@@ -21,7 +21,7 @@ from tantra.coverage import (
 )
 from tantra.instrument import InstrumentId
 
-from tantra_examples._kernel.ports import BarStore, MarketDataProvider, validate_bar
+from tantra_examples.harness.ports import BarStore, MarketDataProvider, validate_bar
 
 logger = logging.getLogger(__name__)
 

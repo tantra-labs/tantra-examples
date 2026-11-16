@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from tantra_examples._kernel.loader import CatalogError
+from tantra_examples.harness.loader import CatalogError
 from tantra_examples.pipeline import (
     EqualWeightSizer,
     FundamentalQualityFilter,

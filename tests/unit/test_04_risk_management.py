@@ -74,7 +74,7 @@ def _bars(closes):
 
 
 def _replay(example, closes, **kw):
-    from tantra_examples._kernel.testing import replay
+    from tantra_examples.harness.testing import replay
 
     strat = example.RiskManagedSma(**kw)
     return strat, replay(strat, _bars(closes))

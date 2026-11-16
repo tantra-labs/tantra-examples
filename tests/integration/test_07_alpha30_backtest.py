@@ -19,7 +19,7 @@ from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.markets.india.universes import resolve_universe
 from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.loader import CatalogError, find_catalog
+from tantra_examples.harness.loader import CatalogError, find_catalog
 from tantra_examples.synthetic import bar, weekdays
 
 SCRIPT = Path(__file__).resolve().parents[2] / "examples" / "universes" / "07_alpha30_backtest.py"

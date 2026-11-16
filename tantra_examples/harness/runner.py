@@ -40,7 +40,7 @@ order; it consumes no order id. Invalid intents are rejected as usual. Vectors s
 Rust: ``schema/conformance/warmup_gate.json``.
 
 Logged event types mirror ``tantra-messages::Event`` wire types exactly so that
-``_kernel.log.EventFilter`` can filter them by wire name:
+``harness.log.EventFilter`` can filter them by wire name:
 
 * ``order``          - intent submitted to the execution port
 * ``order_rejected`` - intent failed validation, or the port rejected an order (WARNING level)
@@ -83,7 +83,7 @@ from tantra.risk import OrderRejected, RiskRefusal, RiskRefused, check_state
 from tantra.tick import QuoteTick, TradeTick
 from tantra.trade import Trade
 
-import tantra_examples._kernel.log as _tantra_log  # noqa: F401 — triggers auto-init from VYAAPAAR_LOG_EVENTS
+import tantra_examples.harness.log as _tantra_log  # noqa: F401 — triggers auto-init from VYAAPAAR_LOG_EVENTS
 
 if TYPE_CHECKING:
     from tantra.risk import RiskLimits, RiskStage, TradingState

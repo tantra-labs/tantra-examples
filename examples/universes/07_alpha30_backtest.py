@@ -54,11 +54,11 @@ from tantra.instrument import InstrumentId
 from tantra.markets.india.universes import resolve_universe
 from tantra.money import Currency, Money
 
-from tantra_examples._kernel.loader import CatalogError
 from tantra_examples.artifact import write_run_json
 from tantra_examples.backtest import BacktestRun, run_portfolio_backtest
 from tantra_examples.base import TantraExample, ts_to_date
 from tantra_examples.catalog import load_named
+from tantra_examples.harness.loader import CatalogError
 from tantra_examples.settlement import resolve_settlement_days
 
 SCHEMA = "tantra-examples/07-alpha30-backtest/v1"

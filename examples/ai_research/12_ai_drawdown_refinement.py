@@ -55,8 +55,8 @@ from tantra.indicators import Adx, Sma
 from tantra.instrument import InstrumentId
 from tantra.order import OrderIntent
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import oscillating_bars
 

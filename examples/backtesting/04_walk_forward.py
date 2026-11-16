@@ -3,7 +3,7 @@
 Upgraded to use ``tantra.algo_analytics.walk_forward`` (rolling
 expanding/rolling windows, full Tantra backtest with next-open fills, NSE
 delivery costs, T+1 settlement) for real data. For synthetic data, uses the same
-fold geometry with ``_kernel.testing.replay`` for fast deterministic runs.
+fold geometry with ``tantra_examples.harness.testing.replay`` for fast deterministic runs.
 Requires Walk-Forward Efficiency (WFE) ≥ 0.60 as a reported gate
 on real data; synthetic-data runs report WFE without asserting.
 
@@ -52,8 +52,8 @@ from tantra.algo_analytics.walk_forward import (
 from tantra.base import Strategy
 from tantra.indicators import Sma
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.metrics import curve_metrics
 from tantra_examples.synthetic import oscillating_bars
 

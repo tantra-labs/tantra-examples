@@ -4,7 +4,7 @@ Uses ``tantra.backtest.session.Tantra.backtest`` (the wheel session orchestrator
 that powers live) with
 a tiny ``DataProvider`` that returns synthetic bars. The strategy emits market
 orders; here ``replay(..., fill_delay=1)`` fills them at the next bar's open, the same timing as
-Tantra's ``next_open`` model for daily sessions (``_kernel.backtest.simulated.NextOpenExecution``,
+Tantra's ``next_open`` model for daily sessions (``tantra.backtest.NextOpenExecution``,
 which adds costs and settlement; ``tantra_examples.backtest.run_portfolio_backtest`` wraps it for
 multi-instrument runs). The report names its data source (``lakehouse`` or ``synthetic``).
 
@@ -92,9 +92,9 @@ def run(
     strat = SmaBacktest(fast=fast, slow=slow, capital=capital)
 
     # Note: BacktestSession requires a real DataProvider; for this learning-path example
-    # we use the _kernel.testing.replay harness instead. fill_delay=1 fills each order at
-    # the next bar's open (the default 0 would fill at the signal bar's own close).
-    from tantra_examples._kernel.testing import replay
+    # we use the tantra_examples.harness.testing.replay harness instead. fill_delay=1 fills
+    # each order at the next bar's open (the default 0 would fill at the signal bar's own close).
+    from tantra_examples.harness.testing import replay
 
     result = replay(strat, bars_list, fill_delay=1)
 

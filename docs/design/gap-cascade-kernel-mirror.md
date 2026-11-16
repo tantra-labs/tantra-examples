@@ -1,6 +1,6 @@
 # Gap cascade: the `_kernel/` kernel-domain mirror (gaps 0001–0008)
 
-**Status**: **all 8 gaps CLOSED**, 2026-11-15 — the `_kernel` mirror is fully dismantled; the remaining `_kernel/` files are only the shared harness.
+**Status**: **all 8 gaps CLOSED**, 2026-11-15 — the `_kernel` mirror is fully dismantled; the remaining `_kernel/` files were only the shared harness, renamed to `tantra_examples/harness/` under plan 0003 (root plan 0006, T13 Thrust B).
 
 ## Summary
 
@@ -55,7 +55,8 @@ surface and deleted in its own closure (ex 0002/0003/0004/0007/0008).
 The `_kernel` mirror contained float financial fields; the wheel surface is
 Decimal-canonical (never promoted verbatim). The root closure therefore
 included a Decimal re-architecture, which is why the root (ex 0006) was a
-re-architecture rather than a move. The shared harness that remains in
-`_kernel/` is Decimal-canonical against the wheel; the float-rooted pre-existing
-test failures in the kept harness (e.g. `tantra_examples/metrics.fills_equity_curve`)
-are tracked by the owning gaps.
+re-architecture rather than a move. The shared harness that remained in
+`_kernel/` is Decimal-canonical against the wheel; it was renamed to
+`tantra_examples/harness/` under plan 0003 (root plan 0006, T13 Thrust B). The
+float-rooted pre-existing test failures in the kept harness (e.g.
+`tantra_examples/metrics.fills_equity_curve`) are tracked by the owning gaps.

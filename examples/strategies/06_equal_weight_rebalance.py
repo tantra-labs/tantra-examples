@@ -38,16 +38,16 @@ The catalog strategy ``../tantra-strategies/portfolio/rebalancing/equal_weight/`
 that config bound to a thin ``PortfolioStrategy`` subclass; an integration test checks that
 this code-composed version and the catalog one produce identical fills, positions and cash.
 
-Three base classes, from most to least opinionated (``_kernel``):
-``DeclarativeStrategy`` (per-instrument entries and exits), ``TargetWeightStrategy`` (declare
-``universe()`` / ``target_weights()``) and ``PortfolioStrategy`` (compose the parts above).
+Strategy base classes, most to least opinionated:
+``tantra.declarative.DeclarativeStrategy`` (per-instrument entries and exits) and
+``tantra.portfolio_strategy.PortfolioStrategy`` (compose the parts above).
 
 Other strategies from the same parts: ``--weighting inverse_vol`` (lower-volatility names get
 more weight) and ``--schedule monthly:first_session`` (rebalance on the first session of each
 month). Those flags go through ``build_portfolio_strategy``, i.e. the params form above.
 
 Synthetic bars (see ``tantra_examples/synthetic.py``) for all 30 members are replayed by a small
-harness (``_kernel.testing.replay`` fills every order at the price of the bar that
+harness (``tantra_examples.harness.testing.replay`` fills every order at the price of the bar that
 emitted it, which is wrong for a portfolio, so each order here fills at the last close of its
 own instrument): no adapter, no Parquet store, no network. The report holds the number of
 rebalances (distinct sessions that submitted orders), the final quantity and weight of every
@@ -101,8 +101,8 @@ from tantra.portfolio_strategy import (
 )
 from tantra.trade import Trade
 
-from tantra_examples._kernel.testing import ReplayResult
 from tantra_examples.cli import run_example
+from tantra_examples.harness.testing import ReplayResult
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import bar
 from tantra_examples.synthetic import weekdays as weekdays_func

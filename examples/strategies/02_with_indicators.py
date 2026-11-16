@@ -6,7 +6,8 @@ Builds on 01 by adding:
 - ATR-based position sizing (risk 1% of equity per trade)
 - ATR trailing stop on exit
 
-Runs on deterministic sine-wave bars (``oscillating_bars``) with ``_kernel.testing.replay``.
+Runs on deterministic sine-wave bars (``oscillating_bars``) with
+``tantra_examples.harness.testing.replay``.
 
 Run::
 

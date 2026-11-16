@@ -93,7 +93,7 @@ from tantra_examples.screening.nl_support import (
 )
 from tantra_examples.screening.nl_support import resolve_llm_provider as _resolve_llm_provider
 
-# The `_kernel.cli` global-store mirror (gap 0004) is deleted; the harness store
+# The former CLI global-store mirror (gap 0004) is deleted; the harness store
 # accessor lives on `tantra_examples.base`.
 _STORE = get_store()
 

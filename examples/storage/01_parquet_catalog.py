@@ -5,7 +5,7 @@ Parquet file per instrument, timeframe and year at
 ``<data_dir>/catalog/<TIMEFRAME>/<EXCHANGE>/<SYMBOL>/<year>.parquet``, plus a JSON ledger at
 ``<data_dir>/coverage_ledger.json`` recording which date ranges the store claims to hold.
 ``append(coverage_record, bars)`` is the only write path: it validates every bar
-(``tantra_examples._kernel.ports.validate_bar``), merges by ``ts`` so re-appending the same
+(``tantra_examples.harness.ports.validate_bar``), merges by ``ts`` so re-appending the same
 bars is idempotent, and rewrites the ledger; ``read(instrument, timeframe, DateInterval(start,
 end))`` is a **half-open UTC window** ``[start 00:00, end 00:00)``, so a bar stamped on the end
 date is only read when you ask for ``end + 1 day``; ``coverage`` reads the ledger back.
@@ -52,8 +52,8 @@ from tantra.coverage import CoverageRecord, CoverageStatus, DateInterval
 from tantra.instrument import InstrumentId
 from tantra.store import ParquetBarStore
 
-from tantra_examples._kernel.ports import validate_bar
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.ports import validate_bar
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import bar, weekdays
 

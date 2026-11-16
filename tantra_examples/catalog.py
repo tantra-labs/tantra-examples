@@ -8,7 +8,7 @@ def load_named(
     name: str, strategies_dir: Path | None = None, search_from: Path | None = None
 ) -> Any:
     """Load a named catalog strategy (find_catalog/load_catalog in tantra-strategies loader)."""
-    from tantra_examples._kernel.loader import find_catalog, load_catalog_strategy
+    from tantra_examples.harness.loader import find_catalog, load_catalog_strategy
 
     catalog_path = find_catalog(strategies_dir, search_from=search_from)
     return load_catalog_strategy(name, catalog_path)
@@ -19,7 +19,7 @@ def strategies_catalog_dir() -> Path:
 
     Raises ``tantra.strategies.loader.CatalogError`` saying how to point at one when absent.
     """
-    from tantra_examples._kernel.loader import find_catalog
+    from tantra_examples.harness.loader import find_catalog
 
     return find_catalog(search_from=Path(__file__))
 

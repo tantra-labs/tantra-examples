@@ -1,13 +1,13 @@
 """strategies/01_first_strategy: a minimal SMA crossover strategy.
 
-Subclass ``_kernel.base.Strategy``, set ``name`` and ``warmup_bars``, and
+Subclass ``tantra.base.Strategy``, set ``name`` and ``warmup_bars``, and
 implement ``on_bar``. The strategy emits market orders through ``self.buy``/
 ``self.sell`` (or ``self.submit`` for limit/stop variants). The runner binds a
 context, calls ``on_start`` → streams bars → ``on_stop``.
 
 This example runs a fast SMA(10) vs slow SMA(30) crossover on a synthetic
 100-bar series (see ``tantra_examples/synthetic.py``) using the testing harness
-``_kernel.testing.replay`` — no adapter, no Parquet store, no network.
+``tantra_examples.harness.testing.replay`` — no adapter, no Parquet store, no network.
 
 Run::
 

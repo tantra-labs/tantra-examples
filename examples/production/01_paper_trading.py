@@ -94,7 +94,7 @@ def run(
     ]
 
     # Paper trading uses fake adapter with simulated fills
-    from tantra_examples._kernel.testing import replay
+    from tantra_examples.harness.testing import replay
 
     strat = SmaPaper(fast=fast, slow=slow, symbol=symbol)
     result = replay(strat, bars_list, fill_delay=1)  # next-open fills

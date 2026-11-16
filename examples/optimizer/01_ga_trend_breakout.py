@@ -112,7 +112,7 @@ class SmaTrendFollowing(Strategy):
 
 def _evaluate(bars_list: list, params: dict[str, Any]) -> dict[str, Any]:
     """Run backtest and return metrics."""
-    from tantra_examples._kernel.testing import replay
+    from tantra_examples.harness.testing import replay
     from tantra_examples.metrics import curve_metrics
 
     strat = SmaTrendFollowing(**params)

@@ -84,7 +84,7 @@ def _run_one_account(
         synth_bar(symbol, d, 2500.0 + i * 0.5) for i, d in enumerate(weekdays_func(start, bars))
     ]
 
-    from tantra_examples._kernel.testing import replay
+    from tantra_examples.harness.testing import replay
 
     strat = SmaMulti(fast=fast, slow=slow, symbol=symbol)
     result = replay(strat, bars_list, fill_delay=1)

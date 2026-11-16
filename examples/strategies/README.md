@@ -1,6 +1,6 @@
 # 05 Strategies – reference strategies on synthetic data
 
-Every example here runs with ``_kernel.testing.replay`` — no adapter,
+Every example here runs with ``tantra_examples.harness.testing.replay`` — no adapter,
 no Parquet store, no network. The bars are synthetic (``tantra_examples/synthetic.py``),
 the results are deterministic, and the same strategy class can later be plugged
 into a real backtest or live runner unchanged.
@@ -41,9 +41,9 @@ general treatment see
 ## The common pattern
 
 ```python
-from tantra_examples._kernel.base import Strategy
-from tantra_examples._kernel.indicators import Sma, Rsi, Atr
-from tantra_examples._kernel.testing import replay
+from tantra.base import Strategy
+from tantra.indicators import Sma, Rsi, Atr
+from tantra_examples.harness.testing import replay
 
 
 class MyStrategy(Strategy):
@@ -61,7 +61,7 @@ result = replay(strat, bars)  # or: StrategyRunner + LedgerContext in a real run
 
 ## Declarative style
 
-Three base classes in ``_kernel`` replace the ``on_bar`` body with declarations
+Three base classes in the ``tantra`` wheel replace the ``on_bar`` body with declarations
 (examples 07 and 06). ``DeclarativeStrategy`` is Jesse-style and per instrument: override
 ``should_long`` / ``should_short`` / ``should_exit`` and return ``Entry(quantity, stop_loss,
 take_profit)`` from ``go_long`` / ``go_short``; the framework sends the entry and the
@@ -102,7 +102,7 @@ pytest tests/unit -q -k "first_strategy or with_indicators or position_sizing or
 ## From here to production
 
 The same ``Strategy`` subclass works with:
-- ``_kernel.testing.replay`` (these examples)
+- ``tantra_examples.harness.testing.replay`` (these examples)
 - ``tantra.session.BacktestSession`` (event-driven backtest with Parquet data)
 - ``tantra.engine`` + adapter (paper/live)
 

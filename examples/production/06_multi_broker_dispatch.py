@@ -52,8 +52,8 @@ from tantra.base import Strategy
 from tantra.indicators import Sma
 from tantra.instrument import InstrumentId
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.metrics import fills_equity_curve
 from tantra_examples.synthetic import bar as synth_bar
 from tantra_examples.synthetic import weekdays as weekdays_func

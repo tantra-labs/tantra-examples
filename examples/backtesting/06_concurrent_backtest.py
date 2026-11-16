@@ -1,6 +1,6 @@
 """backtesting/06_concurrent_backtest: parameter sweep with concurrent execution.
 
-Uses ``_kernel.testing.replay`` (bar-close fills, no settlement or costs)
+Uses ``tantra_examples.harness.testing.replay`` (bar-close fills, no settlement or costs)
 in a thread pool to evaluate a grid of (fast, slow)
 periods on deterministic noisy sine-wave bars. Reports the Pareto frontier (return vs drawdown)
 and the best by Sharpe among pairs with enough closed trades; pairs with too few are listed as
@@ -39,8 +39,8 @@ from typing import Any
 from tantra.base import Strategy
 from tantra.indicators import Sma
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.metrics import curve_metrics
 from tantra_examples.synthetic import oscillating_bars
 

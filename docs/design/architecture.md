@@ -17,13 +17,13 @@ walk-forward optimization (WFO), and the autonomous AI research loop.
 
 ```
 tantra-examples/
-├── tantra_examples/   # Zone 1: shared harness + ported kernel mirror
+├── tantra_examples/   # Zone 1: shared harness (app layer; no kernel mirror)
 ├── examples/          # Zone 2: numbered runnable scripts (flat 01–15 + 13 topic dirs)
 ├── tests/             # Zone 3: regression tests (unit / integration / snapshots)
 └── docs/              # Zone 4: architecture, gaps, plans, reference
 ```
 
-### Zone 1 — `tantra_examples/` (harness + kernel mirror)
+### Zone 1 — `tantra_examples/` (application harness)
 
 The public package is what every example imports. It has four layers:
 
@@ -32,7 +32,7 @@ The public package is what every example imports. It has four layers:
 | Public API | `__init__.py`, `_compat.py` | Re-exports `Backtest`, `Bar`, `RSI`, `SMA`, `Trade`, `PerformanceMetrics`, `compute_metrics`, `synthetic_bars`, `trending_bars`, `walk_forward_*`; `VYAAPAAR_AVAILABLE` + exact-`Decimal` fallback (`_compat`) |
 | Fresh learning-path world | `data.py`, `sdk.py`, `metrics.py`, `backtest.py` (fresh `Backtest`), `walkforward.py` | Deterministic **exact-`Decimal`** bar generation, streaming SMA/RSI, performance metrics, a signal-function backtester, and walk-forward windows |
 | Ported harness helpers | `base.py`, `artifact.py`, `bars.py`, `output.py`, `display_style.py`, `jsonable.py`, `cli.py`, `screener_cli.py`, `catalog.py`, `settlement.py`, `sip*.py`, `replay_report.py`, `synthetic.py`, `universe_lists.py` | CLI plumbing (`TantraExample` base), OHLC aggregation, print/stream formatting, deterministic JSON, strategy-catalog loading, settlement resolution, SIP engine, replay reporting |
-| Mirrors & engines | `_kernel/`, `pipeline/`, `screening/`, `ewr/`, `options/`, `optimizer/`, `ai_replay/`, `amfi.py`, `bhavcopy.py`, `quant.py`, `fake_llm.py`, `decision_guard.py` | Kernel-verbatim mirrors (gaps 0002–0008), composable pipeline DSL, point-in-time screeners, equal-weight rebalancer, options microstructure, optimizer/analytics engines, AI-replay journal |
+| Harness & engines | `harness/` (app harness; renamed from `_kernel`, plan 0003), `pipeline/`, `screening/`, `ewr/`, `options/`, `optimizer/`, `ai_replay/` | Application-layer example harness (the kernel-verbatim mirror was dismantled with gaps 0002–0008), composable pipeline DSL, point-in-time screeners, equal-weight rebalancer, options microstructure, optimizer/analytics engines, AI-replay journal |
 
 ### Zone 2 — `examples/` (the numbered journey)
 
@@ -66,10 +66,12 @@ tests/
 
 ---
 
-## 2. The Two Worlds
+## 2. One Decimal World, One Harness
 
-`tantra-examples` deliberately contains **two coexisting bar/type worlds**, joined at
-the harness boundary:
+`tantra-examples` now runs entirely on the wheel's Decimal-canonical domain; the second,
+kernel-verbatim float world that once lived in `_kernel/` was dismantled when gaps
+0002–0008 closed, and the shared harness that remained was renamed
+`tantra_examples/harness/` (plan 0003, root plan 0006 Thrust B):
 
 1. **Fresh Decimal world** (learning path canonical):
    - `data.Bar` — frozen `Decimal` OHLCV bar (`open/high/low/close` are `Decimal`,
@@ -79,21 +81,13 @@ the harness boundary:
    - `sdk.SMA` / `sdk.RSI` — compact streaming indicators over `Decimal`.
    - `metrics` — exact `Decimal` Sharpe/Sortino/Calmar/drawdown/expectancy/win-rate.
    - `backtest.Backtest` — signal-function backtester over fresh bars.
-2. **Kernel mirror world** (`_kernel/`, gaps 0002–0008):
-   - `_kernel.bar.Bar` / `InstrumentId` / `Money` / `OrderIntent` / `OrderSide` … — the
-     ported kernel-domain types. This is the float-domain world the engine uses, kept
-     byte-verbatim from the owning engine so golden parity tests pin its behaviour.
-   - `_kernel.backtest.simulated` / `runner.py` — the deterministic simulator and
-     `StrategyRunner` the grafted `backtest.run_portfolio_backtest` drives.
-   - `_kernel.indicators/` (87 files) — the ported indicator registry and families
-     (moving_average, trend, momentum, volatility, volume, breadth, statistical,
-     support_resistance).
-   - `_kernel.ai/`, `_kernel.wire/`, `_kernel.markets/india/`, `_kernel.portfolio_strategy/`,
-     `_kernel.screener/`, `_kernel.data/`, `_kernel.cli/` — further kernel mirrors.
-
-Closed with ex 0007: the adapter framework mirror (`_kernel.adapters/`) shipped to the wheel
-as `tantra.adapters` (registry, capabilities, contract, `FakeAdapter`, session, rate-limit,
-secrets) and the in-repo copy was deleted.
+2. **Wheel domain world** — the kernel-verbatim float mirror (`_kernel/`, gaps 0002–0008)
+   was fully dismantled (2026-11-15): every domain type now comes from the `tantra`
+   wheel (bar/instrument/money/order/position/tick/trade, indicators, `tantra.base`,
+   `tantra.declarative`, `tantra.portfolio_strategy`, `tantra.adapters`,
+   `tantra.backtest.session`, …), Decimal-canonical throughout. The mirror's only
+   survivors — the shared example harness — were renamed to `tantra_examples/harness/`
+   under plan 0003 (root plan 0006 Thrust B).
 
 The `_compat.D` alias lets harness code write `Decimal`-polymorphic math that falls back
 to pure `decimal.Decimal` when the `tantra` wheel is absent.
@@ -107,14 +101,14 @@ to pure `decimal.Decimal` when the `tantra` wheel is absent.
 | `base.py` | `TantraExample` base class: common CLI args (`--universe`, `--exchange`, `--start/--end`, `--initial-capital`, `--warmup-days`, `--out-dir`, `--data-dir`, `--format/--width`), lazy `ParquetBarStore` at `find_data_root(REPO_ROOT)`, `load_universe` / `load_bars` / `load_bars_with_warmup`, `run()` + `main()` entry points. |
 | `artifact.py` | `bars_digest` (deterministic SHA-256 over bars), `resolve_window`, `write_json_report`. |
 | `bars.py` | OHLC aggregation/bucketing to higher timeframes (`aggregate`, `bucket_start`, `timeframe_seconds`); UTC buckets, `ts` = first bar in bucket. |
-| `catalog.py` | `load_named` / `strategies_catalog_dir` / `load_catalog_tool` — resolves the `tantra-strategies` catalog (via `_kernel.loader`) without fragile sibling paths. |
+| `catalog.py` | `load_named` / `strategies_catalog_dir` / `load_catalog_tool` — resolves the `tantra-strategies` catalog (via `tantra_examples.harness.loader`) without fragile sibling paths. |
 | `cli.py` | `make_parser`, `add_out_arg`, `emit_json`, `run_example`, and the `VYAAPAAR_EXAMPLES_ALLOW_LIVE_ORDERS` paper-only guard (`require_paper_adapter`). |
 | `screener_cli.py` | `ScreenerCLIExample` — stream-friendly screener CLI base (`table/json/csv/symbols/plain` formats) composable in Unix pipes. |
 | `output.py` / `display_style.py` | One place every example prints through: `add_output_args`/`resolve_output`, table/JSON/CSV/plain renderers, Indian-money formatting (best-effort `tantra.utils.format` try-import). |
 | `jsonable.py` | Deterministic JSON image of domain values (enums by value, sets sorted, ISO dates). |
 | `settlement.py` | Settlement-cycle resolution: CLI > config > market default; kernel-mirrored NSE T+2 (before 2023-01-27) / T+1 (from then) schedule. |
 | `sip.py` / `sip_plan.py` / `sip_report.py` | Portfolio SIP backtest engine (XIRR bisection, lump sum + monthly installments), single-instrument SIP helpers (Newton-Raphson XIRR), SIP report emitter. |
-| `replay_report.py` | Replays a strategy over bars via `_kernel.testing.replay` and packages the JSON report. |
+| `replay_report.py` | Replays a strategy over bars via `tantra_examples.harness.testing.replay` and packages the JSON report. |
 | `universe_lists.py` | Nifty 50 / Nifty200 Alpha 30 / Bank Nifty universe lists and `resolve_universe`; mirrored kernel universe surface (gap 0006). |
 | `quant.py` | Exact-`Decimal` stats + linear algebra (`returns`, `mean`, `std_dev`, `covariance_matrix`, `solve_linear_system`, `bs_greeks`, `deflated_sharpe`, `pbo` …) mirroring the Rust quant engines (examples 12–15). |
 | `amfi.py` | AMFI `NAVAll.txt` parser (`parse_navall`, `nav_bars`, `NavRow`, `NavSkip`) — gap 0003 stand-in. |
@@ -132,15 +126,15 @@ to pure `decimal.Decimal` when the `tantra` wheel is absent.
 | `options/` | Options-microstructure helpers: option-premium STT on sell, ICCL T+1 settlement, Greek risk bounds. SEBI freeze-limit slicing lives in the wheel (`tantra.sizing`, ex 0005 closed). |
 | `optimizer/` | Removed 2026-11-15 (ex 0001 closed): Pareto-frontier helpers moved to `tantra.optimizer` and the `algo_analytics` engine moved to `tantra.algo_analytics` in the wheel. |
 | `ai_replay/` | SHA-256 prompt cache + Journal v1 NDJSON decision-replay helpers (`PromptCache`, `verify_journal`). |
-| `_kernel/` | The kernel mirror (gaps 0002–0008), detailed in §5. |
+| `harness/` | The application-layer example harness (renamed from `_kernel` under plan 0003 / root plan 0006 Thrust B), detailed in §5. |
 
 ---
 
 ## 4. Event Pipeline & Determinism
 
 Tantra's canonical event pipeline (market feed → strategy → risk → execution → fills →
-OMS) is exercised by the examples through the mirrored kernel:
-`_kernel.runner.StrategyRunner` + `_kernel.backtest.simulated.NextOpenExecution` drive
+OMS) is exercised by the examples through the harness and the wheel session engine:
+`tantra_examples.harness.runner.StrategyRunner` + `tantra.backtest.NextOpenExecution` drive
 intents → next-open fills → cash/position/equity accounting. The grafted
 `backtest.run_portfolio_backtest` books each order in `CanonicalOrderLedger` (sells
 first, then by instrument, so runs are reproducible regardless of `PYTHONHASHSEED`),
@@ -159,32 +153,33 @@ trades only inside `[test_start, test_end]`, and reports `fills`, `order_events`
 
 ---
 
-## 5. The Kernel Mirror (`_kernel/`, 166 files)
+## 5. The Application Harness (`tantra_examples/harness/`)
 
-The wheel does not yet expose the kernel-domain surface, so the ported kernel lives
-in-repo as `tantra_examples._kernel.*`. Each mirrored file carries a
-`# mirror: kernel-verbatim port (gap NNNN)` citation after its docstring, plus
-`# mirror accommodation (gap NNNN)` type:ignore comments where the verbatim kernel
-assigns dynamic class attributes or typed unions. See
+The kernel-verbatim mirror described in earlier revisions of this document was fully
+dismantled when gaps 0002–0008 closed (2026-11-15): the wheel now exposes the complete
+Decimal-canonical domain surface (`tantra.bar`, `tantra.instrument`, `tantra.money`,
+`tantra.order`, `tantra.portfolio`, `tantra.position`, `tantra.tick`, `tantra.trade`,
+`tantra.base`, `tantra.indicators`, `tantra.declarative`, `tantra.portfolio_strategy`,
+`tantra.adapters`, `tantra.backtest.session`, …) and every mirror file was deleted. See
 [`docs/gaps/0006-tantra-wheel-kernel-domain-surface.md`](../gaps/0006-tantra-wheel-kernel-domain-surface.md).
 
-| Sub-tree | Files | Content |
-|---|---|---|
-| `_kernel/` root | 33 | `bar`, `instrument`, `order`, `order_state`, `portfolio`, `position`, `trade`, `money`, `coverage`, `store` (Parquet), `service`, `evaluator`, `calendar`, `base` (Strategy/Parameter), `config`, `manifest`, `loader`, `context`, `entities`, `native` (pinned constants), `testing` (replay), `runner`, `risk`, `execution`, `declarative`, `sizing`, `session`, `greeks`, `option`, `ports`, `log`, `tick` |
-| `_kernel/adapters/` | 13 | adapter framework mirror (gap 0007) |
-| `_kernel/ai/` | 6 | ask / decision / knowledge / llm.provider (gap 0002) |
-| `_kernel/backtest/` | 5 | `simulated`, `impact`, `l2_sim`, `opening_auction` (gap 0006) |
-| `_kernel/indicators/` | 87 | registry + 8 families (gap 0006) |
-| `_kernel/markets/india/` | 3 | costs + settlement (gap 0004) |
-| `_kernel/portfolio_strategy/` | 10 | tamashii portfolio strategies (gap 0006) |
-| `_kernel/screener/` | 2 | catalog + coverage (gap 0002/0003) |
-| `_kernel/wire/` | 4 | wire envelope + `SCHEMA_VERSION` check |
-| `_kernel/cli/` | 1 | store accessor (gap 0004) |
-| `_kernel/data/` | 1 | `Quantity` parse (gap 0003) |
+The only files that survived the dismantling are the nine application-harness modules,
+renamed from `_kernel/` to `tantra_examples/harness/` under plan 0003 (root plan 0006
+Thrust B). The harness is built entirely on the wheel:
 
-Pinned constants (`_kernel/native.py`): `SCHEMA_VERSION = 8`, `API_VERSION = "v1"`,
-`STRATEGY_API_VERSION = "1.0.0"`, currency-minor-units table — sourced from the owning
-engine's Rust constants; delete with the mirror when the wheel ships the surface.
+| Module | Role |
+|---|---|
+| `config.py` | `StrategyConfig` (declared strategy parameters). |
+| `loader.py` | Strategy-catalog resolution: `find_catalog`, `load_catalog_strategy`, `load_named`, `load_strategy`, `resolve_strategy_version`, `CatalogError`. |
+| `log.py` | Event logging: `register_event`, `setup_event_logging`, `EventFilter` (`python -m tantra_examples.harness.log`). |
+| `manifest.py` | Strategy manifests: `StrategyManifest`, `ParameterSpec`, `Subscriptions`, `TimeframeSpec`, `Universe`, `WarmupBars`, `STRATEGY_API_VERSION`, param/sweep/trial-grid schemas. |
+| `ports.py` | Domain ports: `BarStore`, `MarketDataProvider`, `validate_bar`. |
+| `runner.py` | `StrategyRunner` (intent → fill), `RunResult`, `SubmittedIntent`/`SuppressedIntent`, order/intent rejections. |
+| `service.py` | `DataService` (bar-store-backed market-data service). |
+| `testing.py` | `replay`, `ReplayResult` (bar-close-fill harness used by the examples). |
+
+`tantra_examples/harness/__init__.py` re-exports only these harness names; the wheel
+domain surface it once re-exported is now imported directly from `tantra.*`.
 
 ---
 
@@ -194,8 +189,7 @@ engine's Rust constants; delete with the mirror when the wheel ships the surface
    synthetic/fixture data with `ScriptedFakeLlm`; no live credentials, no network.
 2. **Strict zero-floats in financial math** — prices, quantities and fees are
    `decimal.Decimal`; synthetic prices are generated in integer paise. Documented
-   exceptions: Black-Scholes internals (example 13), grafted `metrics.py` statistics,
-   and the kernel-mirror float domain (gap 0006).
+   exceptions: Black-Scholes internals (example 13) and grafted `metrics.py` statistics.
 3. **Parallel test directory rule** — every `examples/.../NN_*.py` has a regression test
    in `tests/unit/`; no inline `test_*` in production modules.
 4. **Mandatory `Pitfalls::` docstring section** on every numbered script.

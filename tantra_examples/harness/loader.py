@@ -32,7 +32,7 @@ from packaging.specifiers import InvalidSpecifier, SpecifierSet
 from packaging.version import Version
 from tantra.base import Strategy
 
-from tantra_examples._kernel.config import StrategyConfig
+from tantra_examples.harness.config import StrategyConfig
 
 __all__ = [
     "CATALOG_DIRNAME",

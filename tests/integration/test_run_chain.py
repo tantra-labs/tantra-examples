@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from tantra_examples._kernel.loader import CatalogError
+from tantra_examples.harness.loader import CatalogError
 from tantra_examples.pipeline.chain import ChainError, load_chain, run_chain, validate
 
 EX = Path(__file__).resolve().parents[2] / "examples"

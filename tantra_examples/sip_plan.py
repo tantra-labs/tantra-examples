@@ -139,7 +139,7 @@ def ensure_instrument_data(
         from tantra_data.loaders.nse import NseBhavcopyProvider
         from tantra_data.loaders.yfinance import YFinanceProvider
 
-        from tantra_examples._kernel.service import DataService
+        from tantra_examples.harness.service import DataService
 
         bhav_cache = store.data_dir / "cache" / "bhavcopy"
         bhav_cache.mkdir(parents=True, exist_ok=True)

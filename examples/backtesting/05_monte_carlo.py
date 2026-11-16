@@ -3,7 +3,7 @@
 Upgraded to use ``tantra.algo_analytics.monte_carlo`` which reruns the same
 strategy over staggered start-date offsets and gates the dispersion of final
 equity and max drawdown. For synthetic data, uses the same offset geometry with
-``_kernel.testing.replay`` for fast deterministic runs.
+``tantra_examples.harness.testing.replay`` for fast deterministic runs.
 Also injects 2x slippage shocks and reports the drawdown distribution under stress.
 
 Run::
@@ -48,8 +48,8 @@ from tantra.algo_analytics.monte_carlo import (
 from tantra.base import Strategy
 from tantra.indicators import Sma
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.metrics import curve_metrics
 from tantra_examples.synthetic import oscillating_bars
 

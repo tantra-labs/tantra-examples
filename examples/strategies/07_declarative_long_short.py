@@ -1,6 +1,6 @@
 """strategies/07_declarative_long_short: a Jesse-style long/short SMA crossover.
 
-``_kernel.declarative.DeclarativeStrategy`` replaces the ``on_bar`` body with small rule hooks:
+``tantra.declarative.DeclarativeStrategy`` replaces the ``on_bar`` body with small rule hooks:
 
 * ``should_long(bar)`` / ``should_short(bar)``: open a position when flat and idle;
 * ``go_long(bar)`` / ``go_short(bar)``: return ``Entry(quantity, stop_loss, take_profit)``;
@@ -20,7 +20,7 @@ Known limitations (core ``DeclarativeStrategy``)
   The tiny harness below plays the exchange (it triggers resting orders from the bar range
   and cancels the sibling); the strategy class itself does not.
 
-``_kernel.testing.replay`` is not used because it fills every intent, including
+``tantra_examples.harness.testing.replay`` is not used because it fills every intent, including
 resting stops and limits, at once at the bar close. Here only market orders fill at the
 close; stops and limits fill when a later bar's range touches their level.
 
@@ -63,8 +63,8 @@ from tantra.instrument import InstrumentId
 from tantra.order import OrderIntent, OrderSide, OrderType
 from tantra.trade import Trade
 
-from tantra_examples._kernel.testing import ReplayResult
 from tantra_examples.cli import run_example
+from tantra_examples.harness.testing import ReplayResult
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import bar
 from tantra_examples.synthetic import weekdays as weekdays_func

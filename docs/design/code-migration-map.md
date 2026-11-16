@@ -5,7 +5,10 @@
 > **Target**: `tantra-examples`
 > **Status**: Migration complete (staged port, all 9 stages 0–8). The milestone record
 > lives in [`implementation-record.md`](implementation-record.md); this file is the
-> historical layout mapping.
+> historical layout mapping. The `_kernel` rows below record where honba modules were
+> ported to; that mirror was dismantled with gaps 0002–0008 (2026-11-15) and the
+> surviving shared harness was renamed `tantra_examples/harness/` under plan 0003
+> (root plan 0006, T13 Thrust B).
 
 ## Layout mapping
 

@@ -36,8 +36,8 @@ STEPS = [
 
 
 def _schema_tools():
-    from tantra_examples._kernel.loader import CatalogError
     from tantra_examples.catalog import load_catalog_tool
+    from tantra_examples.harness.loader import CatalogError
 
     try:
         return load_catalog_tool("validate_chain")

@@ -38,10 +38,11 @@ closing commit).
 
 As of 2026-11-15, the 8-gap dependency cascade rooted in the 166-file `_kernel` mirror is
 resolved: **all 8 gaps are closed** — the `_kernel` mirror is fully dismantled. The
-remaining `_kernel/` files are only the shared example harness
+remaining `_kernel/` files were only the shared example harness
 (`calendar`, `config`, `evaluator`, `greeks`, `loader`, `log`, `manifest`, `option`,
 `portfolio`, `ports`, `risk`, `runner`, `service`, `testing`) — all built on the wheel,
-with the cascade root unblocked. **Retained harness (ex 0004)**: `output.py`, `screener_cli.py` and
+with the cascade root unblocked; the harness survivors were renamed to
+`tantra_examples/harness/` under plan 0003 (root plan 0006, T13 Thrust B). **Retained harness (ex 0004)**: `output.py`, `screener_cli.py` and
 `cli.py` are example-harness modules that stay on top of the wheel surfaces — only their
 imports were retargeted to `tantra.display` / `tantra.cli.data`; they are not kernel
 mirrors. **Ownership (ex 0003)**: the screener

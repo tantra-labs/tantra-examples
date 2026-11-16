@@ -15,8 +15,8 @@ from types import ModuleType
 import pytest
 from tantra.context import LedgerContext
 
-from tantra_examples._kernel.config import StrategyConfig
-from tantra_examples._kernel.loader import CatalogError, find_catalog
+from tantra_examples.harness.config import StrategyConfig
+from tantra_examples.harness.loader import CatalogError, find_catalog
 
 EXAMPLE = (
     Path(__file__).resolve().parents[2] / "examples" / "strategies" / "06_equal_weight_rebalance.py"

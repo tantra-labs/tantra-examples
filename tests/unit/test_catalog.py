@@ -16,7 +16,7 @@ def test_load_named_uses_loader(monkeypatch, tmp_path):
         calls["load"] = (name, catalog_path)
         return SimpleNamespace(name=name, path=catalog_path)
 
-    from tantra_examples._kernel import loader
+    from tantra_examples.harness import loader
 
     monkeypatch.setattr(loader, "find_catalog", fake_find_catalog)
     monkeypatch.setattr(loader, "load_catalog_strategy", fake_load_catalog_strategy)
@@ -39,7 +39,7 @@ def test_load_named_defaults(monkeypatch, tmp_path):
         calls["load"] = (name, catalog_path)
         return SimpleNamespace(ok=True)
 
-    from tantra_examples._kernel import loader
+    from tantra_examples.harness import loader
 
     monkeypatch.setattr(loader, "find_catalog", fake_find_catalog)
     monkeypatch.setattr(loader, "load_catalog_strategy", fake_load_catalog_strategy)

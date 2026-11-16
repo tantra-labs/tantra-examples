@@ -47,8 +47,8 @@ from tantra.base import Strategy
 from tantra.indicators import Rsi
 from tantra.order import OrderSide
 
-from tantra_examples._kernel.testing import replay
 from tantra_examples.cli import add_out_arg, emit_json, make_parser
+from tantra_examples.harness.testing import replay
 from tantra_examples.jsonable import jsonable
 from tantra_examples.synthetic import oscillating_bars
 
