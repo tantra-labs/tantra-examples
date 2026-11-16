@@ -10,7 +10,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
+DATA_DIR_ENV = "TANTRA_DATA_DIR"
 # Offline/test seam (kept after ex 0003 closure): the tantra_data loader
 # surface has shipped and downloads are handled by sip_plan's providers, but the
 # real NSE catalog is absent from CI, so callers point this env var at a synthetic
@@ -43,8 +43,9 @@ def find_catalog_path(explicit_path: Path | None = None) -> Path:
             return c.resolve()
 
     raise FileNotFoundError(
-        "Could not find 1D NSE catalog. Please pass --catalog-dir pointing to  "
-        "<data_dir>/catalog/1D/NSE."
+        "Could not find the 1D NSE catalog. Set TANTRA_DATA_DIR to a data root, "
+        "pass --data-dir pointing at <data_root>/catalog/1D/NSE, or provision data "
+        "with `python -m tantra_examples.provision.seam`."
     )
 
 

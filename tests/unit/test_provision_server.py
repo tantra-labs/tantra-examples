@@ -16,7 +16,7 @@ from tantra_examples.provision.contracts import ProvisionRequest
 from tantra_examples.provision.layout import Dataset, Mode
 from tantra_examples.provision.server import JobStore, create_app
 
-DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
+DATA_DIR_ENV = "TANTRA_DATA_DIR"
 TERMINAL_STATUSES = ("done", "skipped", "failed")
 POLL_DEADLINE_S = 2.0
 POLL_INTERVAL_S = 0.01

@@ -1,9 +1,9 @@
 """Canonical data-root layout for the provisioning service (plan 0004).
 
-The service provisions a *data root* (the ``$VYAAPAAR_DATA_DIR`` layout). Every
+The service provisions a *data root* (the ``$TANTRA_DATA_DIR`` layout). Every
 consumer in the workspace resolves this same root:
 
-* ``tantra.store.find_data_root`` / ``$VYAAPAAR_DATA_DIR`` (wheel, sim, analyser,
+* ``tantra.store.find_data_root`` / ``$TANTRA_DATA_DIR`` (wheel, sim, analyser,
   UI ``data_dir``, testing adapter);
 * ``tantra_examples.screening.paths`` (screeners: ``find_catalog_path`` /
   ``find_duckdb_path`` / ``find_mutual_funds_db_path``).
@@ -17,7 +17,7 @@ import os
 from enum import StrEnum
 from pathlib import Path
 
-DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
+DATA_DIR_ENV = "TANTRA_DATA_DIR"
 """Environment variable naming the data root (beats cwd discovery, matches
 ``tantra.store`` and ``tantra_examples.screening.paths``)."""
 
@@ -41,7 +41,7 @@ class Mode(StrEnum):
 def resolve_data_root(explicit: str | Path | None = None) -> Path:
     """Resolve the data root without creating it (pure).
 
-    Priority: ``explicit`` argument > ``$VYAAPAAR_DATA_DIR`` > wheel
+    Priority: ``explicit`` argument > ``$TANTRA_DATA_DIR`` > wheel
     :func:`tantra.store.find_data_root` (cwd/project discovery).
     """
     if explicit is not None:

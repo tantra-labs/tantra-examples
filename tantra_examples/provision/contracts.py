@@ -34,7 +34,7 @@ class ProvisionRequest:
     start: dt.date = DEFAULT_START
     end: dt.date = DEFAULT_END
     data_root: str | None = None
-    """``None`` → ``$VYAAPAAR_DATA_DIR`` or the wheel's default data root."""
+    """``None`` → ``$TANTRA_DATA_DIR`` or the wheel's default data root."""
 
     force: bool = False
     """Re-provision an existing complete layout instead of skipping."""

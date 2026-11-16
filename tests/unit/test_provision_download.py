@@ -19,8 +19,8 @@ from tantra_examples.provision.layout import (
 
 @pytest.fixture(autouse=True)
 def _set_data_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    """Point every test at an isolated VYAAPAAR_DATA_DIR."""
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    """Point every test at an isolated TANTRA_DATA_DIR."""
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
 
 
 def test_catalog_argv_and_success(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

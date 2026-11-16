@@ -50,7 +50,7 @@ def _seed(tmp_path: Path, scheme: str, navs: dict[dt.date, float]) -> None:
 
 
 def test_optimal_weights_sum_to_one_and_respect_bounds(example, tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     start = dt.date(2024, 1, 1)
     days = [start + dt.timedelta(days=i) for i in range(60)]
     _seed(tmp_path, "AAA", {d: 100.0 * (1.01**i) for i, d in enumerate(days)})
@@ -73,6 +73,6 @@ def test_optimal_weights_sum_to_one_and_respect_bounds(example, tmp_path, monkey
 
 
 def test_fewer_than_two_schemes_raises(example, tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     with pytest.raises(ValueError, match="at least 2 schemes"):
         example.run(schemes=["AAA"], start=dt.date(2024, 1, 1), end=dt.date(2024, 2, 1))

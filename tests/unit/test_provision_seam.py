@@ -10,7 +10,7 @@ from tantra_examples.provision.dummy import build_lakehouse, is_complete
 from tantra_examples.provision.layout import Mode
 from tantra_examples.provision.seam import ensure_data_root
 
-DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
+DATA_DIR_ENV = "TANTRA_DATA_DIR"
 
 
 def test_dummy_chooser_provisions(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:

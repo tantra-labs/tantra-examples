@@ -4,6 +4,16 @@
 see the milestones table below). The provisioning library, all three modes, the
 HTTP microservice and the example seam are in `tantra_examples/provision/`.
 
+**Follow-on (2026-11-16, same day)**: the per-example runtime prompt shipped —
+`ScreenerCLIExample` offers the download / dummy / Monte-Carlo choice when the catalog
+is missing (`provision_catalog()` → `seam.ensure_data_root`) and re-runs against the
+provisioned root; piped runs (stdin not a TTY) print guidance and stop instead of
+prompting. `--data-dir` now accepts a data root or the catalog dir itself. The
+data-root env var was renamed **`VYAAPAAR_DATA_DIR` → `TANTRA_DATA_DIR`** across the
+wheel (`tantra.store`), `screening/paths.py`, `provision/layout.py` and all tests
+(resolution semantics unchanged). Gate: `tests/unit` 1018 passed / 1 skipped, ruff
+clean, mypy clean on `provision/`.
+
 **Decision (2026-11-16)**: a provisioning **microservice** serves example data
 options (download real / populate dummy / Monte-Carlo randomized) instead of
 another CLI. Interactive choice is surfaced to users through the service, not
@@ -15,7 +25,7 @@ The examples, screeners and backtests need a market-data lakehouse (1D NSE price
 catalog, fundamentals, mutual-fund data) that the workspace does not ship. Today the
 gap is papered over two ways, both with drawbacks:
 
-1. **Offline seam (`VYAAPAAR_DATA_DIR`) + per-test synthetic fixtures** —
+1. **Offline seam (`TANTRA_DATA_DIR`) + per-test synthetic fixtures** —
    `tests/unit/synthetic_lakehouse.py` and the `_synthetic_catalog` helpers generate
    deterministic parquet/duckdb roots. There is no one canonical generator, the
    generators are test-side, and a user of the examples has no way to *choose*
@@ -30,7 +40,7 @@ interactive "download it, populate dummy data, or generate Monte-Carlo data" cho
 ## Scope of the service
 
 A small HTTP microservice (the owning component for example data provisioning) that
-**provisions a data root** (the `$VYAAPAAR_DATA_DIR` layout) on request. It is the single
+**provisions a data root** (the `$TANTRA_DATA_DIR` layout) on request. It is the single
 canonical source of synthetic lakehouse data and the supported route to real data.
 
 ### Datasets the service can provision
@@ -68,7 +78,7 @@ POST /provision
   "seed": null,                          // null → truly random; int → reproducible
   "symbols": ["RELIANCE", "TCS", ...],   // optional; default = the example universe
   "start": "2020-01-01", "end": "2025-12-31",
-  "data_root": null                      // null → $VYAAPAAR_DATA_DIR or the default root
+  "data_root": null                      // null → $TANTRA_DATA_DIR or the default root
 }
 → 202 Accepted { "job_id": "...", "status": "running" }
 GET /provision/jobs/{job_id} → { "status": "done", "written": {...}, "root": "..." }
@@ -106,7 +116,7 @@ consumer-side changes**.
 | **Analyser** (`tantra.algo_analytics.walk_forward`) | `DataProvider.bars()` (same protocol) | same catalog |
 | **UI** (`tantra-ui` CLI/TUI, Rust) | `tantra serve <data_dir>` / `ServeConfig::new(data_dir)` | `catalog/` tree (or flat parquet) |
 | **Screeners** (`tantra_examples.screening.*`) | `find_catalog_path` / `find_duckdb_path` / `find_mutual_funds_db_path` | `<root>/catalog/1D/NSE` + `fundamentals.duckdb` + `mutual_funds.duckdb` |
-| **Wheel store** (`tantra.store.ParquetBarStore`) | `find_data_root` / `$VYAAPAAR_DATA_DIR` | `<root>/catalog/<TF>/<EXCHANGE>/<SYMBOL>/<year>.parquet` + `coverage_ledger.json` |
+| **Wheel store** (`tantra.store.ParquetBarStore`) | `find_data_root` / `$TANTRA_DATA_DIR` | `<root>/catalog/<TF>/<EXCHANGE>/<SYMBOL>/<year>.parquet` + `coverage_ledger.json` |
 | **Testing adapter** (`tantra.adapters.testing`) | `find_data_root` | `<root>/fundamentals.duckdb` (`companies`) |
 | **tantra-data readers** (`TantraDataService`, `ParquetCatalog`) | `CatalogRepository` + duckdb stores | hive + runtime catalog layouts |
 
@@ -133,16 +143,18 @@ Findings that strengthen the design:
 - **Data-root resolution is unchanged**: everything already reads through
   `tantra.store.find_data_root` / `tantra_examples.screening.paths`
   (`find_catalog_path`, `find_duckdb_path`, `find_mutual_funds_db_path`), all honoring
-  `$VYAAPAAR_DATA_DIR`. The service just *writes* the canonical layout; consumers are
+  `$TANTRA_DATA_DIR`. The service just *writes* the canonical layout; consumers are
   untouched.
 - **Test wiring (one canonical source)**: `tests/unit/synthetic_lakehouse.py` is folded
   into the service's `dummy` mode. The unit tests call the provisioner's in-process
   dummy generator (or, in integration, the service) instead of owning their own
   generator. This makes the ad-hoc per-test `_synthetic_catalog`/`_write_symbol_parquet`
   helpers redundant over time.
-- **Per-example runtime prompt (future)**: when an example finds an absent data root,
-  it may surface the service's three options (download / dummy / Monte-Carlo) and
-  invoke the chosen one — the choice the user asked for, without a new CLI.
+- **Per-example runtime prompt (shipped 2026-11-16)**: when an example finds an absent data
+  root, it surfaces the service's three options (download / dummy / Monte-Carlo) and invokes
+  the chosen one — the choice the user asked for, without a new CLI. Wired into
+  `ScreenerCLIExample` (`provision_catalog()`); piped runs (stdin not a TTY) print guidance
+  and stop rather than prompting, keeping the machine-readable stdout stream pure.
 
 ## Milestones (T15 — ALL COMPLETE 2026-11-16)
 
@@ -166,7 +178,8 @@ Findings that strengthen the design:
    (httpx `ProvisionClient`); 7 tests.
 6. **Example seam** — runtime prompt wiring; remove redundant per-test generators. **T15.6
    done**: seam `__main__` runtime prompt; per-test duckdb parquet writers folded onto the
-   canonical writer.
+   canonical writer. **Follow-on (2026-11-16)**: the seam is also wired into
+   `ScreenerCLIExample` — see the status block.
 
 **Verified**: `tests/unit` = **1014 passed / 1 skipped** (skip = mutual_funds store surface,
 tantra-data gap 0023); ruff check + format clean; mypy clean on `provision/`.
@@ -186,7 +199,8 @@ tantra-data gap 0023); ruff check + format clean; mypy clean on `provision/`.
 
 - No new CLI surface in tantra-examples (the seam's `__main__` is the interactive runtime
   prompt, not an argparse CLI).
-- No change to `VYAAPAAR_DATA_DIR` resolution semantics.
+- No change to `TANTRA_DATA_DIR` resolution semantics (the env var was renamed from
+  `VYAAPAAR_DATA_DIR`; precedence and the layout it resolves are unchanged).
 - `mutual_funds` dummy/download remain gated on tantra-data gap 0023 (store surface).
 
 ## Related

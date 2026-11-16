@@ -1,7 +1,7 @@
 """Provisioning library (plan 0004) — the canonical data-root provisioner.
 
 The owning component for example-data provisioning: writes the
-``$VYAAPAAR_DATA_DIR`` layout (NSE 1D catalog + fundamentals.duckdb +
+``$TANTRA_DATA_DIR`` layout (NSE 1D catalog + fundamentals.duckdb +
 mutual_funds.duckdb) on request, in one of three modes:
 
 * ``dummy`` — deterministic synthetic lakehouse (the fold of the old

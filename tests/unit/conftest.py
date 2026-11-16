@@ -17,7 +17,7 @@ Bar = tuple[dt.date, float, float, float, float, float]  # (date, open, high, lo
 
 SCREEN_ASOF = dt.date(2024, 6, 28)
 
-_DATA_DIR_ENV = "VYAAPAAR_DATA_DIR"
+_DATA_DIR_ENV = "TANTRA_DATA_DIR"
 
 
 def sessions(end: dt.date, n: int) -> list[dt.date]:
@@ -88,7 +88,7 @@ def add_series(catalog_dir: Path) -> Callable[..., None]:
 
 @pytest.fixture
 def data_env(catalog_dir: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Point ``VYAAPAAR_DATA_DIR`` at the synthetic data root (offline screeners).
+    """Point ``TANTRA_DATA_DIR`` at the synthetic data root (offline screeners).
 
     Seam for the absent tantra-data checkout (gap 0003): the tmp root has the
     production shape ``<root>/catalog/1D/NSE`` plus ``fundamentals.duckdb`` when the
@@ -113,7 +113,7 @@ def lakehouse_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
 
 @pytest.fixture
 def _real_catalog(lakehouse_root: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """The synthetic 1D NSE catalog with ``VYAAPAAR_DATA_DIR`` resolved to its root."""
+    """The synthetic 1D NSE catalog with ``TANTRA_DATA_DIR`` resolved to its root."""
     monkeypatch.setenv(_DATA_DIR_ENV, str(lakehouse_root))
     return lakehouse_root / "catalog" / "1D" / "NSE"
 

@@ -72,11 +72,62 @@ class ScreenerCLIExample(TantraExample):
         )
 
     def resolve_catalog_dir(self) -> Path:
-        """Locate the 1D Parquet catalog (``--data-dir`` if given, else the workspace data root)."""
+        """Locate the 1D Parquet catalog (``--data-dir`` if given, else the workspace data root).
+
+        ``--data-dir`` accepts either a data root (``<root>/catalog/1D/NSE`` is
+        resolved under it) or the catalog directory itself.
+        """
         if self.data_dir:
-            return find_catalog_path(self.data_dir)
+            explicit = Path(self.data_dir)
+            candidate = explicit / "catalog" / self.timeframe / self.exchange
+            return candidate if candidate.is_dir() else find_catalog_path(explicit)
         candidate = Path.cwd() / "tantra-data" / "data" / "catalog" / self.timeframe / self.exchange
         return candidate if candidate.is_dir() else find_catalog_path()
+
+    def provision_catalog(self) -> Path | None:
+        """Plan 0004 seam: offer download / dummy / monte-carlo when the catalog is absent.
+
+        Interactive when ``stdin`` is a TTY (the choice the user asked for); a piped
+        run (stdin not a TTY) prints guidance and stops — a prompt would hang a
+        pipeline or corrupt the machine-readable stdout stream. Returns the
+        provisioned catalog directory, or None when the run must stop.
+        """
+        if not sys.stdin.isatty():
+            print(
+                "Error: 1D NSE catalog not found. Set TANTRA_DATA_DIR to a data root, "
+                "pass --data-dir pointing at <data_root>/catalog/1D/NSE, or provision "
+                "data with `python -m tantra_examples.provision.seam`.",
+                file=sys.stderr,
+            )
+            return None
+        print(
+            "1D NSE catalog not found. Provision example data (1=download, 2=dummy, "
+            "3=monte-carlo):",
+            file=sys.stderr,
+        )
+        try:
+            from tantra_examples.provision.seam import choose_mode, ensure_data_root
+
+            job = ensure_data_root(chooser=choose_mode)
+        except Exception as exc:
+            print(f"Error: provisioning failed: {exc}", file=sys.stderr)
+            return None
+        if job.status not in ("done", "skipped"):
+            print(
+                f"Error: provisioning {job.status}: {job.error or 'no detail'}",
+                file=sys.stderr,
+            )
+            return None
+        catalog = Path(job.root) / "catalog" / self.timeframe / self.exchange
+        if not catalog.is_dir():
+            print(
+                f"Error: provisioning wrote {job.root} but no catalog at {catalog}. "
+                "Set TANTRA_DATA_DIR to that root and re-run.",
+                file=sys.stderr,
+            )
+            return None
+        print(f"provisioned ({job.mode.value} {job.status}): {job.root}", file=sys.stderr)
+        return catalog
 
     def resolve_asof(self, catalog_dir: Path) -> dt.date:
         """Resolve the point-in-time evaluation date, snapping past dates to the catalog horizon."""
@@ -133,9 +184,11 @@ class ScreenerCLIExample(TantraExample):
     def run(self) -> Any:
         try:
             catalog_dir = self.resolve_catalog_dir()
-        except FileNotFoundError as exc:
-            print(f"Error: {exc}", file=sys.stderr)
-            return 1
+        except FileNotFoundError:
+            provisioned = self.provision_catalog()
+            if provisioned is None:
+                return 1
+            catalog_dir = provisioned
 
         asof = self.resolve_asof(catalog_dir)
         candidates = self.screen(catalog_dir, asof)

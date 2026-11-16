@@ -99,7 +99,7 @@ def test_dummy_fundamentals_decimal_schema(tmp_path: Path) -> None:
 
 
 def test_provision_dummy_returns_done_job(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     req = ProvisionRequest(dataset=Dataset.NSE_1D_CATALOG, mode=Mode.DUMMY)
     job = provision(req)
     assert job.status == "done"
@@ -110,7 +110,7 @@ def test_provision_dummy_returns_done_job(tmp_path: Path, monkeypatch: pytest.Mo
 def test_provision_dummy_skips_when_complete(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     req = ProvisionRequest(dataset=Dataset.NSE_1D_CATALOG, mode=Mode.DUMMY)
     assert provision(req).status == "done"
     assert provision(req).status == "skipped"  # idempotent
@@ -121,7 +121,7 @@ def test_provision_dummy_skips_when_complete(
 def test_provision_download_wired_delegates(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     req = ProvisionRequest(dataset=Dataset.NSE_1D_CATALOG, mode=Mode.DOWNLOAD)
     # Download delegates to the tantra-data CLIs (network); assert the dispatch
     # reaches run_download and is NOT a NotImplementedError. run_download is
@@ -143,7 +143,7 @@ def test_provision_download_wired_delegates(
 
 
 def test_provision_monte_carlo_wired_now(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     req = ProvisionRequest(dataset=Dataset.NSE_1D_CATALOG, mode=Mode.MONTE_CARLO, seed=7)
     job = provision(req)
     assert job.status == "done"

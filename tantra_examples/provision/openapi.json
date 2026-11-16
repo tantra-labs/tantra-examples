@@ -3,7 +3,7 @@
   "info": {
     "title": "Tantra Data Provisioning Service",
     "version": "0.1.0",
-    "description": "Provisions a Tantra data root (the $VYAAPAAR_DATA_DIR layout) with real (download), deterministic (dummy) or seeded-random (monte-carlo) data for the NSE 1D catalog, fundamentals.duckdb and mutual_funds.duckdb. Plan 0004."
+    "description": "Provisions a Tantra data root (the $TANTRA_DATA_DIR layout) with real (download), deterministic (dummy) or seeded-random (monte-carlo) data for the NSE 1D catalog, fundamentals.duckdb and mutual_funds.duckdb. Plan 0004."
   },
   "paths": {
     "/provision": {
@@ -101,7 +101,7 @@
           "end": { "type": "string", "format": "date", "default": "2025-12-31" },
           "data_root": {
             "type": ["string", "null"],
-            "description": "null -> $VYAAPAAR_DATA_DIR or the default data root"
+            "description": "null -> $TANTRA_DATA_DIR or the default data root"
           },
           "force": {
             "type": "boolean",

@@ -48,7 +48,7 @@ def _seed(tmp_path: Path, navs: dict[dt.date, float]) -> None:
 
 
 def test_run_with_scheme_returns_the_stored_nav_series(example, tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     _seed(tmp_path, NAVS)
     out = example.run(scheme=CODE)
     assert out["type"] == "scheme"
@@ -58,7 +58,7 @@ def test_run_with_scheme_returns_the_stored_nav_series(example, tmp_path, monkey
 
 
 def test_run_with_latest_returns_the_last_seeded_nav(example, tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     _seed(tmp_path, NAVS)
     out = example.run(scheme=CODE, latest=True)
     assert out["type"] == "latest"
@@ -68,6 +68,6 @@ def test_run_with_latest_returns_the_last_seeded_nav(example, tmp_path, monkeypa
 
 
 def test_run_without_scheme_or_category_raises(example, tmp_path, monkeypatch) -> None:
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     with pytest.raises(ValueError, match="Provide --scheme or --category"):
         example.run()

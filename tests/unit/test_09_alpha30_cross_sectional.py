@@ -35,14 +35,14 @@ def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Build a deterministic synthetic 1D NSE catalog for ``main()``'s store run.
 
     Replaces the skip (the real ``tantra-data`` lakehouse is absent here) with a
-    synthetic lakehouse under ``tmp_path``: ``$VYAAPAAR_DATA_DIR`` points the
+    synthetic lakehouse under ``tmp_path``: ``$TANTRA_DATA_DIR`` points the
     store's data root there, so the same ``main()`` invocation reads the synthetic
     parquet at ``<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet``.
     """
     root = tmp_path / "data_root"
     symbols = ["RELIANCE", "HINDALCO", "SAIL", "VEDL", "ASHOKLEY", "BHEL", "NATIONALUM"]
     _write_lakehouse_catalog(root, symbols, dt.date(2023, 1, 2), dt.date(2024, 12, 31))
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(root))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(root))
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(dt.date(2023, 1, 2), dt.date(2024, 12, 31) + dt.timedelta(days=1))
     bars = store.read(InstrumentId("RELIANCE", "NSE"), "1D", interval)

@@ -1,6 +1,20 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **Plan 0004 seam wired into screener CLIs + data-root env renamed (2026-11-16)**: the
+  per-example runtime prompt (plan 0004 "future" item) shipped — `ScreenerCLIExample` now
+  catches a missing catalog and offers the interactive choice (1=download / 2=dummy /
+  3=monte-carlo) via `provision_catalog()` → `seam.ensure_data_root`, then re-runs against the
+  provisioned `<root>/catalog/1D/NSE`. Piped runs (stdin not a TTY) print guidance and stop
+  (no prompt in pipelines; stdout stream stays pure). `--data-dir` now accepts a data root or
+  the catalog dir itself. The missing-catalog error message was fixed (it named a nonexistent
+  `--catalog-dir`; it now names `--data-dir` + the env var + the seam command). **Env var
+  renamed `VYAAPAAR_DATA_DIR` → `TANTRA_DATA_DIR`** repo-wide — wheel `tantra.store`
+  (`tantra-ffi` `DATA_DIR_ENV`), `screening/paths.py`, `provision/layout.py`, and every test
+  (code grep-clean; the old name survives only in git history). 5 new tests in
+  `tests/unit/test_screener_provisioning.py`. **Gate: `tests/unit` = 1018 passed / 1 skipped**
+  (skip = `tantra_data.store.mutual_funds`, tantra-data gap 0023); ruff check + format clean;
+  mypy clean on `provision/` + the changed files.
 * **Plan 0004 IMPLEMENTED — T15 COMPLETE (2026-11-16, all six milestones)**: the data-
   provisioning service landed in `tantra_examples/provision/` across four commits: `f76428b`
   (M1 — layout/contracts/dummy + openapi.json + `synthetic_lakehouse.py` re-export shim),
@@ -22,7 +36,7 @@
   the provider repo (see tantra-strategies HANDOFF) un-skipping the 28 pipeline chain/manifest
   tests; (4) the 1D NSE catalog tests got a deterministic synthetic lakehouse —
   `tests/unit/synthetic_lakehouse.py` (price catalog + `fundamentals.duckdb`) behind the
-  `VYAAPAAR_DATA_DIR` seam via a shared `_real_catalog` fixture in `tests/unit/conftest.py`,
+  `TANTRA_DATA_DIR` seam via a shared `_real_catalog` fixture in `tests/unit/conftest.py`,
   un-skipping test_08/09/10 + test_screening_cli. Also fixed a wheel-API regression in
   `examples/production/06_multi_broker_dispatch.py` (paper mocks now registered unconditionally
   `replace=True`; `available_adapters` import dropped) and re-gated two integration suites on
@@ -119,7 +133,7 @@
   `amfi.py`, `bhavcopy.py`) and **retargeted every consumer** to `tantra_data.loaders.*` +
   `tantra.screener` + `tantra_data.parse_quantity` (12 AMFI consumers, the bhavcopy import,
   `_kernel.ai.{ask,knowledge}` catalog imports, `01_llm_research_analyst`, `03_nl_screener`,
-  7 test files). The `VYAAPAAR_DATA_DIR` offline seam in `screening/paths.py` is kept (the
+  7 test files). The `TANTRA_DATA_DIR` offline seam in `screening/paths.py` is kept (the
   real NSE catalog is absent from CI). Unit suite in the provisioned venv is identical to
   untouched HEAD (840 passed / 73 failed / 3 errors / 41 skipped — no new failures; the +1
   over the pre-provisioning 72 is `test_screening_cli::test_mutual_fund_screener_execution`,
@@ -203,7 +217,7 @@
 * **Gap 0004 stream plumbing**: the standalone screener CLIs stream through `screener_cli.py` re-exporting `tantra.cli.data` (`read_symbols`/`to_stream`/`parse_symbols`/`dumps`), not a `stream.py` module.
 * **Gap 0005**: only `examples/options/07_large_qty_options_slicer.py` probes optional `tantra_te_slicer`; `examples/stocksharp/02_twap_vwap.py` imports `tantra_examples.options` directly.
 * **Pitfalls contract**: flat foundational scripts (15) have 2–3 bullets; topic scripts (94) have 3–6. `test_pitfalls_sections.py` accommodates both.
-* **Offline catalog seam**: integration tests that require the multi-GB real Parquet catalog skip when run offline (`VYAAPAAR_DATA_DIR` synthetic fixture seam, kept after the gap 0003 closure).
+* **Offline catalog seam**: integration tests that require the multi-GB real Parquet catalog skip when run offline (`TANTRA_DATA_DIR` synthetic fixture seam, kept after the gap 0003 closure).
 
 ## Immediate Next Step
 * **Plan 0004 / T15 COMPLETE (2026-11-16)** — all six milestones shipped and verified

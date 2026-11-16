@@ -45,7 +45,7 @@ def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Build a deterministic synthetic ``ALPHAETF.NSE`` 1D catalog for ``main()``.
 
     ``main()``'s default run reads the data root resolved by ``find_data_root``;
-    pointing ``$VYAAPAAR_DATA_DIR`` at a synthetic lakehouse under ``tmp_path``
+    pointing ``$TANTRA_DATA_DIR`` at a synthetic lakehouse under ``tmp_path``
     (``<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet``) replaces the absent real
     ``tantra-data`` catalog (the previous offline-seam skip).
     """
@@ -66,7 +66,7 @@ def _default_catalog(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     ]
     (nse_dir / "ALPHAETF").mkdir(parents=True, exist_ok=True)
     write_symbol_parquet(nse_dir / "ALPHAETF" / "2025.parquet", rows)
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(root))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(root))
     store = ParquetBarStore(find_data_root(REPO_ROOT))
     interval = DateInterval(
         dt.date(2025, 1, 1), dt.datetime.now(tz=dt.UTC).date() + dt.timedelta(days=1)

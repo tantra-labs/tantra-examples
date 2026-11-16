@@ -18,9 +18,9 @@ RELIANCE = "RELIANCE"
 
 @pytest.fixture()
 def data_root(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    """Point ``$VYAAPAAR_DATA_DIR`` at ``tmp_path`` and return it."""
+    """Point ``$TANTRA_DATA_DIR`` at ``tmp_path`` and return it."""
 
-    monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
+    monkeypatch.setenv("TANTRA_DATA_DIR", str(tmp_path))
     return tmp_path
 
 
