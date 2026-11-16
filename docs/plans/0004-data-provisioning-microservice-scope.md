@@ -1,8 +1,8 @@
 # 0004 — Data-Provisioning Microservice: Scope (download / dummy / Monte-Carlo)
 
-**Status**: In progress — **T15 started 2026-11-16** (milestone 1: contract + layout +
-`provision` library with the `dummy` generator as the canonical synthetic source).
-Scope confirmed 2026-11-16; implementation began the same day.
+**Status**: Implemented — **T15.1–T15.6 shipped 2026-11-16** (all six milestones;
+see the milestones table below). The provisioning library, all three modes, the
+HTTP microservice and the example seam are in `tantra_examples/provision/`.
 
 **Decision (2026-11-16)**: a provisioning **microservice** serves example data
 options (download real / populate dummy / Monte-Carlo randomized) instead of
@@ -144,22 +144,32 @@ Findings that strengthen the design:
   it may surface the service's three options (download / dummy / Monte-Carlo) and
   invoke the chosen one — the choice the user asked for, without a new CLI.
 
-## Milestones (T15 build order — milestone 1 in progress)
+## Milestones (T15 — ALL COMPLETE 2026-11-16)
 
 1. **Contract + layout** — OpenAPI spec for `/provision`, job status, canonical layout
    constants; a `provision` library package with the three generators as pure functions
-   (dummy first — the fold of `synthetic_lakehouse.py`). **T15.1 started 2026-11-16**:
-   `tantra_examples/provision/` (layout, contracts, dummy, openapi.json) shipped;
-   `tests/unit/synthetic_lakehouse.py` is a re-export shim; 23 new tests; 990 passed / 1 skipped.
-2. **Dummy mode** — the canonical deterministic lakehouse; tests re-pointed to it. *(The fold
-   landed with milestone 1; remaining: move the conftest `write_symbol`/`add_series` ad-hoc
-   writers onto the provisioner, and expose a thin `provision` CLI/example seam.)*
+   (dummy first — the fold of `synthetic_lakehouse.py`). **T15.1 done**:
+   `tantra_examples/provision/` (layout, contracts, dummy, openapi.json); 23 new tests.
+2. **Dummy mode** — the canonical deterministic lakehouse; tests re-pointed to it. **T15.2
+   done**: `tests/unit/synthetic_lakehouse.py` is a re-export shim; conftest `write_symbol`
+   folded onto `provision.dummy.write_symbol_parquet`; interactive seam
+   (`choose_mode` / `ensure_data_root`).
 3. **Monte-Carlo mode** — seeded (or truly-random) GBM/regime generator + fundamentals
-   randomizer; golden/seed vectors for determinism tests.
+   randomizer; golden/seed vectors for determinism tests. **T15.3 done**:
+   `provision/monte_carlo.py` — `seed=None` truly random, int seed byte-identical; 6 tests.
 4. **Download mode** — job runner over `tantra_data.cli.ingest_*` + provider failures
-   surfaced as terminal errors.
-5. **HTTP service** — background job store, progress, cancellation; thin client.
-6. **Example seam** — runtime prompt wiring; remove redundant per-test generators.
+   surfaced as terminal errors. **T15.4 done**: `provision/download.py` (in-process CLI
+   delegation, cancel flag); 7 tests.
+5. **HTTP service** — background job store, progress, cancellation; thin client. **T15.5
+   done**: `provision/server.py` (FastAPI: `POST /provision` → 202, `GET /provision/jobs/{id}`,
+   `POST .../cancel`, `GET /health`; pydantic enum validation) + `provision/client.py`
+   (httpx `ProvisionClient`); 7 tests.
+6. **Example seam** — runtime prompt wiring; remove redundant per-test generators. **T15.6
+   done**: seam `__main__` runtime prompt; per-test duckdb parquet writers folded onto the
+   canonical writer.
+
+**Verified**: `tests/unit` = **1014 passed / 1 skipped** (skip = mutual_funds store surface,
+tantra-data gap 0023); ruff check + format clean; mypy clean on `provision/`.
 
 ## Dependencies / blockers
 
@@ -174,9 +184,10 @@ Findings that strengthen the design:
 
 ## Non-goals (for now)
 
-- **No HTTP service in this milestone** (milestones 5–6); the library + contract are shipped.
-- No new CLI surface in tantra-examples.
+- No new CLI surface in tantra-examples (the seam's `__main__` is the interactive runtime
+  prompt, not an argparse CLI).
 - No change to `VYAAPAAR_DATA_DIR` resolution semantics.
+- `mutual_funds` dummy/download remain gated on tantra-data gap 0023 (store surface).
 
 ## Related
 
