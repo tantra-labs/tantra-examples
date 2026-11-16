@@ -57,6 +57,12 @@ documented, NOT required to close this plan):
   wheel session.
 - `harness/service.py` (`DataService`) vs `tantra_data`'s service layer.
 - `harness/testing.py` (`replay`) as a future wheel backtest-replay helper.
+- **Zero-floats conversion of `tantra_examples/metrics.fills_equity_curve`** — an in-progress
+  Decimal rework was attempted during the closure waves and **reverted** (2026-11-15): it
+  converted the curve to `Decimal` but not its consumers, leaving a `Decimal - float`
+  `TypeError` in `examples/production/{01,03,06}*.py`. The conversion must ship end-to-end
+  (curve **and** every consumer that does arithmetic on `equity_curve`/`capital`), then the
+  3 pre-existing `test_production_equity` failures can be closed.
 
 ## Dependency
 
