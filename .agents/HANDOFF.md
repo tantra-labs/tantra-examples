@@ -15,7 +15,7 @@
   `tantra.indicators`, `tantra_examples.harness.testing`. Plan 0003 marked **Implemented-pending**
   (T13 gate + T13.7 follow-on consolidation candidates still open). Verified: unit suite
   916 passed / 50 skipped / 0 failed, ruff clean on touched files, 6 example import-smokes pass.
-  Commit `COMMIT_HASH_PLACEHOLDER` (local, not pushed). Thrust A (the wheel lift that deleted the
+  Commit `1acabfb9` (local, not pushed). Thrust A (the wheel lift that deleted the
   six domain modules `_kernel/{portfolio,risk,greeks,option,evaluator,calendar}.py`) was already
   complete before this batch; the facade now exposes no wheel names at all.
 * **Unit suite fully green (2026-11-15)**: all 73 pre-existing float-rooted failures + 3 errors fixed
@@ -45,7 +45,7 @@
   rename `_kernel/` → `tantra_examples/harness/` (config/loader/log/manifest/ports/runner/service/
   testing), ~60 `_kernel.*` import sites, deleting `_kernel/`, gate + follow-on candidates (root
   plan 0006, Thrust B; T13.6–T13.7). **Executed** — see the top batch entry (commit
-  `COMMIT_HASH_PLACEHOLDER`); plan 0003 is now **Implemented-pending** (T13 gate sign-off remains).
+  `1acabfb9`); plan 0003 is now **Implemented-pending** (T13 gate sign-off remains).
 * **Gap 0008 CLOSED (2026-11-15)**: wheel `tantra.backtest.session` shipped; `_kernel/session.py`
   deleted; the `_kernel/` mirror is fully dismantled — only the shared harness remains.
 * **Gap 0008 CLOSED (2026-11-15, ex 0008 closure — the last gap; all 8 closed)** — the
@@ -168,7 +168,7 @@
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.
 * All 8 gaps (0001–0008) are closed and the `_kernel` mirror is fully dismantled; the shared
   example harness was renamed to `tantra_examples/harness/` (plan 0003, root plan 0006 Thrust B,
-  commit `COMMIT_HASH_PLACEHOLDER`, 2026-11-16). **Plan 0003 = Implemented-pending**: the T13
+  commit `1acabfb9`, 2026-11-16). **Plan 0003 = Implemented-pending**: the T13
   gate sign-off and the T13.7 follow-on consolidation candidates are the next work; otherwise
   example-side maintenance (keep every numbered script runnable and its `tests/unit/` regression
   green) or whatever the orchestrator assigns next.
