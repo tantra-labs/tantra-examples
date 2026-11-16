@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import datetime as dt
 from collections.abc import Callable, Sequence
+from decimal import Decimal
 from pathlib import Path
 
 import duckdb
 import pytest
 
+from tantra_examples.provision.dummy import write_symbol_parquet
 from tests.unit.synthetic_lakehouse import build_lakehouse
 
 Bar = tuple[dt.date, float, float, float, float, float]  # (date, open, high, low, close, volume)
@@ -33,16 +35,20 @@ def write_symbol(catalog: Path, symbol: str, bars: Sequence[Bar]) -> None:
     """Write ``bars`` as ``<catalog>/<symbol>/bars.parquet`` (ts in epoch nanoseconds)."""
     sym_dir = catalog / symbol
     sym_dir.mkdir(parents=True, exist_ok=True)
-    con = duckdb.connect()
-    con.execute(
-        "CREATE TABLE b (ts BIGINT, open DOUBLE, high DOUBLE, low DOUBLE, close DOUBLE, "
-        "volume DOUBLE)"
-    )
+    rows: list[tuple[int, Decimal, Decimal, Decimal, Decimal, Decimal]] = []
     for d, o, high, low, close, volume in bars:
         ts = int(dt.datetime(d.year, d.month, d.day, tzinfo=dt.UTC).timestamp()) * 10**9
-        con.execute("INSERT INTO b VALUES (?, ?, ?, ?, ?, ?)", [ts, o, high, low, close, volume])
-    con.execute(f"COPY b TO '{sym_dir / 'bars.parquet'}' (FORMAT PARQUET)")
-    con.close()
+        rows.append(
+            (
+                ts,
+                Decimal(str(o)).quantize(Decimal("0.0000000001")),
+                Decimal(str(high)).quantize(Decimal("0.0000000001")),
+                Decimal(str(low)).quantize(Decimal("0.0000000001")),
+                Decimal(str(close)).quantize(Decimal("0.0000000001")),
+                Decimal(str(volume)).quantize(Decimal("0.0000000001")),
+            )
+        )
+    write_symbol_parquet(sym_dir / "bars.parquet", rows)
 
 
 @pytest.fixture

@@ -27,6 +27,7 @@ from tantra_examples.provision.dummy import (
     build_lakehouse,
     is_complete,
     sessions,
+    write_symbol_parquet,
 )
 from tantra_examples.provision.layout import (
     DATA_DIR_ENV,
@@ -38,6 +39,10 @@ from tantra_examples.provision.layout import (
     resolve_data_root,
     symbol_year_path,
 )
+from tantra_examples.provision.monte_carlo import (
+    MonteCarloConfig,
+    provision_monte_carlo,
+)
 
 __version__ = "0.1.0"
 
@@ -45,8 +50,8 @@ __version__ = "0.1.0"
 def provision(request: ProvisionRequest) -> ProvisionJob:
     """Provision a data root per ``request``.
 
-    ``dummy`` is implemented (idempotent); ``download`` and ``monte-carlo`` are
-    milestones 3-4 of plan 0004 and raise ``NotImplementedError`` with a pointer.
+    ``dummy`` and ``monte-carlo`` are implemented (idempotent); ``download`` is
+    milestone 4 of plan 0004 and raises ``NotImplementedError`` with a pointer.
     """
     root = resolve_data_root(request.data_root)
     if request.mode is Mode.DOWNLOAD:
@@ -54,9 +59,7 @@ def provision(request: ProvisionRequest) -> ProvisionJob:
             "download mode is plan 0004 milestone 4 (delegates to tantra_data.cli.ingest_*)"
         )
     if request.mode is Mode.MONTE_CARLO:
-        raise NotImplementedError(
-            "monte-carlo mode is plan 0004 milestone 3 (seeded GBM generator)"
-        )
+        return provision_monte_carlo(request)
     if request.mode is not Mode.DUMMY:
         raise ValueError(f"unknown mode: {request.mode}")
     if request.dataset not in (Dataset.NSE_1D_CATALOG, Dataset.FUNDAMENTALS):
@@ -94,6 +97,7 @@ __all__ = [
     "DEFAULT_START",
     "Dataset",
     "Mode",
+    "MonteCarloConfig",
     "ProvisionJob",
     "ProvisionRequest",
     "build_catalog",
@@ -104,7 +108,9 @@ __all__ = [
     "is_complete",
     "mutual_funds_db",
     "provision",
+    "provision_monte_carlo",
     "resolve_data_root",
     "sessions",
     "symbol_year_path",
+    "write_symbol_parquet",
 ]

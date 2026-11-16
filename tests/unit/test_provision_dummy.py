@@ -127,13 +127,12 @@ def test_provision_download_not_implemented_yet(
         provision(req)
 
 
-def test_provision_monte_carlo_not_implemented_yet(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_provision_monte_carlo_wired_now(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
     req = ProvisionRequest(dataset=Dataset.NSE_1D_CATALOG, mode=Mode.MONTE_CARLO, seed=7)
-    with pytest.raises(NotImplementedError, match="milestone 3"):
-        provision(req)
+    job = provision(req)
+    assert job.status == "done"
+    assert is_complete(tmp_path)
 
 
 def test_dummy_growth_symbol_rises_deterministically(tmp_path: Path) -> None:

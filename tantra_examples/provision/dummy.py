@@ -106,6 +106,13 @@ def _write_parquet(
     pq.write_table(table, path, compression="snappy")
 
 
+def write_symbol_parquet(
+    path: Path, rows: list[tuple[int, Decimal, Decimal, Decimal, Decimal, Decimal]]
+) -> None:
+    """Write one symbol parquet file with the wheel's decimal128(38, 10) schema (BIGINT ts)."""
+    _write_parquet(path, rows)
+
+
 def _d(value: float) -> Decimal:
     return Decimal(str(value)).quantize(Decimal("0.0000000001"))
 
@@ -248,4 +255,5 @@ __all__ = [
     "build_lakehouse",
     "is_complete",
     "sessions",
+    "write_symbol_parquet",
 ]
