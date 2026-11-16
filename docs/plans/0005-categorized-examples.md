@@ -15,12 +15,12 @@ Depends on: [tantra-data 0007](../../../tantra-data/docs/plans/0007-instrument-m
 
 ## 1. Context & Gaps Covered
 
-`universe_lists.py` (`resolve_universe`, `UniverseUnavailable`) supports only nifty50 and
-nifty200_alpha30, tracked by gaps [0004](../gaps/0004-tantra-wheel-display-universes-client.md) and
-[0006](../gaps/0006-tantra-wheel-kernel-domain-surface.md). `pipeline/screeners.py`
+Universe resolution now comes from the wheel (`tantra.markets.india.universes`: `resolve_universe`,
+`UniverseUnavailable`; examples gaps 0004/0006 closed upstream) and supports only a few
+hand-registered lists (nifty50, Alpha30, Bank Nifty). `pipeline/screeners.py`
 (`ScreenerStep`, `MultibaggerScreener`, `ValueScreener`, `DividendYieldScreener`) builds DuckDB SQL
-with a string `_asof_clause`. **The universe portions of gaps 0004/0006 are superseded by
-tantra-data 0007**; update those gap entries when it lands.
+with a string `_asof_clause`. The data-backed, point-in-time universes come from
+tantra-data plan 0007, surfaced through the wheel's `resolve_universe`.
 
 ## 2. Component Specifications & Phases
 
@@ -38,7 +38,7 @@ tantra-data 0007**; update those gap entries when it lands.
 - `pipeline/screeners.py` moves to tantra-data readers with parameterised SQL (no string-built clauses).
 
 ### Phase C — Gap hygiene
-- Update gaps 0004/0006 universe sections to point at tantra-data 0007; close when examples switch over.
+- Switch examples from the hand-registered wheel lists to data-backed `resolve_universe(name, as_of=...)` once tantra-data 0007 lands; no examples gap needs reopening.
 
 ## 3. Test Plan (TDD)
 
@@ -49,7 +49,7 @@ that no SQL in `pipeline/` is built by string interpolation.
 ## 4. Dependencies & Tier Notes
 
 L6; examples use only public surfaces (`tantra` wheel, tantra-data readers). Examples for blocked
-categories (shareholding, estimates) stay out until tantra-data gap 0023 closes.
+categories (shareholding, estimates) stay out until tantra-data gap 0024 closes.
 
 ## 5. Open Questions
 
