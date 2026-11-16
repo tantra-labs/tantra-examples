@@ -1,6 +1,21 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **Plan 0004 / T15 started — milestone 1 shipped (2026-11-16)**: the data-provisioning
+  library landed as `tantra_examples/provision/` — `layout.py` (canonical data-root layout
+  constants + `Dataset`/`Mode` enums + `resolve_data_root`), `contracts.py` (`ProvisionRequest`/
+  `ProvisionJob`), `dummy.py` (the fold of the old `tests/unit/synthetic_lakehouse.py` fixture —
+  **one canonical synthetic source**, now DECIMAL-canonical: parquet decimal128(38,10) matching
+  `tantra.store.BAR_SCHEMA`, duckdb DECIMAL(18,4)), `__init__.py` (`provision()` dispatcher;
+  download/monte-carlo raise `NotImplementedError` citing milestones 3–4), and
+  `openapi.json` (OpenAPI 3.1 for `POST /provision` + `GET /provision/jobs/{id}`).
+  `tests/unit/synthetic_lakehouse.py` is now a re-export shim → `provision.dummy`. 23 new tests
+  (`test_provision_{layout,contracts,dummy}.py`). **Gate: `tests/unit` = 990 passed / 1 skipped**
+  (967 baseline + 23 new; the 1 skip stays honest — `tantra_data.store.mutual_funds` gap 0023);
+  ruff check + format clean; mypy clean on the new package (pre-existing harness/backtest mypy
+  errors unchanged); writer optimized to pyarrow (lakehouse build 16s → 0.8s). Plan 0004 status
+  updated: Proposed → **In progress (T15)**; consumer-coverage analysis recorded in the plan
+  (sim/analyser/UI/screeners/wheel all read the one canonical root — zero consumer changes).
 * **All 51 unit-suite skips fixed (2026-11-16) — `tests/unit` now 967 passed / 1 skipped** (was
   916 passed / 51 skipped). The 50 fixable skips fell into 4 roots: (1) missing optional deps
   (`numpy`+`scipy` installed into the wheel venv; `test_04_portfolio_optimization` also needed a
@@ -184,6 +199,9 @@
   `ruff format --check` clean (incl. pre-existing I001/SIM102 in untouched files fixed).
 
 ## Phase / Slice Status
+* **Plan 0004 (T15) milestone 1 SHIPPED (2026-11-16)**: `tantra_examples/provision/` package
+  (layout + contracts + dummy + openapi.json); synthetic fixture folded to the provisioner;
+  23 new tests; suite 990/1. Next: milestone 2 (fold conftest writers + thin seam), then MC.
 * **Honba staged port (plan 0002)** — **ALL 9 STAGES COMPLETE (Stages 0–8)**; recorded Implemented in `docs/plans/README.md` (commit `bbfa692`). Plan doc cleaned up per gap-tracking §4.
 * **Docs (this change)**: former `docs/roadmap/` (`roadmap.md` + `migration-verification.md`) dismantled into `docs/design/` (`architecture.md`, `implementation-record.md`, `code-migration-map.md`), `docs/gaps/` (README + 0001–0008 source-verified), and `docs/plans/README.md`; `docs/reference/` concept docs unchanged.
 * Full verification gates were green at port close: `pytest -q` (922 passed, 70 skipped), `ruff check .`, `ruff format --check .`, `mypy tantra_examples` (234 files), `make check`.
@@ -197,6 +215,18 @@
 * **Offline catalog seam**: integration tests that require the multi-GB real Parquet catalog skip when run offline (`VYAAPAAR_DATA_DIR` synthetic fixture seam, kept after the gap 0003 closure).
 
 ## Immediate Next Step
+* **Plan 0004 / T15 milestone 1 done.** Next slices, in order:
+  1. **Milestone 2 (dummy mode complete)**: fold the remaining per-test ad-hoc writers in
+     `tests/unit/conftest.py` (`write_symbol`/`add_series`/`FundWriter`) onto
+     `tantra_examples.provision.dummy`, then expose a thin `provision` example seam (prompt the
+     three options when a data root is absent). Gate stays 990/1 green.
+  2. **Milestone 3 (Monte-Carlo)**: seeded (or truly-random) GBM/regime generator + fundamentals
+     randomizer in `provision/monte_carlo.py`; golden/seed vectors for determinism tests
+     (byte-identical re-runs; `seed=None` truly random).
+  3. **Milestone 4 (download)**: job runner delegating to `tantra_data.cli.ingest_catalog` /
+     `ingest_fundamentals` / `ingest_mutual_funds`; provider failures surface as terminal errors.
+  4. **Milestones 5–6 (HTTP service + seam)**: background job store + progress + cancellation;
+     interactive client.
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.
 * All 8 gaps (0001–0008) are closed; the `_kernel` mirror is fully dismantled and the harness was
   renamed to `tantra_examples/harness/` (plan 0003, root plan 0006 Thrust B, commits `25cb5df` +

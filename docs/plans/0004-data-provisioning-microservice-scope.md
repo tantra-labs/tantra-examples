@@ -1,6 +1,8 @@
 # 0004 — Data-Provisioning Microservice: Scope (download / dummy / Monte-Carlo)
 
-**Status**: Proposed — scoping only, **no implementation** (2026-11-16).
+**Status**: In progress — **T15 started 2026-11-16** (milestone 1: contract + layout +
+`provision` library with the `dummy` generator as the canonical synthetic source).
+Scope confirmed 2026-11-16; implementation began the same day.
 
 **Decision (2026-11-16)**: a provisioning **microservice** serves example data
 options (download real / populate dummy / Monte-Carlo randomized) instead of
@@ -92,6 +94,40 @@ GET /provision/jobs/{job_id} → { "status": "done", "written": {...}, "root": "
   (or the examples' runtime seam) that calls the service; the service itself is
   non-interactive HTTP.
 
+## Consumer coverage (T15 analysis, 2026-11-16)
+
+Probe-verified: every data consumer in the workspace already reads the *same canonical
+data-root layout*, so one provisioner that writes that root serves them all with **zero
+consumer-side changes**.
+
+| Consumer | Reads through | Layout contract |
+| :--- | :--- | :--- |
+| **Sim** (`tantra.backtest.session`, wheel) | `DataProvider.bars()` / `bars=` → `ParquetBarStore` | `<root>/catalog/1D/NSE/<SYMBOL>/<year>.parquet` (decimal128(38,10)) |
+| **Analyser** (`tantra.algo_analytics.walk_forward`) | `DataProvider.bars()` (same protocol) | same catalog |
+| **UI** (`tantra-ui` CLI/TUI, Rust) | `tantra serve <data_dir>` / `ServeConfig::new(data_dir)` | `catalog/` tree (or flat parquet) |
+| **Screeners** (`tantra_examples.screening.*`) | `find_catalog_path` / `find_duckdb_path` / `find_mutual_funds_db_path` | `<root>/catalog/1D/NSE` + `fundamentals.duckdb` + `mutual_funds.duckdb` |
+| **Wheel store** (`tantra.store.ParquetBarStore`) | `find_data_root` / `$VYAAPAAR_DATA_DIR` | `<root>/catalog/<TF>/<EXCHANGE>/<SYMBOL>/<year>.parquet` + `coverage_ledger.json` |
+| **Testing adapter** (`tantra.adapters.testing`) | `find_data_root` | `<root>/fundamentals.duckdb` (`companies`) |
+| **tantra-data readers** (`TantraDataService`, `ParquetCatalog`) | `CatalogRepository` + duckdb stores | hive + runtime catalog layouts |
+
+Findings that strengthen the design:
+
+1. **The layout is the shared contract.** `tantra.store.find_data_root`, the screeners'
+   `screening/paths.py`, and `tantra-ui`'s `data_dir` all resolve the same root; the
+   provisioner writes exactly that layout, so sim / analyser / UI / screeners / wheel all
+   get data with no code change. No repo depends on the generator (no dependency inversion):
+   consumers read the *root*, the service writes it.
+2. **`dummy` is the one canonical synthetic source.** The old `tests/unit/synthetic_lakehouse.py`
+   fixture is now a re-export shim over `tantra_examples.provision.dummy`; unit tests keep
+   passing (990 passed / 1 skipped at T15 start) and there is exactly one synthetic-data
+   implementation for the whole workspace.
+3. **The dummy writer is DECIMAL-canonical.** Parquet OHLCV/volume are decimal128(38,10)
+   (matching `tantra.store.BAR_SCHEMA`); `fundamentals.duckdb` ratio/statement columns are
+   DECIMAL(18,4). The wheel `to_decimal` read path accepts both decimal128 and legacy float64
+   columns, so the schema upgrade is safe for every consumer.
+4. **Deferred correctly to tantra-data:** the `mutual_funds` *store surface* is owned by
+   tantra-data (gap 0023); the provisioner stubs that dataset until the provider ships it.
+
 ## Interaction with existing seams
 
 - **Data-root resolution is unchanged**: everything already reads through
@@ -108,12 +144,16 @@ GET /provision/jobs/{job_id} → { "status": "done", "written": {...}, "root": "
   it may surface the service's three options (download / dummy / Monte-Carlo) and
   invoke the chosen one — the choice the user asked for, without a new CLI.
 
-## Milestones (draft build order — NOT started)
+## Milestones (T15 build order — milestone 1 in progress)
 
 1. **Contract + layout** — OpenAPI spec for `/provision`, job status, canonical layout
    constants; a `provision` library package with the three generators as pure functions
-   (dummy first — the fold of `synthetic_lakehouse.py`).
-2. **Dummy mode** — the canonical deterministic lakehouse; tests re-pointed to it.
+   (dummy first — the fold of `synthetic_lakehouse.py`). **T15.1 started 2026-11-16**:
+   `tantra_examples/provision/` (layout, contracts, dummy, openapi.json) shipped;
+   `tests/unit/synthetic_lakehouse.py` is a re-export shim; 23 new tests; 990 passed / 1 skipped.
+2. **Dummy mode** — the canonical deterministic lakehouse; tests re-pointed to it. *(The fold
+   landed with milestone 1; remaining: move the conftest `write_symbol`/`add_series` ad-hoc
+   writers onto the provisioner, and expose a thin `provision` CLI/example seam.)*
 3. **Monte-Carlo mode** — seeded (or truly-random) GBM/regime generator + fundamentals
    randomizer; golden/seed vectors for determinism tests.
 4. **Download mode** — job runner over `tantra_data.cli.ingest_*` + provider failures
@@ -134,7 +174,7 @@ GET /provision/jobs/{job_id} → { "status": "done", "written": {...}, "root": "
 
 ## Non-goals (for now)
 
-- **No implementation in this scope** (decision 2026-11-16).
+- **No HTTP service in this milestone** (milestones 5–6); the library + contract are shipped.
 - No new CLI surface in tantra-examples.
 - No change to `VYAAPAAR_DATA_DIR` resolution semantics.
 

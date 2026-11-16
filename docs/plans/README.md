@@ -9,7 +9,7 @@ Per workspace rule `.agents/rules/gap-tracking.md`:
 
 | # | Title | Target Scope | Status |
 |---|-------|--------------|--------|
-| [0004](0004-data-provisioning-microservice-scope.md) | Data-Provisioning Microservice (download / dummy / Monte-Carlo) — scope only, no implementation (2026-11-16 decision) | new service component; `examples/`, `tantra_examples/`, `tests/` (canonical dummy-mode fixture fold) | Proposed |
+| [0004](0004-data-provisioning-microservice-scope.md) | Data-Provisioning Microservice (download / dummy / Monte-Carlo) — **T15 in progress (2026-11-16)**: milestone 1 shipped `tantra_examples/provision/` (layout + contracts + dummy generator + openapi.json); `tests/unit/synthetic_lakehouse.py` is a re-export shim (one canonical synthetic source); 990 passed / 1 skipped | new service component; `examples/`, `tantra_examples/provision/`, `tests/` (canonical dummy-mode fixture fold) | In progress (T15) |
 
 ## Implemented Plans
 

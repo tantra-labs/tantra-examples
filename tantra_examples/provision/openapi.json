@@ -1,0 +1,134 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tantra Data Provisioning Service",
+    "version": "0.1.0",
+    "description": "Provisions a Tantra data root (the $VYAAPAAR_DATA_DIR layout) with real (download), deterministic (dummy) or seeded-random (monte-carlo) data for the NSE 1D catalog, fundamentals.duckdb and mutual_funds.duckdb. Plan 0004."
+  },
+  "paths": {
+    "/provision": {
+      "post": {
+        "summary": "Start a provisioning job",
+        "operationId": "provision",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProvisionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Accepted; job is running in the background",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProvisionJob"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid dataset/mode combination"
+          },
+          "501": {
+            "description": "Mode not implemented yet (milestone 3/4)"
+          }
+        }
+      }
+    },
+    "/provision/jobs/{job_id}": {
+      "get": {
+        "summary": "Query provisioning job status",
+        "operationId": "getProvisionJob",
+        "parameters": [
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProvisionJob"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unknown job id"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Dataset": {
+        "type": "string",
+        "enum": ["nse_1d_catalog", "fundamentals", "mutual_funds"]
+      },
+      "Mode": {
+        "type": "string",
+        "enum": ["download", "dummy", "monte-carlo"]
+      },
+      "ProvisionRequest": {
+        "type": "object",
+        "required": ["dataset", "mode"],
+        "properties": {
+          "dataset": { "$ref": "#/components/schemas/Dataset" },
+          "mode": { "$ref": "#/components/schemas/Mode" },
+          "seed": {
+            "type": ["integer", "null"],
+            "description": "null -> truly random Monte-Carlo; int -> reproducible"
+          },
+          "symbols": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "empty -> the default example universe"
+          },
+          "start": { "type": "string", "format": "date", "default": "2020-01-01" },
+          "end": { "type": "string", "format": "date", "default": "2025-12-31" },
+          "data_root": {
+            "type": ["string", "null"],
+            "description": "null -> $VYAAPAAR_DATA_DIR or the default data root"
+          },
+          "force": {
+            "type": "boolean",
+            "default": false,
+            "description": "re-provision an existing complete layout"
+          }
+        }
+      },
+      "ProvisionJob": {
+        "type": "object",
+        "required": ["job_id", "dataset", "mode", "status", "root"],
+        "properties": {
+          "job_id": { "type": "string" },
+          "dataset": { "$ref": "#/components/schemas/Dataset" },
+          "mode": { "$ref": "#/components/schemas/Mode" },
+          "status": {
+            "type": "string",
+            "enum": ["running", "done", "failed", "skipped"]
+          },
+          "root": { "type": "string", "format": "path" },
+          "written": {
+            "type": "object",
+            "additionalProperties": { "type": "integer" }
+          },
+          "error": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}
