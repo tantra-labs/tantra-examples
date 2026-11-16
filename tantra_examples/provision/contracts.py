@@ -10,6 +10,7 @@ from __future__ import annotations
 import datetime as dt
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 from tantra_examples.provision.layout import Dataset, Mode
 
@@ -48,7 +49,7 @@ class ProvisionJob:
     mode: Mode
     status: str  # "running" | "done" | "failed" | "skipped"
     root: Path
-    written: dict[str, int] = field(default_factory=dict)
+    written: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
 
 

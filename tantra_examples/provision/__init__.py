@@ -20,6 +20,7 @@ from tantra_examples.provision.contracts import (
     ProvisionJob,
     ProvisionRequest,
 )
+from tantra_examples.provision.download import run_download
 from tantra_examples.provision.dummy import (
     COMPANY_NAMES,
     build_catalog,
@@ -50,14 +51,12 @@ __version__ = "0.1.0"
 def provision(request: ProvisionRequest) -> ProvisionJob:
     """Provision a data root per ``request``.
 
-    ``dummy`` and ``monte-carlo`` are implemented (idempotent); ``download`` is
-    milestone 4 of plan 0004 and raises ``NotImplementedError`` with a pointer.
+    ``dummy``, ``monte-carlo`` and ``download`` are implemented; ``download``
+    delegates to the tantra-data ingest CLIs and is network-dependent.
     """
     root = resolve_data_root(request.data_root)
     if request.mode is Mode.DOWNLOAD:
-        raise NotImplementedError(
-            "download mode is plan 0004 milestone 4 (delegates to tantra_data.cli.ingest_*)"
-        )
+        return run_download(request)
     if request.mode is Mode.MONTE_CARLO:
         return provision_monte_carlo(request)
     if request.mode is not Mode.DUMMY:
@@ -110,6 +109,7 @@ __all__ = [
     "provision",
     "provision_monte_carlo",
     "resolve_data_root",
+    "run_download",
     "sessions",
     "symbol_year_path",
     "write_symbol_parquet",

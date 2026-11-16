@@ -9,7 +9,7 @@ import duckdb
 import pytest
 
 from tantra_examples.provision import provision
-from tantra_examples.provision.contracts import ProvisionRequest
+from tantra_examples.provision.contracts import ProvisionJob, ProvisionRequest
 from tantra_examples.provision.dummy import (
     COMPANY_NAMES,
     SESSION_END,
@@ -118,13 +118,28 @@ def test_provision_dummy_skips_when_complete(
     assert provision(forced).status == "done"
 
 
-def test_provision_download_not_implemented_yet(
+def test_provision_download_wired_delegates(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     monkeypatch.setenv("VYAAPAAR_DATA_DIR", str(tmp_path))
     req = ProvisionRequest(dataset=Dataset.NSE_1D_CATALOG, mode=Mode.DOWNLOAD)
-    with pytest.raises(NotImplementedError, match="milestone 4"):
-        provision(req)
+    # Download delegates to the tantra-data CLIs (network); assert the dispatch
+    # reaches run_download and is NOT a NotImplementedError. run_download is
+    # exercised end-to-end with monkeypatched CLIs in test_provision_download.py.
+    monkeypatch.setattr(
+        "tantra_examples.provision.run_download",
+        lambda _req: ProvisionJob(
+            job_id="dl-1",
+            dataset=req.dataset,
+            mode=req.mode,
+            status="failed",
+            root=tmp_path,
+            error="delegated",
+        ),
+    )
+    job = provision(req)
+    assert job.status == "failed"
+    assert job.error == "delegated"
 
 
 def test_provision_monte_carlo_wired_now(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
