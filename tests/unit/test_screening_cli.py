@@ -187,12 +187,12 @@ def test_screener_stream_feeds_backtester_parser():
     assert parse("") == []
 
 
-def test_mutual_fund_screener_execution(mf_script, capsys):
+def test_mutual_fund_screener_execution(mf_script, capsys, _real_catalog):
     pytest.importorskip("tantra_data", reason="mutual-fund screener needs the [mutual-funds] extra")
     example = mf_script.MutualFundScreenerExample()
     example.stream_format = "symbols"
     example.category = "Equity:Flexi Cap"
-    catalog_dir = example.resolve_catalog_dir()
+    catalog_dir = _real_catalog
     asof = example.resolve_asof(catalog_dir)
     candidates = example.screen(catalog_dir, asof)
     assert len(candidates) >= 1

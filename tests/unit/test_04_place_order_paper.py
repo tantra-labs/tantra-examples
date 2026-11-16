@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -55,7 +56,7 @@ def test_market_buy_fills_at_the_ask(report):
     assert fill["product"] == "delivery"
     assert fill["quantity"] == 10
     assert fill["filled_quantity"] == 10
-    assert fill["average_price"] == 2450.55  # the fake's first ask for RELIANCE
+    assert fill["average_price"] == Decimal("2450.55")  # the fake's first ask for RELIANCE
     assert fill["reject_reason"] is None
     assert fill["ts_event"] > 0
 
@@ -110,7 +111,11 @@ def test_order_and_trade_books_reflect_the_fill(report):
     assert len(trades) == 1
     trade = trades[0]
     assert trade["instrument_id"] == {"symbol": "RELIANCE", "exchange": "NSE"}
-    assert (trade["side"], trade["quantity"], trade["price"]) == ("buy", 10, 2450.55)
+    assert (trade["side"], trade["quantity"], trade["price"]) == (
+        "buy",
+        Decimal("10"),
+        Decimal("2450.55"),
+    )
     assert trade["order_id"] == "reliance-buy"
 
 
@@ -118,14 +123,15 @@ def test_available_cash_moved_by_exactly_the_fill_notional(report):
     fill = report["market_buy"]["report"]
     funds = report["funds"]
     assert funds["opening_balance"] == 1_000_000.0
-    assert funds["available_cash"] == 1_000_000.0 - fill["quantity"] * fill["average_price"]
+    notional = Decimal(fill["quantity"]) * fill["average_price"]
+    assert funds["available_cash"] == Decimal("1000000") - notional
     assert funds["available_cash"] == 975_494.5
     assert funds["margin_used"] == 0.0
 
 
 def test_output_is_deterministic_across_two_calls(example):
-    first = json.dumps(example.run(adapter="fake"))
-    second = json.dumps(example.run(adapter="fake"))
+    first = json.dumps(example.run(adapter="fake"), default=str)
+    second = json.dumps(example.run(adapter="fake"), default=str)
     assert first == second
 
 

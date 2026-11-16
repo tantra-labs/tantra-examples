@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -45,9 +46,9 @@ def test_buy_opens_a_position_with_side_quantity_and_avg_price(report):
     assert row["instrument_id"] == {"symbol": "RELIANCE", "exchange": "NSE"}
     assert row["currency"] == "INR"
     assert row["side"] == "long"
-    assert row["quantity"] == 10
-    assert row["avg_price"] == 2450.55
-    assert row["realized_pnl"] == {"amount": 0, "currency": "INR"}
+    assert int(row["quantity"]) == 10
+    assert Decimal(row["avg_price"]) == Decimal("2450.55")
+    assert row["realized_pnl"] == {"amount": "0", "currency": "INR"}
     assert row["realized_pnl_rupees"] == 0.0
 
 
@@ -55,12 +56,13 @@ def test_partial_sell_reduces_the_position_and_books_realized_pnl(report):
     rows = {row["instrument_id"]["symbol"]: row for row in report["positions"]}
     reliance = rows["RELIANCE"]
     assert reliance["side"] == "long"
-    assert reliance["quantity"] == 6  # 10 bought, 4 sold
-    assert reliance["avg_price"] == 2450.55  # the buy price survives a partial close
+    assert int(reliance["quantity"]) == 6  # 10 bought, 4 sold
+    # the buy price survives a partial close
+    assert Decimal(reliance["avg_price"]) == Decimal("2450.55")
     # 4 shares sold at the bid after buying at the ask: the spread is the realized loss,
-    # booked once, in integer minor units (ADR 0011).
-    assert reliance["realized_pnl"] == {"amount": -40, "currency": "INR"}
-    assert reliance["realized_pnl_rupees"] == -0.4
+    # booked once, reported as a two-decimal rupee string (ADR 0011).
+    assert reliance["realized_pnl"] == {"amount": "-0.40", "currency": "INR"}
+    assert reliance["realized_pnl_rupees"] == Decimal("-0.40")
 
 
 def test_flat_position_is_omitted_from_the_book(report):
@@ -77,18 +79,18 @@ def test_flat_position_is_omitted_from_the_book(report):
 
 def test_funds_and_trades_tell_the_same_story(report):
     trades = report["trades"]
-    assert [(t["side"], t["quantity"]) for t in trades] == [
+    assert [(t["side"], int(t["quantity"])) for t in trades] == [
         ("buy", 10),
         ("sell", 4),
         ("buy", 5),
         ("sell", 5),
     ]
-    cash = 1_000_000.0
+    cash = Decimal("1000000.0")
     for trade in trades:
-        notional = trade["quantity"] * trade["price"]
+        notional = Decimal(trade["quantity"]) * Decimal(trade["price"])
         cash = cash + (notional if trade["side"] == "sell" else -notional)
-    assert report["funds"]["available_cash"] == cash
-    assert report["funds"]["available_cash"] == 985_295.3
+    assert Decimal(report["funds"]["available_cash"]) == cash
+    assert Decimal(report["funds"]["available_cash"]) == Decimal("985295.30")
 
 
 def test_holdings_is_reported_as_unsupported_without_an_exception(report):
@@ -99,8 +101,8 @@ def test_holdings_is_reported_as_unsupported_without_an_exception(report):
 
 
 def test_output_is_deterministic_across_two_calls(example):
-    first = json.dumps(example.run(adapter="fake"))
-    second = json.dumps(example.run(adapter="fake"))
+    first = json.dumps(example.run(adapter="fake"), default=str)
+    second = json.dumps(example.run(adapter="fake"), default=str)
     assert first == second
 
 

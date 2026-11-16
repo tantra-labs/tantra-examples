@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import datetime as dt
 import sys
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -105,13 +106,13 @@ def run(
     # Equity marked to each bar close, so an open position carries its unrealised P&L
     equity_curve = fills_equity_curve(capital, fills, bars_list)
 
-    final_equity = equity_curve[-1] if equity_curve else capital
-    total_return = final_equity - capital
-    return_pct = (total_return / capital) * 100
+    final_equity = equity_curve[-1] if equity_curve else Decimal(str(capital))
+    total_return = final_equity - Decimal(str(capital))
+    return_pct = (total_return / Decimal(str(capital))) * 100
 
     # Max drawdown
-    peak = capital
-    max_dd = 0.0
+    peak = Decimal(str(capital))
+    max_dd = Decimal(0)
     for eq in equity_curve:
         peak = max(peak, eq)
         dd = (peak - eq) / peak * 100

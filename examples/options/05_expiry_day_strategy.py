@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import datetime as dt
 import sys
+from decimal import Decimal as D
 from typing import Any
 
 from tantra_examples._kernel.greeks import bs_greeks, bs_price
@@ -71,7 +72,7 @@ def run(
     rebalance_threshold: float = 0.1,  # rebalance when delta exceeds this
 ) -> dict[str, Any]:
     expiry = expiry or dt.date(2024, 12, 25)
-    strike = strike or round(spot_at_open / 100) * 100
+    strike = D(str(strike or round(spot_at_open / 100) * 100))
     tau_open = 1.0 / 365.0  # expiry day: ~1 day to expiry
     r = 0.07
 
@@ -87,9 +88,10 @@ def run(
     path = _simulate_intraday_path(spot_at_open, 0.0, iv, intraday_steps)
 
     rebalance_log = []
-    position = {"call": 1.0, "put": 1.0}  # quantities
-    cash_flow = 0.0  # cash from rebalancing
-    theta_pnl = 0.0  # time decay accrued by the position held at each step (negative when long)
+    position = {"call": D(1), "put": D(1)}  # quantities (Decimal, delta is Decimal)
+    cash_flow = D(0)  # cash from rebalancing
+    theta_pnl = D(0)  # time decay accrued by the position held at each step (negative when long)
+    rebalance_threshold = D(str(rebalance_threshold))
 
     for i, spot in enumerate(path):
         tau = max(1e-6, (intraday_steps - i) / intraday_steps * tau_open)
@@ -126,9 +128,9 @@ def run(
         )
 
     # Final P&L at expiry (assume spot ends at last path value)
-    spot_expiry = path[-1]
-    call_payoff = max(0.0, spot_expiry - strike)
-    put_payoff = max(0.0, strike - spot_expiry)
+    spot_expiry = D(str(path[-1]))
+    call_payoff = max(D(0), spot_expiry - strike)
+    put_payoff = max(D(0), strike - spot_expiry)
 
     total_payoff = (position["call"] * call_payoff + position["put"] * put_payoff) * lot_size
     initial_cost = (call_price_open + put_price_open) * lot_size

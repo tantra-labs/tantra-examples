@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+from decimal import Decimal
 from typing import Any
 
 import pytest
@@ -99,11 +100,14 @@ def test_curve_is_cash_plus_positions_marked_at_close_in_minor() -> None:
     last = result.curve[-1]
     i = len(DAYS) - 1
     held = {s: result.final_positions[s] for s in SYMS}
+    # Money.mul_qty(...).amount is major INR (exact Decimal); the curve is in
+    # minor units (paise), so convert with a factor of 100.
     marks = sum(
-        Money.mul_qty(held[s], 100.0 + 10 * j + i + 0.5, INR).amount for j, s in enumerate(SYMS)
+        Money.mul_qty(held[s], Decimal(100.0 + 10 * j + i + 0.5), INR).amount
+        for j, s in enumerate(SYMS)
     )
-    assert last["positions_value_minor"] == marks
-    assert last["equity_minor"] == last["cash_minor"] + marks
+    assert last["positions_value_minor"] == int(marks * 100)
+    assert last["equity_minor"] == last["cash_minor"] + int(marks * 100)
     assert all(isinstance(p["equity_minor"], int) for p in result.curve)
 
 

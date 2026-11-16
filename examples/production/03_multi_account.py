@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import datetime as dt
 import sys
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -90,15 +91,16 @@ def _run_one_account(
 
     equity_curve = fills_equity_curve(capital, result.fills, bars_list)
 
-    final = equity_curve[-1] if equity_curve else capital
+    final = equity_curve[-1] if equity_curve else Decimal(str(capital))
+    capital_d = Decimal(str(capital))
     return {
         "account_id": account_id,
         "capital": capital,
         "symbol": symbol,
         "fills": len(result.fills),
         "final_equity": final,
-        "total_return": final - capital,
-        "return_pct": (final - capital) / capital * 100,
+        "total_return": final - capital_d,
+        "return_pct": (final - capital_d) / capital_d * 100,
         "equity_curve": equity_curve,
     }
 
@@ -114,20 +116,20 @@ def run(
     ]
 
     results = []
-    total_capital = 0.0
-    total_final = 0.0
-    total_return = 0.0
+    total_capital = Decimal(0)
+    total_final = Decimal(0)
+    total_return = Decimal(0)
 
     for acc in accounts:
         res = _run_one_account(
             acc["id"], acc["capital"], acc["symbol"], acc["fast"], acc["slow"], bars
         )
         results.append(res)
-        total_capital += res["capital"]
+        total_capital += Decimal(str(res["capital"]))
         total_final += res["final_equity"]
         total_return += res["total_return"]
 
-    overall_return_pct = (total_return / total_capital * 100) if total_capital else 0.0
+    overall_return_pct = (total_return / total_capital * 100) if total_capital else Decimal(0)
 
     return {
         "config": {"accounts": accounts, "bars": bars},

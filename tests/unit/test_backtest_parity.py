@@ -17,6 +17,7 @@ import datetime as dt
 import importlib.util
 import json
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -106,7 +107,7 @@ def test_python_backtest_matches_golden_within_tolerance(backtest_module):
 
     actual = {
         "final_equity": mm["final_equity"],
-        "total_return": mm["final_equity"] - golden["capital_inr"],
+        "total_return": mm["final_equity"] - Decimal(str(golden["capital_inr"])),
         "max_drawdown_pct": m["max_drawdown_pct"],
         "sharpe": m["sharpe"],
         "n_fills": m["n_fills"],
@@ -114,7 +115,7 @@ def test_python_backtest_matches_golden_within_tolerance(backtest_module):
 
     for key in ("final_equity", "total_return", "max_drawdown_pct", "sharpe"):
         assert key in actual, key
-        assert abs(actual[key] - expected[key]) <= TOLERANCE, (
+        assert abs(Decimal(str(actual[key])) - Decimal(str(expected[key]))) <= TOLERANCE, (
             f"{key}: {actual[key]} != {expected[key]} (tol {TOLERANCE})"
         )
     assert actual["n_fills"] == expected["n_fills"]

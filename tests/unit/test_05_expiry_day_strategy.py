@@ -26,7 +26,7 @@ def test_theta_is_time_weighted_and_negative_for_long_options(example) -> None:
     assert "theta_captured" not in summary
     assert summary["theta_pnl"] < 0.0
     # Daily theta integrated over one day is of the order of the premium, not steps x premium.
-    assert abs(summary["theta_pnl"]) < 3.0 * initial
+    assert abs(summary["theta_pnl"]) < 3 * initial
 
 
 def test_theta_does_not_scale_with_step_count(example) -> None:

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -71,7 +72,8 @@ def _replay(example, bars=100, **kw):
 def _max_weight_drift(strat, last):
     values = {s: strat.position(strat._iids[s]) * last[s] for s in last}
     total = sum(values.values())
-    return max(abs(v / total - 1 / len(values)) for v in values.values())
+    n = Decimal(len(values))
+    return max(abs(v / total - Decimal(1) / n) for v in values.values())
 
 
 def test_rebalance_places_orders_toward_equal_weight(example):

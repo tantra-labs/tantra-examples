@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -62,7 +63,9 @@ def test_one_tick_per_instrument_per_advance(report):
     assert len(ticks) == report["advances"] * len(report["subscription"]["instruments"])
     assert [t["symbol"] for t in ticks] == ["RELIANCE", "TCS", "RELIANCE", "TCS"]
     for tick in ticks:
-        assert json.loads(json.dumps(tick)) == tick
+        assert json.loads(json.dumps(tick, default=str)) == {
+            key: str(value) if isinstance(value, Decimal) else value for key, value in tick.items()
+        }
         assert {"symbol", "bid_price", "ask_price"} <= set(tick)
         assert tick["bid_price"] <= tick["ask_price"]
         assert tick["bid_size"] > 0 and tick["ask_size"] > 0
@@ -76,18 +79,30 @@ def test_ticks_and_snapshot_follow_the_fake_price_series(report):
     # pushed RELIANCE quote is the series' second pair, never its first (2450.45, 2450.55).
     reliance = [t for t in report["ticks"] if t["symbol"] == "RELIANCE"]
     tcs = [t for t in report["ticks"] if t["symbol"] == "TCS"]
-    assert (reliance[0]["bid_price"], reliance[0]["ask_price"]) == (2451.75, 2452.10)
-    assert (reliance[1]["bid_price"], reliance[1]["ask_price"]) == (2452.60, 2452.85)
-    assert (tcs[0]["bid_price"], tcs[0]["ask_price"]) == (4118.90, 4120.00)
+    assert (reliance[0]["bid_price"], reliance[0]["ask_price"]) == (
+        Decimal("2451.75"),
+        Decimal("2452.10"),
+    )
+    assert (reliance[1]["bid_price"], reliance[1]["ask_price"]) == (
+        Decimal("2452.60"),
+        Decimal("2452.85"),
+    )
+    assert (tcs[0]["bid_price"], tcs[0]["ask_price"]) == (
+        Decimal("4118.90"),
+        Decimal("4120.00"),
+    )
     # the one-shot snapshot is taken where the stream stopped, so it agrees with the last
     # tick pushed for that instrument
     snapshot = report["snapshot"]
-    assert (snapshot["bid_price"], snapshot["ask_price"]) == (2452.60, 2452.85)
+    assert (snapshot["bid_price"], snapshot["ask_price"]) == (
+        Decimal("2452.60"),
+        Decimal("2452.85"),
+    )
 
 
 def test_output_is_deterministic_json(example):
-    first = json.dumps(example.run(adapter="fake"), sort_keys=True)
-    second = json.dumps(example.run(adapter="fake"), sort_keys=True)
+    first = json.dumps(example.run(adapter="fake"), sort_keys=True, default=str)
+    second = json.dumps(example.run(adapter="fake"), sort_keys=True, default=str)
     assert first == second
 
 

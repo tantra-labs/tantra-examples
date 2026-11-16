@@ -50,6 +50,7 @@ from __future__ import annotations
 
 import random
 import sys
+from decimal import Decimal as D
 from typing import Any
 
 from tantra.sizing import freeze_limit_qty
@@ -122,9 +123,11 @@ def run(
     total_credit = call_prem_entry + put_prem_entry
 
     # Sell-side premium STT (sunk at entry, both legs)
-    stt_call = float(option_sell_stt(call_prem_entry, lot_size))
-    stt_put = float(option_sell_stt(put_prem_entry, lot_size))
+    stt_call = option_sell_stt(call_prem_entry, lot_size)
+    stt_put = option_sell_stt(put_prem_entry, lot_size)
     stt_total = stt_call + stt_put
+    # Per-leg stop loss as an exact Decimal multiplier on the entry premium.
+    stop_mult = D(1) + D(str(stop_pct))
 
     path = _simulate_intraday_path(spot_at_entry, iv, steps, seed)
 
@@ -150,7 +153,7 @@ def run(
 
         if call_active:
             call_prem = bs_price(OptionKind.CALL, spot, strike, tau, iv, r)
-            if call_prem >= call_prem_entry * (1.0 + stop_pct):
+            if call_prem >= call_prem_entry * stop_mult:
                 call_active = False
                 call_exit_price = call_prem
                 call_exit_step = i
@@ -167,7 +170,7 @@ def run(
 
         if put_active:
             put_prem = bs_price(OptionKind.PUT, spot, strike, tau, iv, r)
-            if put_prem >= put_prem_entry * (1.0 + stop_pct):
+            if put_prem >= put_prem_entry * stop_mult:
                 put_active = False
                 put_exit_price = put_prem
                 put_exit_step = i
@@ -266,7 +269,7 @@ def run(
             "gross_pnl": gross_pnl,
             "stt_total": stt_total,
             "net_pnl": net_pnl,
-            "return_on_credit_pct": (net_pnl / (total_credit * lot_size) * 100.0)
+            "return_on_credit_pct": (net_pnl / (total_credit * lot_size) * 100)
             if total_credit > 0
             else 0.0,
             "max_adverse_spot_move_pct": ((max(path) - min(path)) / spot_at_entry * 100.0),

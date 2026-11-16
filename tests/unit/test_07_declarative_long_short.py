@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -48,7 +49,7 @@ def test_long_entry_is_buy_with_protective_sell_orders_below_and_above(example):
     assert (take["side"], take["order_type"]) == ("sell", "limit")
     assert stop["trigger_price"] == pytest.approx(long_entry["stop_loss"])
     assert take["price"] == pytest.approx(long_entry["take_profit"])
-    assert stop["trigger_price"] < long_entry["price"] < take["price"]
+    assert Decimal(stop["trigger_price"]) < Decimal(long_entry["price"]) < Decimal(take["price"])
     assert stop["quantity"] == take["quantity"] == entry["quantity"]
 
 
@@ -62,7 +63,7 @@ def test_short_entry_is_sell_with_protective_buy_orders_above_and_below(example)
     stop, take = intents[i + 1], intents[i + 2]
     assert (stop["side"], stop["order_type"]) == ("buy", "stop_market")
     assert (take["side"], take["order_type"]) == ("buy", "limit")
-    assert take["price"] < short_entry["price"] < stop["trigger_price"]
+    assert Decimal(take["price"]) < Decimal(short_entry["price"]) < Decimal(stop["trigger_price"])
     assert stop["quantity"] == take["quantity"] == intents[i]["quantity"]
 
 

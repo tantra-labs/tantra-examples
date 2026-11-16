@@ -128,8 +128,7 @@ class BasketSma(Strategy):
 
     def _equity(self) -> float:
         held = sum(
-            float(self.position(self._iids[s])) * float(px)
-            for s, px in self._last_close.items()
+            float(self.position(self._iids[s])) * float(px) for s, px in self._last_close.items()
         )
         return self._cash + held
 

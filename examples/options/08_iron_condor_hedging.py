@@ -44,6 +44,7 @@ from __future__ import annotations
 
 import random
 import sys
+from decimal import Decimal as D
 from typing import Any
 
 from tantra_examples._kernel.greeks import bs_greeks, bs_price
@@ -95,10 +96,10 @@ def run(
 ) -> dict[str, Any]:
     """Short iron condor opened at entry; delta-hedged intraday; square off at 15:20."""
     strikes = {
-        "put_short": put_short_strike,
-        "put_long": put_long_strike,
-        "call_short": call_short_strike,
-        "call_long": call_long_strike,
+        "put_short": D(str(put_short_strike)),
+        "put_long": D(str(put_long_strike)),
+        "call_short": D(str(call_short_strike)),
+        "call_long": D(str(call_long_strike)),
     }
     r = 0.07
 
@@ -126,7 +127,7 @@ def run(
     net_credit = (prem["put_short"] - prem["put_long"]) + (prem["call_short"] - prem["call_long"])
 
     # Sell-side premium STT on all four opening legs, sunk at entry.
-    stt_total = float(
+    stt_total = (
         option_sell_stt(prem["put_short"], lot_size)
         + option_sell_stt(prem["put_long"], lot_size)
         + option_sell_stt(prem["call_short"], lot_size)
@@ -139,7 +140,7 @@ def run(
     hedge_trades: list[dict[str, Any]] = []
     greek_snapshots: list[dict[str, Any]] = []
     breach_count = 0
-    hedge_cash = 0.0  # cash from underlying hedges (buy -> negative, sell -> positive)
+    hedge_cash = D(0)  # cash from underlying hedges (buy -> negative, sell -> positive)
 
     last_spot = path[-1]
     last_step = len(path) - 1
@@ -163,13 +164,13 @@ def run(
             for leg, strike in strikes.items()
         }
         net_delta = sum(
-            (-1.0 if leg.endswith("_short") else 1.0) * g.delta for leg, g in legs.items()
+            (-D(1) if leg.endswith("_short") else D(1)) * g.delta for leg, g in legs.items()
         )
         net_gamma = sum(
-            (-1.0 if leg.endswith("_short") else 1.0) * g.gamma for leg, g in legs.items()
+            (-D(1) if leg.endswith("_short") else D(1)) * g.gamma for leg, g in legs.items()
         )
         net_vega = sum(
-            (-1.0 if leg.endswith("_short") else 1.0) * g.vega for leg, g in legs.items()
+            (-D(1) if leg.endswith("_short") else D(1)) * g.vega for leg, g in legs.items()
         )
 
         greek_snapshots.append(
@@ -191,7 +192,7 @@ def run(
         if abs(net_delta) > delta_bound:
             hedge_qty = round(-net_delta)  # opposite sign to flatten
             if hedge_qty != 0:
-                hedge_cash -= hedge_qty * spot  # buy -> cash out, sell -> cash in
+                hedge_cash -= hedge_qty * D(str(spot))  # buy -> cash out, sell -> cash in
                 hedge_trades.append(
                     {
                         "step": i,
@@ -199,7 +200,7 @@ def run(
                         "spot": spot,
                         "net_delta_before": net_delta,
                         "hedge_qty": hedge_qty,
-                        "cash_flow": -hedge_qty * spot,
+                        "cash_flow": -hedge_qty * D(str(spot)),
                     }
                 )
 
@@ -246,15 +247,15 @@ def run(
             "premiums": prem,
             "net_credit": net_credit,
             "stt_total": stt_total,
-            "breakeven_lower": put_short_strike - net_credit,
-            "breakeven_upper": call_short_strike + net_credit,
+            "breakeven_lower": strikes["put_short"] - net_credit,
+            "breakeven_upper": strikes["call_short"] + net_credit,
         },
         "greeks": greek_snapshots,
         "risk": {
             "breach_count": breach_count,
-            "final_net_delta": greek_snapshots[-1]["net_delta"] if greek_snapshots else 0.0,
-            "final_net_gamma": greek_snapshots[-1]["net_gamma"] if greek_snapshots else 0.0,
-            "final_net_vega": greek_snapshots[-1]["net_vega"] if greek_snapshots else 0.0,
+            "final_net_delta": greek_snapshots[-1]["net_delta"] if greek_snapshots else D(0),
+            "final_net_gamma": greek_snapshots[-1]["net_gamma"] if greek_snapshots else D(0),
+            "final_net_vega": greek_snapshots[-1]["net_vega"] if greek_snapshots else D(0),
         },
         "exit": {
             "time": "15:20",
@@ -273,7 +274,7 @@ def run(
             "stt_total": stt_total,
             "hedge_cash": hedge_cash,
             "net_pnl": net_pnl,
-            "return_on_credit_pct": (net_pnl / (net_credit * lot_size) * 100.0)
+            "return_on_credit_pct": (net_pnl / (net_credit * lot_size) * 100)
             if net_credit > 0
             else 0.0,
         },

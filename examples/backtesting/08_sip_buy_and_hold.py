@@ -225,8 +225,8 @@ def run(
     )
 
     avg_price = (
-        sum(i["units"] * float(i["price"]) for i in installments) / shares
-    ) if shares > 0 else 0.0
+        (sum(i["units"] * float(i["price"]) for i in installments) / shares) if shares > 0 else 0.0
+    )
 
     summary = {
         "symbol": symbol,

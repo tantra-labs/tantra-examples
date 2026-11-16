@@ -12,13 +12,13 @@
   "test_start": "2026-01-01",
   "test_end": "2026-06-30",
   "expected": {
-    "final_equity": 100013.15,
-    "total_return": 13.15,
-    "max_drawdown_pct": -0.00185,
-    "sharpe": 9.531391537518791,
+    "final_equity": 100013.14,
+    "total_return": 13.14,
+    "max_drawdown_pct": -0.00186,
+    "sharpe": 9.499475906618601,
     "n_fills": 1,
     "n_intents": 1
   },
   "tolerance": 1e-6,
-  "note": "Phase 8 test-parity golden vector. Pins the deterministic Python backtest (tantra_examples.backtest.run_portfolio_backtest, next-open fills, NSE cost model). The intent is that the Python backtest matches the compiled Rust backtest (tantra-runtime-backtest) within 1e-6; until the Rust golden vector is wired in, this snapshot makes the target executable and offline."
+  "note": "Phase 8 test-parity golden vector. Pins the deterministic Python backtest (tantra_examples.backtest.run_portfolio_backtest, next-open fills, NSE cost model). The intent is that the Python backtest matches the compiled Rust backtest (tantra-runtime-backtest) within 1e-6; until the Rust golden vector is wired in, this snapshot makes the target executable and offline. Regenerated 2026-11-15 from the current Decimal-canonical backtest (previous pin drifted 0.01 INR / 0.03 Sharpe after the retarget)."
 }

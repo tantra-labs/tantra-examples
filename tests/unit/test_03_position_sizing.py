@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -81,18 +82,20 @@ def test_fractional_kelly_no_edge_and_too_few_trades(example):
 
 def test_kelly_mode_sizes_from_trailing_trades_and_is_capped(example):
     res = example.run(sizing="kelly")["result"]
-    buys = [f["quantity"] for f in res["fills"] if f["side"] == "buy"]
-    equity = 100_000.0
+    buys = [Decimal(f["quantity"]) for f in res["fills"] if f["side"] == "buy"]
+    equity = Decimal(100_000)
     assert len(buys) >= 5
     assert buys[0] == 1  # no trade history yet: the fixed_qty fallback
     assert max(buys) > 1  # later entries are sized from the trade stats
     for f in res["fills"]:
         if f["side"] == "buy":
-            assert f["quantity"] * f["price"] <= equity * 0.25 + f["price"]
+            assert Decimal(f["quantity"]) * Decimal(f["price"]) <= equity * Decimal(
+                "0.25"
+            ) + Decimal(f["price"])
 
 
 def test_volatility_sizing_never_exceeds_equity(example):
     res = example.run(sizing="volatility")["result"]
     for f in res["fills"]:
         if f["side"] == "buy":
-            assert f["quantity"] * f["price"] <= 100_000.0
+            assert Decimal(f["quantity"]) * Decimal(f["price"]) <= Decimal(100_000)

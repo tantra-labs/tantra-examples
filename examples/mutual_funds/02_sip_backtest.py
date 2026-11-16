@@ -34,6 +34,7 @@ from __future__ import annotations
 import calendar
 import datetime as dt
 import sys
+from decimal import Decimal as D
 from pathlib import Path
 from typing import Any
 
@@ -81,8 +82,9 @@ def run(
 
     sip_dates = _sip_dates(start, end, sip_day)
     legs: list[dict[str, Any]] = []
-    total_units = 0.0
-    total_invested = 0.0
+    monthly_d = D(str(monthly))
+    total_units = D(0)
+    total_invested = D(0)
 
     skipped: list[str] = []
     publication_dates = sorted(nav_by_date)
@@ -97,25 +99,25 @@ def run(
             continue
         nav = nav_by_date[effective_date]
 
-        units = monthly / nav
+        units = monthly_d / nav
         total_units += units
-        total_invested += monthly
+        total_invested += monthly_d
         legs.append(
             {
                 "sip_date": sip_date.isoformat(),
                 "effective_date": effective_date.isoformat(),
                 "nav": nav,
                 "units": units,
-                "amount": monthly,
+                "amount": monthly_d,
                 "total_units": total_units,
                 "total_invested": total_invested,
             }
         )
 
-    final_nav = nav_points[-1].nav if nav_points else 0.0
+    final_nav = nav_points[-1].nav if nav_points else D(0)
     current_value = total_units * final_nav
     gain = current_value - total_invested
-    return_pct = (gain / total_invested * 100) if total_invested else 0.0
+    return_pct = (gain / total_invested * 100) if total_invested else D(0)
 
     return {
         "config": {

@@ -207,7 +207,7 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as err:
         sys.exit(str(err))
 
-    text = json.dumps(result, indent=2) + "\n"
+    text = json.dumps(result, indent=2, default=str) + "\n"
     if args.out:
         Path(args.out).write_text(text)
     sys.stdout.write(text)

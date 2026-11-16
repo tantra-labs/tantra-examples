@@ -198,20 +198,26 @@ def _xirr(
     return mid * 100.0
 
 
-def fills_equity_curve(capital: float, fills: Sequence[Any], bars: Sequence[Any]) -> list[float]:
+def fills_equity_curve(
+    capital: float | int | str | Decimal, fills: Sequence[Any], bars: Sequence[Any]
+) -> list[Decimal]:
     """Equity at each bar close: ``capital`` first, then cash plus open position at that close.
 
     A fill is applied at its own price on the bar whose ``ts`` it carries, before that bar is
     marked, so a position held to the last bar shows its unrealised gain or loss.
     Single-instrument: every fill is taken to be in the instrument ``bars`` prices.
+
+    Exact ``Decimal`` throughout (zero-floats policy): wheel fills carry ``Decimal``
+    quantity/price and wheel bars ``Decimal`` closes, so cash, position and the marked
+    equity curve are all kept in exact decimal arithmetic.
     """
     pending = sorted(fills, key=lambda f: f.ts)
-    cash, position, i = capital, 0.0, 0
-    curve = [capital]
+    cash, position, i = D(str(capital)), D(0), 0
+    curve: list[Decimal] = [D(str(capital))]
     for b in bars:
         while i < len(pending) and pending[i].ts <= b.ts:
             f = pending[i]
-            sign = 1.0 if f.side.value == "buy" else -1.0
+            sign = D(1) if f.side.value == "buy" else D(-1)
             cash -= sign * f.quantity * f.price
             position += sign * f.quantity
             i += 1

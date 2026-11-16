@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime as dt
+from decimal import Decimal
 
 import pytest
 from tantra.instrument import InstrumentId
@@ -120,7 +121,7 @@ def test_nav_bars_carry_the_nav_as_flat_ohlc_with_no_volume():
     assert len(bars) == len(rows)
     for row, bar in zip(rows, bars, strict=True):
         assert bar.instrument_id == InstrumentId(row.code, "AMFI")
-        assert (bar.open, bar.high, bar.low, bar.close) == (row.nav,) * 4
+        assert (bar.open, bar.high, bar.low, bar.close) == (Decimal(str(row.nav)),) * 4
         assert bar.volume == 0.0
 
 

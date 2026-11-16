@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -85,7 +86,7 @@ def test_equity_estimate_subtracts_cash_spent_on_buys(example):
     assert len(res.fills) == 1 and res.fills[0].side.value == "buy"
     fill = res.fills[0]
     # starting cash + the position's unrealised P&L, not starting cash + the whole position value
-    expected = 100_000.0 + fill.quantity * (closes[-1] - fill.price)
+    expected = Decimal("100000") + fill.quantity * (Decimal(str(closes[-1])) - fill.price)
     assert strat._estimate_equity(closes[-1]) == pytest.approx(expected)
 
 

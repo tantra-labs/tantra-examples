@@ -47,8 +47,8 @@ def test_summary_counts_by_kind(example):
 
 
 def test_output_is_deterministic_json(example):
-    a = json.dumps(example.run(adapter="fake"), sort_keys=True)
-    b = json.dumps(example.run(adapter="fake"), sort_keys=True)
+    a = json.dumps(example.run(adapter="fake"), sort_keys=True, default=str)
+    b = json.dumps(example.run(adapter="fake"), sort_keys=True, default=str)
     assert a == b
 
 

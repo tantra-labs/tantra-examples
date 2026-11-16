@@ -35,7 +35,7 @@ def test_run_shape_and_stt(example) -> None:
     assert result["entry"]["total_credit"] > 0
     call_prem = result["entry"]["call_premium"]
     put_prem = result["entry"]["put_premium"]
-    expected_stt = float(option_sell_stt(call_prem, 50) + option_sell_stt(put_prem, 50))
+    expected_stt = option_sell_stt(call_prem, 50) + option_sell_stt(put_prem, 50)
     assert result["costs"]["stt_total"] == pytest.approx(expected_stt)
     assert result["costs"]["stt_call"] + result["costs"]["stt_put"] == pytest.approx(
         result["costs"]["stt_total"]

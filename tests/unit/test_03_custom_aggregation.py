@@ -7,6 +7,7 @@ import datetime as dt
 import importlib.util
 import json
 import math
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -105,11 +106,11 @@ def test_each_row_is_the_fold_of_its_own_constituent_bars(report, source):
     for row, (bucket, members) in zip(report["bars"], sorted(grouped.items()), strict=True):
         assert row["constituents"] == len(members)
         assert row["date"] == dt.datetime.fromtimestamp(members[0].ts / 1e9, tz=dt.UTC).isoformat()
-        assert row["open"] == members[0].open
-        assert row["close"] == members[-1].close
-        assert row["high"] == max(bar.high for bar in members)
-        assert row["low"] == min(bar.low for bar in members)
-        assert row["volume"] == sum(bar.volume for bar in members)
+        assert Decimal(row["open"]) == members[0].open
+        assert Decimal(row["close"]) == members[-1].close
+        assert Decimal(row["high"]) == max(bar.high for bar in members)
+        assert Decimal(row["low"]) == min(bar.low for bar in members)
+        assert Decimal(row["volume"]) == sum(bar.volume for bar in members)
         for bar in members:  # right-open bucket: [start, start + timeframe)
             assert bucket <= bar.ts < bucket + bucket_ns
 

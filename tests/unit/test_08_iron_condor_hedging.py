@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -81,7 +82,7 @@ def test_delta_hedge_sign_offsets_delta(example) -> None:
         first = trades[0]
         assert first["hedge_qty"] * first["net_delta_before"] < 0
         # Final delta should be no larger than the last pre-hedge delta magnitude.
-        assert abs(result["risk"]["final_net_delta"]) <= abs(trades[-1]["net_delta_before"]) + 1.0
+        assert abs(result["risk"]["final_net_delta"]) <= abs(trades[-1]["net_delta_before"]) + 1
 
 
 def test_deterministic_across_two_runs(example) -> None:
@@ -96,7 +97,7 @@ def test_main_writes_same_json_to_out_and_stdout(example, tmp_path, capsys) -> N
     assert example.main(["--out", str(out)]) == 0
     stdout = capsys.readouterr().out
     assert json.loads(out.read_text()) == json.loads(stdout)
-    assert json.loads(stdout)["entry"]["net_credit"] > 0
+    assert Decimal(json.loads(stdout)["entry"]["net_credit"]) > 0
 
 
 def test_main_happy_path_returns_zero(example) -> None:

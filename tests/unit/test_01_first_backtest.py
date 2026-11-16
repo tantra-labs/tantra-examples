@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -69,15 +70,15 @@ def test_orders_fill_at_the_next_bar_open(example, synthetic_only):
     """The first signal is on the 30th bar (close 2514.5); the fill is the next open, 2515.0."""
     fills = example.run(bars=60)["result"]["fills"]
     assert fills[0]["side"] == "buy"
-    assert fills[0]["price"] == pytest.approx(2515.0)
+    assert Decimal(fills[0]["price"]) == pytest.approx(Decimal("2515.0"))
 
 
 def test_capital_sizes_the_position_and_marks_the_equity(example, synthetic_only):
     small = example.run(bars=60, capital=10_000.0)
     big = example.run(bars=60, capital=100_000.0)
-    price = big["result"]["fills"][0]["price"]
-    assert big["result"]["fills"][0]["quantity"] == int(100_000.0 // price)
-    assert small["result"]["fills"][0]["quantity"] == int(10_000.0 // price)
+    price = Decimal(big["result"]["fills"][0]["price"])
+    assert Decimal(big["result"]["fills"][0]["quantity"]) == int(Decimal("100000") // price)
+    assert Decimal(small["result"]["fills"][0]["quantity"]) == int(Decimal("10000") // price)
     assert big["summary"]["final_equity"] > 100_000.0  # the ramp is profitable, gross of costs
     assert big["summary"]["net_pnl"] == pytest.approx(big["summary"]["final_equity"] - 100_000.0)
 

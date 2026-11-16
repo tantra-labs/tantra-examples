@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+from decimal import Decimal as D
 from typing import Any, ClassVar, override
 
 from tantra.bar import Bar
@@ -60,7 +61,7 @@ class CompositeSmaRsi(Strategy):
     rsi: Rsi
     atr: Atr
     risk_pct: float
-    _trailing: dict[str, float]
+    _trailing: dict[str, D]
 
     def __init__(
         self,
@@ -97,8 +98,8 @@ class CompositeSmaRsi(Strategy):
         # Entry: fast > slow and RSI not overbought
         if fast_val > slow_val and position <= 0 and rsi_val < 70:
             # ATR-based position sizing: risk = equity * risk_pct
-            equity = 100_000.0  # Simplified - no live equity tracking
-            risk_amount = equity * self.risk_pct
+            equity = D("100000")  # Simplified - no live equity tracking
+            risk_amount = equity * D(str(self.risk_pct))
             qty = max(1, int(risk_amount / (atr_val * 2)))  # 2 ATR stop
             self.buy(bar.instrument_id, qty)
             self._trailing[bar.instrument_id.symbol] = close - 2 * atr_val

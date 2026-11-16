@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -46,7 +47,7 @@ def test_fast_slow_crossover_produces_expected_signal_count(example):
     assert len(fills) >= 1
     first_fill = fills[0]
     assert first_fill["side"] == "buy"
-    assert first_fill["quantity"] == 1.0
+    assert Decimal(first_fill["quantity"]) == Decimal("1")
 
 
 def test_deterministic_across_two_runs(example):

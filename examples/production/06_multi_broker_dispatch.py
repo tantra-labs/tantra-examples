@@ -36,6 +36,7 @@ from __future__ import annotations
 import datetime as dt
 import sys
 from dataclasses import replace
+from decimal import Decimal
 from typing import Any
 
 from tantra.adapters.capabilities import AdapterCapabilities
@@ -176,17 +177,17 @@ def _run_strategy(bars, capital: float, fast: int, slow: int, symbol: str) -> di
     result = replay(strat, bars, fill_delay=1)
     fills = list(result.fills)
     equity_curve = fills_equity_curve(capital, fills, bars)
-    final_equity = equity_curve[-1] if equity_curve else capital
-    peak = capital
-    max_dd = 0.0
+    final_equity = equity_curve[-1] if equity_curve else Decimal(str(capital))
+    peak = Decimal(str(capital))
+    max_dd = Decimal(0)
     for eq in equity_curve:
         peak = max(peak, eq)
-        max_dd = max(max_dd, (peak - eq) / peak * 100 if peak else 0.0)
+        max_dd = max(max_dd, (peak - eq) / peak * 100 if peak else Decimal(0))
     return {
         "n_intents": len(list(result.intents)),
         "n_fills": len(fills),
         "final_equity": final_equity,
-        "total_return": final_equity - capital,
+        "total_return": final_equity - Decimal(str(capital)),
         "max_drawdown_pct": max_dd,
         "fills": [
             {

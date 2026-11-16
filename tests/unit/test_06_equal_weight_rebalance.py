@@ -41,9 +41,11 @@ def test_run_returns_documented_json_shape(example):
 def test_first_rebalance_is_equal_weight_within_one_share(example):
     report = example.run(bars=1)  # a single session: only the initial rebalance happens
     assert report["summary"]["rebalances"] == 1
-    target = Decimal(str(report["config"]["capital"])) * Decimal(
-        str(report["config"]["allocation"])
-    ) / 30
+    target = (
+        Decimal(str(report["config"]["capital"]))
+        * Decimal(str(report["config"]["allocation"]))
+        / 30
+    )
     for holding in report["holdings"]:
         assert holding["quantity"] > 0
         assert abs(holding["quantity"] * holding["close"] - target) <= holding["close"]

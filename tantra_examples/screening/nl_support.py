@@ -15,6 +15,7 @@ import re
 import urllib.error
 import urllib.request
 from collections.abc import Callable, Sequence
+from decimal import Decimal
 from typing import Any
 
 from tantra.ai.llm.provider import LlmPort, ScriptedFakeLlm
@@ -280,6 +281,27 @@ def _predicate_expression(tree: ast.Module) -> ast.expr:
     return fn.body[0].value
 
 
+class _DecimalConstants(ast.NodeTransformer):
+    """Rewrite float constants so predicate comparisons are exact Decimal-vs-Decimal.
+
+    ``compile`` forbids non-primitive ``Constant`` values, so each float constant
+    becomes a call to the ``_d`` helper (``Decimal`` from its string form) supplied
+    in the eval globals alongside the Decimal-canonical row values.
+    """
+
+    def visit_Constant(self, node: ast.Constant) -> ast.AST:
+        if isinstance(node.value, float):
+            return ast.copy_location(
+                ast.Call(
+                    func=ast.Name(id="_d", ctx=ast.Load()),
+                    args=[ast.Constant(value=str(node.value))],
+                    keywords=[],
+                ),
+                node,
+            )
+        return node
+
+
 def safe_eval_predicate(
     predicate_code: str, row: dict[str, Any], allowed: frozenset[str] = KNOWN_METRICS
 ) -> bool:
@@ -317,14 +339,23 @@ def safe_eval_predicate(
     values: dict[str, Any] = {}
     for name in names:
         v = row.get(name)
-        if v is None or isinstance(v, bool) or not isinstance(v, (int, float)) or math.isnan(v):
+        if v is None or isinstance(v, bool) or not isinstance(v, (int, float, Decimal)):
             return False
-        values[name] = v
+        if isinstance(v, float) and math.isnan(v):
+            return False
+        # Decimal-canonical row values (zero-floats policy): exact Decimal
+        # comparisons against the Decimal constants below.
+        values[name] = v if isinstance(v, Decimal) else Decimal(str(v))
+
+    # Decimal-canonical predicate: float constants in the generated code become
+    # Decimal so every comparison is exact Decimal-vs-Decimal, never float.
+    expr = _DecimalConstants().visit(expr)
+    ast.fix_missing_locations(expr)
 
     code = compile(ast.Expression(expr), "<screener_predicate>", "eval")
     try:
-        return bool(eval(code, {"__builtins__": {}}, values))
-    except ZeroDivisionError:
+        return bool(eval(code, {"__builtins__": {}, "_d": Decimal}, values))
+    except (ZeroDivisionError, TypeError, ValueError):
         return False
 
 

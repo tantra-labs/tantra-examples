@@ -148,8 +148,8 @@ def test_subscription_and_connection_are_released(example):
 
 
 def test_output_is_deterministic_across_two_calls(example):
-    first = json.dumps(example.run(), sort_keys=True)
-    second = json.dumps(example.run(), sort_keys=True)
+    first = json.dumps(example.run(), sort_keys=True, default=str)
+    second = json.dumps(example.run(), sort_keys=True, default=str)
     assert first == second
 
 

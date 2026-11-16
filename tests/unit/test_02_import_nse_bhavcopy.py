@@ -39,15 +39,15 @@ def test_udiff_dialect_parses_clamps_and_drops_the_z_series(report):
     assert bars["RELIANCE"] == {
         "symbol": "RELIANCE",
         "date": "2024-01-02",
-        "open": 2800.0,
-        "high": 2850.0,
-        "low": 2790.0,
-        "close": 2840.0,
-        "volume": 1000.0,
+        "open": "2800.00",
+        "high": "2850.00",
+        "low": "2790.00",
+        "close": "2840.00",
+        "volume": "1000",
     }
-    assert bars["TCS"]["high"] == 4010.0  # BE is a kept series
-    assert bars["INFY"]["high"] == 1500.0  # clamped up from 1495.0, below its open
-    assert bars["INFY"]["low"] == 1480.0
+    assert bars["TCS"]["high"] == "4010.00"  # BE is a kept series
+    assert bars["INFY"]["high"] == "1500.00"  # clamped up from 1495.0, below its open
+    assert bars["INFY"]["low"] == "1480.00"
 
 
 def test_sec_bhavdata_dialect_keeps_bz_and_drops_sm(report):
@@ -57,8 +57,8 @@ def test_sec_bhavdata_dialect_keeps_bz_and_drops_sm(report):
     bars = {b["symbol"]: b for b in fx["bars"]}
     assert set(bars) == {"BAJAJ-AUTO", "HDFCBANK", "INFY"}
     assert all(b["date"] == "2024-01-03" for b in fx["bars"])
-    assert bars["BAJAJ-AUTO"]["close"] == 3540.0  # BZ is a kept series
-    assert bars["INFY"]["open"] == 1500.0
+    assert bars["BAJAJ-AUTO"]["close"] == "3540.00"  # BZ is a kept series
+    assert bars["INFY"]["open"] == "1500.00"
 
 
 def test_legacy_dialect_clamps_a_negative_volume_to_zero(report):
@@ -68,8 +68,8 @@ def test_legacy_dialect_clamps_a_negative_volume_to_zero(report):
     bars = {b["symbol"]: b for b in fx["bars"]}
     assert set(bars) == {"ITC", "SBIN", "TATASTEEL"}
     assert all(b["date"] == "2024-01-04" for b in fx["bars"])
-    assert bars["TATASTEEL"]["volume"] == 0.0  # -200 clamped up to the invariant
-    assert bars["SBIN"]["high"] == 648.0
+    assert bars["TATASTEEL"]["volume"] == "0"  # -200 clamped up to the invariant
+    assert bars["SBIN"]["high"] == "648.00"
 
 
 def test_unrecognised_header_returns_an_empty_dict_and_the_report_records_it(example, report):

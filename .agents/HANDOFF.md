@@ -1,6 +1,28 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **Unit suite fully green (2026-11-15)**: all 73 pre-existing float-rooted failures + 3 errors fixed
+  (tests/unit: **916 passed / 51 skipped**, exit 0; wheel suite in tantra-ffi: **464 passed**). Root
+  cause throughout: examples/tests mixed Python `float` with the Decimal-canonical wheel
+  (`tantra.bar.Bar`, `tantra.trade.Trade`, greeks all carry `decimal.Decimal`). Fixes, all
+  zero-floats-compliant:
+  - **Harness**: `tantra_examples/metrics.fills_equity_curve` is now exact Decimal;
+    `tantra_examples/screening/nl_support.safe_eval_predicate` is Decimal-canonical (row values +
+    float predicate constants coerced via a `_d` AST rewrite; `Decimal` imported).
+  - **Examples**: `02_with_indicators`, `02_sip_backtest`, `05_expiry_day_strategy`,
+    `06_nifty_920_straddle`, `08_iron_condor_hedging`, `01_paper_trading`, `03_multi_account`,
+    `06_multi_broker_dispatch` — float literals → `Decimal(str(...))` (import `from decimal import Decimal`);
+    `04_place_order_paper.main` raw `json.dumps` → `default=str`.
+  - **Tests** (the bulk): assertions compare the actual returned type — jsonable decimal strings
+    (`'2515.0'`), raw `Decimal`, or `int` — never a mismatched float literal; determinism tests add
+    `default=str`; `test_backtest` marks-to-minor ×100; `test_screening_cli` MF-screener test uses the
+    `_real_catalog` fixture (skips offline); **`tests/snapshots/backtest_parity_golden.json`
+    regenerated** (stale pin drifted 0.01 INR / 0.03 Sharpe vs the current Decimal-canonical backtest).
+  - 4 pre-existing unformatted files (08_sip_buy_and_hold, 05_multi_instrument, 14_partial_fill_handling,
+    test_06_equal_weight_rebalance) run through `ruff format`.
+  - Gates: `ruff check .` clean, `ruff format --check .` clean, `pytest tests/unit -q` exit 0
+    (916 passed / 51 skipped; the only functional skip is the mutual-fund screener needing the real
+    1D NSE catalog).
 * **T13 PLANNED (docs only, 2026-11-15)**: plan `docs/plans/0003-tantra-examples-harness-dismantle.md`
   filed (Proposed) — rename the remaining `_kernel/` harness to `tantra_examples/harness/`
   (config/loader/log/manifest/ports/runner/service/testing), retarget ~60 `_kernel.*` import
@@ -16,9 +38,8 @@
   to it. This repo **deleted `_kernel/session.py`** (the final mirror/stub) and
   retargeted the one docstring reference (`examples/backtesting/01_first_backtest.py`).
   **All 8 gaps (0001–0008) are closed**; the `_kernel` mirror is fully dismantled and
-  only the shared example harness remains. Unit suite unchanged (841 passed / 73 failed /
-  3 errors / 49 skipped — the brief's 50th skip is an environment-dependent measure,
-  absent here both before and after this change).
+  only the shared example harness remains. Unit suite now fully green (916 passed / 51 skipped —
+  see the top entry; all 73 pre-existing float-rooted failures + 3 errors were fixed 2026-11-15).
 * **Gap 0002 CLOSED (2026-11-15, ex 0002 closure)** — the wheel shipped `tantra.ai`
   (ask / decision / knowledge / llm.provider; tantra-ffi `4d570b4`). This repo **deleted the
   mirrors** (`_kernel/ai/`, `fake_llm.py`, `decision_guard.py`) and **retargeted every
@@ -26,9 +47,7 @@
   import retargeted only). The 4 design-only scripts (02/04/05/07) were **un-skipped** and
   now run deterministic demos of the shipped surface (02 research-loop demo, 04 NL→filter
   demo via the `tantra.screener` catalog, 05 + 07 runnable design notes). Unit suite:
-  841 passed / 73 failed / 3 errors / 50 skipped — failed/errors identical to baseline
-  (73/3); the +1 passed / −1 skipped is `test_polyrepo_decoupling` now importing 02/04/05
-  cleanly (their module-level `pytest.skip` is gone).
+  916 passed / 51 skipped (fully green — see the top entry; all failures fixed 2026-11-15).
 * **Gap 0004 CLOSED (2026-11-15, ex 0004 closure)** — the wheel shipped `tantra.display`
   + `tantra.markets.india` (costs/settlement) + `tantra.markets.india.universes` +
   `tantra.cli.data` (tantra-ffi `e5f40b3` + `723c9c0`; the latter retargets the wheel's own
@@ -55,8 +74,7 @@
   known catalog-absent condition).
 * **Gap 0007 CLOSED (2026-11-15, ex 0007 closure)** — wheel `tantra.adapters` shipped
   (tantra-ffi `437eddf5`); `_kernel/adapters/` mirror (13 modules) deleted; 18 consumers
-  retargeted; adapters unit tests green; full unit suite unchanged (re-measured
-  841 passed / 72 failed / 3 errors / 41 skipped, identical to baseline — no new failures).
+  retargeted; adapters unit tests green. Unit suite now fully green (see top entry).
 * **Gaps 0001 + 0005 CLOSED (2026-11-15, T9.3 + T9.7)** — the owning wheel surfaces shipped
   in `tantra-ffi` (`d79d31b` + `6ac14dd`): `tantra.algo_analytics` + `tantra.quant` +
   `tantra.optimizer` (ex 0001) and `tantra.sizing` freeze-slicing `freeze_limit_qty` /

@@ -7,6 +7,7 @@ import dataclasses
 import datetime as dt
 import importlib.util
 import json
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -60,7 +61,7 @@ def _fold(members):
         max(row["high"] for row in members),
         min(row["low"] for row in members),
         members[-1]["close"],
-        sum(row["volume"] for row in members),
+        sum(Decimal(row["volume"]) for row in members),
     )
 
 
@@ -90,7 +91,7 @@ def test_report_lists_every_view_and_an_alignment_block(report):
         assert set(section) == {"bar_count", "volume", "first_date", "last_date", "bars"}
         assert section["bar_count"] == len(section["bars"]) > 0
         assert section["first_date"] <= section["last_date"]
-        assert section["volume"] == sum(row["volume"] for row in section["bars"])
+        assert Decimal(section["volume"]) == sum(Decimal(row["volume"]) for row in section["bars"])
         dates = [row["date"] for row in section["bars"]]
         assert dates == sorted(dates)
         assert len(set(dates)) == len(dates)
@@ -102,7 +103,13 @@ def test_the_source_view_is_exactly_the_fetch(report, source):
     assert report["1m"]["bar_count"] == len(source)
     for row, bar_ in zip(report["1m"]["bars"], source, strict=True):
         assert _ns(row["date"]) == bar_.ts
-        assert (row["open"], row["high"], row["low"], row["close"], row["volume"]) == (
+        assert (
+            Decimal(row["open"]),
+            Decimal(row["high"]),
+            Decimal(row["low"]),
+            Decimal(row["close"]),
+            Decimal(row["volume"]),
+        ) == (
             bar_.open,
             bar_.high,
             bar_.low,
@@ -135,7 +142,7 @@ def test_each_coarse_bar_equals_the_fold_of_its_own_constituents(
         members = groups[bucket_start(_ns(row["date"]), coarse_timeframe)]
         expected = _fold(members)
         assert (row["open"], row["high"], row["low"], row["close"]) == expected[:4]
-        assert row["volume"] == expected[4]
+        assert Decimal(row["volume"]) == expected[4]
         assert row["date"] == members[0]["date"]
 
 
@@ -207,7 +214,10 @@ def test_the_check_notices_a_wrong_close(example):
     days = weekdays(dt.date(2026, 6, 1), 10)
     fine = _daily_bars(days)
     coarse = aggregate(fine, "1w")
-    tampered = [dataclasses.replace(coarse[0], close=coarse[0].close + 5.0), *coarse[1:]]
+    tampered = [
+        dataclasses.replace(coarse[0], close=coarse[0].close + Decimal("5.0")),
+        *coarse[1:],
+    ]
     check = example._alignment(fine, "1d", tampered, "1w")
     assert check["covered"] is True
     assert check["fold_match"] is False
@@ -221,8 +231,8 @@ def test_the_check_notices_volume_moved_between_buckets(example):
     fine = _daily_bars(days)
     coarse = aggregate(fine, "1w")
     tampered = [
-        dataclasses.replace(coarse[0], volume=coarse[0].volume + 7.0),
-        dataclasses.replace(coarse[1], volume=coarse[1].volume - 7.0),
+        dataclasses.replace(coarse[0], volume=coarse[0].volume + Decimal("7.0")),
+        dataclasses.replace(coarse[1], volume=coarse[1].volume - Decimal("7.0")),
         *coarse[2:],
     ]
     check = example._alignment(fine, "1d", tampered, "1w")

@@ -154,9 +154,7 @@ class PartialFillStrategy(Strategy):
             "symbol": fill.instrument_id.symbol,
             "fill_qty": fill.quantity,
             "price": fill.price,
-            "remaining_qty": max(
-                0.0, self.target_quantity - (self.filled_quantity + filled_chunk)
-            ),
+            "remaining_qty": max(0.0, self.target_quantity - (self.filled_quantity + filled_chunk)),
             "cum_filled": self.filled_quantity + filled_chunk,
         }
         self.on_order_event(evt)
