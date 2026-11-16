@@ -9,6 +9,7 @@ Per workspace rule `.agents/rules/gap-tracking.md`:
 
 | # | Title | Target Scope | Status |
 |---|-------|--------------|--------|
+| [0003](0003-tantra-examples-harness-dismantle.md) | Dismantle `_kernel` — rename the remaining harness to `tantra_examples/harness/`, retarget ~60 `_kernel.*` import sites, delete `_kernel/`, gate + follow-on consolidation candidates (Thrust B of root plan 0006, T13) | `tantra_examples/`, `examples/`, `tests/` | Proposed — rows T13.6–T13.7; executes after the Thrust A wheel lift |
 
 ## Implemented Plans
 

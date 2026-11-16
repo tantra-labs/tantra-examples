@@ -1,6 +1,14 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **T13 PLANNED (docs only, 2026-11-15)**: plan `docs/plans/0003-tantra-examples-harness-dismantle.md`
+  filed (Proposed) — rename the remaining `_kernel/` harness to `tantra_examples/harness/`
+  (config/loader/log/manifest/ports/runner/service/testing), retarget ~60 `_kernel.*` import
+  sites, delete `_kernel/`, gate + follow-on candidates (root plan 0006, Thrust B; track
+  T13.6–T13.7). Depends on the Thrust A wheel lift (`tantra-ffi` plan 0002). No development
+  started; awaits approval.
+* **Gap 0008 CLOSED (2026-11-15)**: wheel `tantra.backtest.session` shipped; `_kernel/session.py`
+  deleted; the `_kernel/` mirror is fully dismantled — only the shared harness remains.
 * **Gap 0008 CLOSED (2026-11-15, ex 0008 closure — the last gap; all 8 closed)** — the
   wheel shipped the session orchestrator (`tantra.backtest.session`, `Tantra.backtest`
   next-open fills, India delivery costs, T+1 settlement; tantra-ffi `2d9214e`) and the
