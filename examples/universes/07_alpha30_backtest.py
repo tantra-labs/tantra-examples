@@ -164,7 +164,9 @@ class Alpha30BacktestExample(TantraExample):
         )
         if capital <= 0:
             raise SystemExit("--initial-capital / --capital must be positive")
-        capital_minor = Money.from_major(capital, Currency.INR).amount
+        # ``capital`` is the config's major-unit (₹) figure; ``run_portfolio_backtest``
+        # accounts in integer minor units (paise), so project it here (major * 100).
+        capital_minor = int(Money.from_major(capital, Currency.INR).amount * 100)
 
         settlement, settlement_source = resolve_settlement_days(
             self.exchange,

@@ -479,7 +479,12 @@ def run_portfolio_backtest(
         run.order_events.append(
             _event(last_ts, order_id, sub.intent, sub.intent.quantity, "unfilled_at_end")
         )
-    run.fees_minor = _minor(port.fees)
+    # Project fees as the paisa-consistent sum of the per-fill costs recorded in
+    # ``run.fills`` (each ``cost_minor`` already paisa-rounded), so the artifact is
+    # self-consistent: ``metrics.total_fees_minor == sum(fill cost_minor)``. The raw
+    # ``port.fees`` total is exact to the fill-cost model's 4dp and may differ by a
+    # paisa or two from that rounded sum.
+    run.fees_minor = sum(_minor(f.costs) for f in runner.fills)
     run.traded_notional_minor = _minor(port.traded_notional)
     run.final_positions = {iid.symbol: qty for iid, qty in port.positions.items()}
     run.rejections = len(runner.rejections)
