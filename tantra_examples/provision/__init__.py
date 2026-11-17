@@ -26,6 +26,7 @@ from tantra_examples.provision.dummy import (
     build_catalog,
     build_fundamentals,
     build_lakehouse,
+    build_mutual_funds,
     is_complete,
     sessions,
     write_symbol_parquet,
@@ -61,11 +62,12 @@ def provision(request: ProvisionRequest) -> ProvisionJob:
         return provision_monte_carlo(request)
     if request.mode is not Mode.DUMMY:
         raise ValueError(f"unknown mode: {request.mode}")
-    if request.dataset not in (Dataset.NSE_1D_CATALOG, Dataset.FUNDAMENTALS):
-        raise NotImplementedError(
-            "mutual_funds dummy needs tantra-data gap 0023 store surface "
-            "(see tantra-data/docs/gaps/0023-mutual-funds-store-surface.md)"
-        )
+    if request.dataset not in (
+        Dataset.NSE_1D_CATALOG,
+        Dataset.FUNDAMENTALS,
+        Dataset.MUTUAL_FUNDS,
+    ):
+        raise NotImplementedError(f"dummy provisioning not implemented for {request.dataset}")
     if is_complete(root) and not request.force:
         return ProvisionJob(
             job_id="",
@@ -102,6 +104,7 @@ __all__ = [
     "build_catalog",
     "build_fundamentals",
     "build_lakehouse",
+    "build_mutual_funds",
     "catalog_dir",
     "fundamentals_db",
     "is_complete",

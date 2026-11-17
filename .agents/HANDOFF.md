@@ -1,6 +1,19 @@
 # `tantra-examples` — Inter-Agent Handoff
 
 ## Latest Batch
+* **MF screener un-skipped — tantra-data gap 0023 closed (2026-11-17, T17.4)**: the last honest
+  unit-suite skip is gone. `tantra_data.store.mutual_funds.DuckDbMutualFundsStore` shipped in
+  tantra-data; `provision/dummy.py` gained `build_mutual_funds` (writes
+  `<root>/mutual_funds.duckdb` through the shipped store: `mf_schemes`/`mf_fund_stats`/`mf_holdings`
+  incl. schemes 122639 / 118989 / 125354, NAV/AUM/TER stats, ISIN-level holdings matched to
+  `companies.isin_code`) and `companies` gained `isin_code` + market-cap/ROCE/P/E/D/E columns;
+  `build_lakehouse`/`is_complete`/`provision_monte_carlo` now cover all three datasets;
+  `provision()`'s `mutual_funds` dummy dataset is wired (the gap-0023 `NotImplementedError` is
+  gone); `screen_mutual_funds` converts the store's Decimal lookthrough ROCE/P/E to float at its
+  own scoring boundary; `test_screen_mutual_funds_reports_missing_extra_clearly` now drops cached
+  `tantra_data` modules so the blocker finder is actually exercised. **Gate: `tests/unit` =
+  1027 passed / 0 skipped / 0 failures** (was 1 skipped: `test_mutual_fund_screener_execution`);
+  ruff check + format clean; mypy: pre-existing baseline errors only, zero new.
 * **Plan 0004 seam wired into screener CLIs + data-root env renamed (2026-11-16)**: the
   per-example runtime prompt (plan 0004 "future" item) shipped — `ScreenerCLIExample` now
   catches a missing catalog and offers the interactive choice (1=download / 2=dummy /
@@ -221,13 +234,14 @@
 
 ## Immediate Next Step
 * **Plan 0004 / T15 COMPLETE (2026-11-16)** — all six milestones shipped and verified
-  (1014 passed / 1 skipped). Remaining workspace-level follow-ons (recorded, NOT required):
-  1. **tantra-data gap 0023** — `tantra_data.store.mutual_funds` store surface; when shipped,
-     wire `provision`'s `mutual_funds` dataset + un-skip
-     `test_mutual_fund_screener_execution` (the 1 honest skip).
-  2. Optional: fundamentals randomizer for `monte_carlo` (currently deterministic via
-     `build_fundamentals`); a `provision` runtime prompt wired into the numbered examples
-     (seam `__main__` is the entry point); `download` progress/cancellation between symbols.
+  (1014 passed / 1 skipped). **Follow-on DONE 2026-11-17 (gap 0023, T17.4)**: the remaining item
+  (1) below shipped — tantra-data's `DuckDbMutualFundsStore` landed, the provisioner's
+  `mutual_funds` dataset is wired through the dummy lakehouse (`build_mutual_funds` writes via
+  the store), and `test_mutual_fund_screener_execution` is un-skipped (`tests/unit` = 1027 passed
+  / 0 skipped). Remaining recorded (NOT required) follow-ons:
+   1. Optional: fundamentals randomizer for `monte_carlo` (currently deterministic via
+      `build_fundamentals`); a `provision` runtime prompt wired into the numbered examples
+      (seam `__main__` is the entry point); `download` progress/cancellation between symbols.
   Otherwise example-side maintenance (keep every numbered script runnable and its
   `tests/unit/` regression green) or whatever the orchestrator assigns next.
 * All 9 stages of the `honba-examples` port are complete and verified; docs batch committed.

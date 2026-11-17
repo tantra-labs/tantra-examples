@@ -29,6 +29,11 @@ class _BlockTantraData:
 def test_screen_mutual_funds_reports_missing_extra_clearly(monkeypatch) -> None:
     from tantra_examples.screening import screen_mutual_funds
 
+    # Drop any already-imported tantra_data modules so the blocking finder is
+    # actually exercised (the store is importable in-session, but the "missing
+    # extra" degradation simulates a clean interpreter without the optional dep).
+    for name in [n for n in sys.modules if n == "tantra_data" or n.startswith("tantra_data.")]:
+        monkeypatch.delitem(sys.modules, name, raising=False)
     monkeypatch.setattr(sys, "meta_path", [_BlockTantraData(), *sys.meta_path])
     with pytest.raises(ModuleNotFoundError, match="tantra-data"):
         screen_mutual_funds()

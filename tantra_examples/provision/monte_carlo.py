@@ -31,6 +31,7 @@ from tantra_examples.provision.dummy import (
     _session_ts,
     _write_parquet,
     build_fundamentals,
+    build_mutual_funds,
     is_complete,
     sessions,
 )
@@ -38,6 +39,7 @@ from tantra_examples.provision.layout import (
     Dataset,
     catalog_dir,
     fundamentals_db,
+    mutual_funds_db,
     resolve_data_root,
 )
 
@@ -125,9 +127,12 @@ def provision_monte_carlo(request: ProvisionRequest) -> ProvisionJob:
         for year, year_rows in sorted(by_year.items()):
             _write_parquet(symbol_dir / f"{year}.parquet", year_rows)
     # build_fundamentals is not idempotent (CREATE TABLE fails on re-run), so
-    # only (re)build the deterministic fundamentals DB when it is missing.
+    # only (re)build the deterministic fundamentals / mutual-funds DBs when they
+    # are missing (the canonical root layout now includes all three datasets).
     if not fundamentals_db(root).is_file():
         build_fundamentals(root)
+    if not mutual_funds_db(root).is_file():
+        build_mutual_funds(root)
     return ProvisionJob(
         job_id="",
         dataset=request.dataset,

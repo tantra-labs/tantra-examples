@@ -172,11 +172,8 @@ def test_screener_stream_feeds_backtester_parser():
     assert parse("") == []
 
 
-def test_mutual_fund_screener_execution(mf_script, capsys, _real_catalog):
-    pytest.importorskip(
-        "tantra_data.store.mutual_funds",
-        reason=("tantra_data.store.mutual_funds not shipped yet (tantra-data provider gap)"),
-    )
+def test_mutual_fund_screener_execution(mf_script, _real_catalog):
+    """The MF screener runs against the provisioned mutual_funds store (gap 0023)."""
     example = mf_script.MutualFundScreenerExample()
     example.stream_format = "symbols"
     example.category = "Equity:Flexi Cap"

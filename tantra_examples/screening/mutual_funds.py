@@ -114,8 +114,13 @@ def screen_mutual_funds(
             disclosure_lag_days=disclosure_lag_days,
         )
 
-        port_roce = lookthrough.get("portfolio_roce")
-        port_pe = lookthrough.get("portfolio_pe")
+        # The store aggregates in exact Decimal; the scoring below does float
+        # arithmetic, so the two lookthrough metrics are converted at the boundary
+        # (mirroring the `float(nav)` conversions above).
+        port_roce_raw = lookthrough.get("portfolio_roce")
+        port_roce = float(port_roce_raw) if port_roce_raw is not None else None
+        port_pe_raw = lookthrough.get("portfolio_pe")
+        port_pe = float(port_pe_raw) if port_pe_raw is not None else None
         holdings = lookthrough.get("holdings", [])
         holding_symbols = {h["symbol"].upper() for h in holdings}
 

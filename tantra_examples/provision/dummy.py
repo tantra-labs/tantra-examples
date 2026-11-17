@@ -20,12 +20,108 @@ import duckdb
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from tantra_examples.provision.layout import catalog_dir, fundamentals_db
+from tantra_examples.provision.layout import catalog_dir, fundamentals_db, mutual_funds_db
 
 SESSION_START = dt.date(2020, 1, 1)
 SESSION_END = dt.date(2025, 12, 31)
 FY_PERIODS = (dt.date(2022, 3, 31), dt.date(2024, 3, 31))
 _IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
+
+#: Evaluation date the mutual-fund screener resolves to (the last catalog session).
+MF_STATS_ASOF = dt.date(2025, 12, 31)
+
+#: Holdings disclosure date — 31 days before ``MF_STATS_ASOF``, comfortably inside
+#: the screener's 10-day disclosure-lag window (no look-ahead).
+MF_HOLDINGS_ASOF = dt.date(2025, 11, 30)
+
+#: Synthetic scheme records: (scheme_code, scheme_name, category, plan, option, amc).
+_MF_SCHEMES = (
+    (
+        "122639",
+        "Quant Flexi Cap Fund - Direct Plan - Growth",
+        "Equity:Flexi Cap",
+        "Direct Plan",
+        "Growth Option",
+        "Quant Mutual Fund",
+    ),
+    (
+        "125354",
+        "Parag Parikh Flexi Cap Fund - Direct Plan - Growth",
+        "Equity:Flexi Cap",
+        "Direct Plan",
+        "Growth Option",
+        "PPFAS Mutual Fund",
+    ),
+    (
+        "118989",
+        "Axis ELSS Tax Saver Fund - Direct Plan - Growth",
+        "Equity:ELSS",
+        "Direct Plan",
+        "Growth Option",
+        "Axis Mutual Fund",
+    ),
+)
+
+#: Synthetic fund stats: (scheme_code, nav, ter_pct, aum_cr, portfolio_turnover_pct).
+_MF_STATS = (
+    ("122639", "123.4500", "0.6500", "12500.0000", "41.0000"),
+    ("125354", "456.7800", "0.6200", "8500.0000", "35.0000"),
+    ("118989", "345.6000", "0.5200", "2100.0000", "25.0000"),
+)
+
+#: Per-company equity fundamentals for the lookthrough: (isin_code, market_cap_cr,
+#: roce_pct, pe_ratio, debt_to_equity). Market caps span the large/mid/small bands
+#: so the screener's cap-breakdown exercise sees all three buckets.
+MF_COMPANY_FUNDAMENTALS: dict[str, tuple[str, str, str, str, str]] = {
+    "RELIANCE": ("INE002A01018", "1500000.0", "18.0", "22.5", "0.4"),
+    "TCS": ("INE467B01029", "1200000.0", "45.0", "28.0", "0.1"),
+    "HDFCBANK": ("INE040A01034", "900000.0", "16.5", "19.0", "0.6"),
+    "INFY": ("INE009A01021", "600000.0", "30.0", "25.0", "0.1"),
+    "SBIN": ("INE062A01020", "400000.0", "10.0", "8.5", "1.0"),
+    "ITC": ("INE154A01025", "200000.0", "35.0", "20.0", "0.2"),
+    "LT": ("INE0BIN01018", "150000.0", "20.0", "30.0", "0.3"),
+    "BHARTIARTL": ("INE397D01024", "4000.0", "12.0", "40.0", "0.5"),
+}
+
+#: Synthetic holdings per scheme: (isin, holding_name, weight_pct). A few weights
+#: reference ISINs absent from ``companies`` so the lookthrough coverage is honest
+#: (``coverage_pct < 100``) rather than silently complete.
+_MF_HOLDINGS: dict[str, list[tuple[str, str, str]]] = {
+    "122639": [
+        ("INE002A01018", "Reliance Industries Ltd", "20.0"),
+        ("INE467B01029", "Tata Consultancy Services Ltd", "15.0"),
+        ("INE040A01034", "HDFC Bank Ltd", "12.0"),
+        ("INE009A01021", "Infosys Ltd", "10.0"),
+        ("INE062A01020", "State Bank of India", "9.0"),
+        ("INE154A01025", "ITC Ltd", "8.0"),
+        ("INE0BIN01018", "Larsen & Toubro Ltd", "6.0"),
+        ("INE397D01024", "Bharti Airtel Ltd", "5.0"),
+        ("IN00UNMATCHED1", "Unlisted Start-up", "8.0"),
+        ("IN00UNMATCHED2", "Derivative Hedge", "7.0"),
+    ],
+    "125354": [
+        ("INE002A01018", "Reliance Industries Ltd", "15.0"),
+        ("INE467B01029", "Tata Consultancy Services Ltd", "12.0"),
+        ("INE040A01034", "HDFC Bank Ltd", "10.0"),
+        ("INE009A01021", "Infosys Ltd", "12.0"),
+        ("INE062A01020", "State Bank of India", "8.0"),
+        ("INE154A01025", "ITC Ltd", "10.0"),
+        ("INE0BIN01018", "Larsen & Toubro Ltd", "8.0"),
+        ("INE397D01024", "Bharti Airtel Ltd", "5.0"),
+        ("IN00UNMATCHED3", "International Equity", "20.0"),
+    ],
+    "118989": [
+        ("INE002A01018", "Reliance Industries Ltd", "25.0"),
+        ("INE467B01029", "Tata Consultancy Services Ltd", "10.0"),
+        ("INE040A01034", "HDFC Bank Ltd", "15.0"),
+        ("INE009A01021", "Infosys Ltd", "15.0"),
+        ("INE062A01020", "State Bank of India", "10.0"),
+        ("INE154A01025", "ITC Ltd", "5.0"),
+        ("INE0BIN01018", "Larsen & Toubro Ltd", "10.0"),
+        ("INE397D01024", "Bharti Airtel Ltd", "5.0"),
+        ("IN00UNMATCHED4", "Cash & Equivalents", "5.0"),
+    ],
+}
 
 COMPANY_NAMES: dict[str, str] = {
     "RELIANCE": "Reliance Industries Ltd",
@@ -163,10 +259,19 @@ def _fundamentals(symbol: str) -> dict[str, Decimal]:
 
 
 def build_fundamentals(root: Path) -> None:
-    """Create ``<root>/fundamentals.duckdb`` with FY rows for both fiscal periods."""
+    """Create ``<root>/fundamentals.duckdb`` with FY rows for both fiscal periods.
+
+    ``companies`` carries the ``isin_code`` the mutual-fund lookthrough joins on
+    (``mf_holdings.isin`` ↔ ``companies.isin_code``) plus the market-cap / ROCE /
+    P/E / debt-to-equity columns the weighted portfolio math reads.
+    """
     db_path = fundamentals_db(root)
     con = duckdb.connect(str(db_path))
-    con.execute("CREATE TABLE companies (symbol VARCHAR, company_name VARCHAR)")
+    con.execute(
+        "CREATE TABLE companies (symbol VARCHAR, company_name VARCHAR, isin_code VARCHAR, "
+        "market_cap_cr DECIMAL(18,4), roce_pct DECIMAL(18,4), pe_ratio DECIMAL(18,4), "
+        "debt_to_equity DECIMAL(18,4))"
+    )
     con.execute(
         """CREATE TABLE financial_ratios (symbol VARCHAR, period_type VARCHAR, fiscal_date DATE,
         revenue DECIMAL(18,4), net_income DECIMAL(18,4), stockholders_equity DECIMAL(18,4),
@@ -183,7 +288,19 @@ def build_fundamentals(root: Path) -> None:
     stmt_rows: list[tuple] = []
     for symbol in COMPANY_NAMES:
         f = _fundamentals(symbol)
-        con.execute("INSERT INTO companies VALUES (?, ?)", [symbol, COMPANY_NAMES[symbol]])
+        isin_code, market_cap_cr, roce, pe_ratio, debt_to_equity = MF_COMPANY_FUNDAMENTALS[symbol]
+        con.execute(
+            "INSERT INTO companies VALUES (?, ?, ?, ?, ?, ?, ?)",
+            [
+                symbol,
+                COMPANY_NAMES[symbol],
+                isin_code,
+                market_cap_cr,
+                roce,
+                pe_ratio,
+                debt_to_equity,
+            ],
+        )
         for fiscal in FY_PERIODS:
             ratio_rows.append(
                 (
@@ -229,18 +346,46 @@ def build_fundamentals(root: Path) -> None:
     con.close()
 
 
+def build_mutual_funds(root: Path) -> None:
+    """Write ``<root>/mutual_funds.duckdb`` (schemes, stats, holdings) for the screener.
+
+    The synthetic mutual-fund store is written through the shipped
+    ``tantra_data.store.mutual_funds.DuckDbMutualFundsStore`` (gap 0023 closed),
+    so the provisioned file provably satisfies the screener's store surface
+    (including the ``mf_fund_stats`` table the consumer reads directly).
+    """
+    from tantra_data.store.mutual_funds import DuckDbMutualFundsStore
+
+    store = DuckDbMutualFundsStore(mutual_funds_db(root))
+    for code, name, category, plan, option, amc in _MF_SCHEMES:
+        store.put_scheme(code, name, category, plan, option, amc, MF_STATS_ASOF)
+    for code, nav, ter, aum, turnover in _MF_STATS:
+        store.put_fund_stats(code, MF_STATS_ASOF, nav, ter, aum, turnover)
+    for code, holdings in _MF_HOLDINGS.items():
+        store.put_holdings(code, MF_HOLDINGS_ASOF, holdings)
+
+
 def build_lakehouse(root: Path) -> None:
-    """Create the complete synthetic data lakehouse under ``root`` (idempotent)."""
-    catalog = catalog_dir(root)
-    if catalog.is_dir() and fundamentals_db(root).is_file():
-        return
-    build_catalog(root, sessions())
-    build_fundamentals(root)
+    """Create the complete synthetic data lakehouse under ``root`` (idempotent).
+
+    Builds only the missing pieces so a partially-provisioned root heals without
+    clobbering the pieces that already exist.
+    """
+    if not catalog_dir(root).is_dir():
+        build_catalog(root, sessions())
+    if not fundamentals_db(root).is_file():
+        build_fundamentals(root)
+    if not mutual_funds_db(root).is_file():
+        build_mutual_funds(root)
 
 
 def is_complete(root: Path) -> bool:
-    """True when the dummy layout already exists (catalog + fundamentals)."""
-    return catalog_dir(root).is_dir() and fundamentals_db(root).is_file()
+    """True when the dummy layout already exists (catalog + fundamentals + mutual funds)."""
+    return (
+        catalog_dir(root).is_dir()
+        and fundamentals_db(root).is_file()
+        and mutual_funds_db(root).is_file()
+    )
 
 
 __all__ = [
@@ -248,11 +393,15 @@ __all__ = [
     "FLAT_SPEC",
     "FY_PERIODS",
     "GROWTH_PER_BAR",
+    "MF_COMPANY_FUNDAMENTALS",
+    "MF_HOLDINGS_ASOF",
+    "MF_STATS_ASOF",
     "SESSION_END",
     "SESSION_START",
     "build_catalog",
     "build_fundamentals",
     "build_lakehouse",
+    "build_mutual_funds",
     "is_complete",
     "sessions",
     "write_symbol_parquet",
