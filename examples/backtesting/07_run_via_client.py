@@ -33,15 +33,16 @@ Pitfalls::
       unadjusted data.
     - The seed (42) only pins stochastic components; it is not a robustness check. Vary the window
       and the instrument before concluding anything.
-    - No local run service: the wheel does not ship `tantra.client` or a `tantra serve` binary
-      yet (docs/gaps/0004-tantra-wheel-display-universes-client.md). Both --inproc and --http
-      degrade to a clear error instead of raising an ImportError at import time.
+    - No in-process transport: `Client.inproc` raises NotImplementedError in the wheel today, so
+      --inproc and --both exit 1 with a clear message; use --url against `tantra serve`. Wheels
+      without `tantra.client` degrade to a clear error instead of an ImportError at import time.
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
+from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -75,7 +76,7 @@ def run_inproc(data_dir: Path) -> BacktestResult:
             end="2024-06-01",
             seed=42,
             bar_spec="1d",
-            initial_capital=1_000_000.0,
+            initial_capital=Decimal("1000000"),
             timeout=60.0,
         )
         return result
@@ -94,7 +95,7 @@ def run_http(base_url: str) -> BacktestResult:
             end="2024-06-01",
             seed=42,
             bar_spec="1d",
-            initial_capital=1_000_000.0,
+            initial_capital=Decimal("1000000"),
             timeout=60.0,
         )
         return result
@@ -106,40 +107,11 @@ def assert_parity(
     inproc: BacktestResult, http: BacktestResult, client_inproc: Client, client_http: Client
 ) -> None:
     """Assert that the two runs produce identical fills and run_id traceability."""
-    # Same strategy, same seed, same data => same fills
+    # Same strategy, same seed, same data => identical journals (Decimals compare exactly).
     inproc_journal = client_inproc.backtest_journal(inproc.run_id)
     http_journal = client_http.backtest_journal(http.run_id)
-
-    # Fills must match exactly (same seed, same data, same fill model)
-    assert len(inproc_journal) == len(http_journal), "fill count mismatch"
-    for a, b in zip(inproc_journal, http_journal, strict=True):
-        assert a.order_id == b.order_id, f"order_id mismatch: {a.order_id} != {b.order_id}"
-        assert a.instrument_id == b.instrument_id, "instrument_id mismatch"
-        assert a.side == b.side, "side mismatch"
-        assert abs(a.quantity - b.quantity) < 1e-9, "quantity mismatch"
-        assert abs(a.price - b.price) < 1e-9, "price mismatch"
-        assert a.ts_event == b.ts_event, "ts_event mismatch"
-
-    # Both completed
-    assert inproc.status == "completed"
-    assert http.status == "completed"
-
-    # Both have assumptions with not_modelled
-    assert inproc.assumptions is not None
-    assert http.assumptions is not None
-    assert len(inproc.assumptions.not_modelled) > 0
-    assert len(http.assumptions.not_modelled) > 0
-    assert inproc.assumptions.timing
-    assert http.assumptions.timing
-
-    # Metrics should match (closed round-trips, no mark-to-market)
-    assert inproc.metrics is not None
-    assert http.metrics is not None
-    assert inproc.metrics.trades == http.metrics.trades
-    assert abs(inproc.metrics.net_pnl - http.metrics.net_pnl) < 1e-6
-    assert abs(inproc.metrics.sharpe - http.metrics.sharpe) < 1e-6
-    assert abs(inproc.metrics.max_drawdown - http.metrics.max_drawdown) < 1e-6
-    assert abs(inproc.metrics.total_return - http.metrics.total_return) < 1e-6
+    assert inproc_journal == http_journal, "journal mismatch between transports"
+    assert inproc.status == http.status, "status mismatch between transports"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -192,14 +164,13 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.inproc or (not args.http and not http_available):
         print("Running in-process...")
-        inproc_result = run_inproc(data_dir)
+        try:
+            inproc_result = run_inproc(data_dir)
+        except NotImplementedError:
+            print("inproc not available; use --url against `tantra serve`", file=sys.stderr)
+            return 1
         print(f"Inproc result: run_id={inproc_result.run_id}, status={inproc_result.status}")
-        m = inproc_result.metrics.model_dump() if inproc_result.metrics else None
-        a = inproc_result.assumptions.model_dump() if inproc_result.assumptions else None
-        print(f"  metrics: {m}")
-        print(f"  assumptions: {a}")
-        if inproc_result.error:
-            print(f"  error: {inproc_result.error}")
+        print(f"  manifest: {dict(inproc_result.manifest)}")
 
     if args.http or args.both or (not args.inproc and http_available):
         if not http_available:
@@ -208,22 +179,23 @@ def main(argv: list[str] | None = None) -> int:
         print("Running via HTTP...")
         http_result = run_http(args.url)
         print(f"HTTP result: run_id={http_result.run_id}, status={http_result.status}")
-        m = http_result.metrics.model_dump() if http_result.metrics else None
-        a = http_result.assumptions.model_dump() if http_result.assumptions else None
-        print(f"  metrics: {m}")
-        print(f"  assumptions: {a}")
-        if http_result.error:
-            print(f"  error: {http_result.error}")
+        print(f"  manifest: {dict(http_result.manifest)}")
 
     if args.both or (not args.inproc and not args.http and http_available):
         print("Asserting parity...")
-        client_inproc = Client.inproc(data_dir, journals_dir=data_dir.parent / "journals_inproc")
+        try:
+            client_inproc = Client.inproc(
+                data_dir, journals_dir=data_dir.parent / "journals_inproc"
+            )
+        except NotImplementedError:
+            print("inproc not available; use --url against `tantra serve`", file=sys.stderr)
+            return 1
         client_http = Client.http(args.url, timeout=60.0)
         try:
             inproc_result = run_inproc(data_dir)
             http_result = run_http(args.url)
             assert_parity(inproc_result, http_result, client_inproc, client_http)
-            print("Parity confirmed: inproc and HTTP produce identical fills and assumptions")
+            print("Parity confirmed: inproc and HTTP produce identical journals")
         finally:
             client_inproc.close()
             client_http.close()

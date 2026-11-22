@@ -1,9 +1,8 @@
 """backtesting/07_run_via_client: smoke test for the run-service client example.
 
-``tantra.client`` is not on the wheel yet (gap
-``0004-tantra-wheel-display-universes-client``), so the example degrades to a clear
-error at ``main()`` time instead of raising ``ImportError`` at import time; this test
-exercises exactly that degrade-gracefully contract (D7).
+The example degrades to a clear error at ``main()`` time (missing ``tantra.client``, or
+``Client.inproc`` not available) instead of raising at import time; this test exercises
+that degrade-gracefully contract (D7).
 """
 
 from __future__ import annotations
@@ -37,8 +36,9 @@ def test_main_requires_data_dir(example):
 
 
 def test_main_reports_missing_client_surface(example, capsys):
-    code = example.main(["--data-dir", "."])
+    # --inproc keeps this deterministic: it never probes a live server on :8000. Whether the
+    # wheel lacks tantra.client or ships it with Client.inproc unimplemented, exit 1 and name it.
+    code = example.main(["--data-dir", ".", "--inproc"])
     assert code == 1
     err = capsys.readouterr().err
-    assert "tantra.client" in err
-    assert "0004" in err
+    assert "tantra.client" in err or "inproc" in err
