@@ -17,7 +17,12 @@ here means deleting the mirrored code and re-pointing consumers.
 
 ## Open Gaps
 
-None — all 8 gaps are closed.
+| # | Title | Severity | Status | Plan |
+| :--- | :--- | :--- | :--- | :--- |
+| [0009](0009-ci-installs-wheel-and-siblings.md) | CI installs neither the wheel nor the sibling packages | high | open | [0006](../plans/0006-design-review-2026-11.md) |
+| [0010](0010-metrics-float-and-wheel-duplication.md) | `metrics.py` float metrics duplicate the wheel | medium | open | [0006](../plans/0006-design-review-2026-11.md) |
+| [0011](0011-provision-server-deps-and-openapi-copy.md) | `provision` server undeclared deps and OpenAPI copy | medium | open | [0006](../plans/0006-design-review-2026-11.md) |
+| [0012](0012-backtest-float-fills.md) | `backtest.py` float fills and two engines | medium | open | [0006](../plans/0006-design-review-2026-11.md) |
 
 ## Closed Gaps
 

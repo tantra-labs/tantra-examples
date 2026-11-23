@@ -10,6 +10,7 @@ Per workspace rule `.agents/rules/gap-tracking.md`:
 | # | Title | Target Scope | Status |
 |---|-------|--------------|--------|
 | [0005](0005-categorized-examples.md) | Categorised Screening, Universe & Rotation Examples | `examples/`, `tantra_examples/` | Proposed — research `docs/research/trendlyne-screener-alerts-mcp.md`; root plan `docs/plans/0010` |
+| [0006](0006-design-review-2026-11.md) | tantra-examples design review (2026-11): runnable CI, wheel-backed harness & Decimal-correct teaching | `tantra_examples/`, `examples/`, `tests/`, CI | Proposed (2026-11-23) — gaps 0009-0012; root plan 0021 |
 
 ## Implemented Plans
 
