@@ -39,6 +39,7 @@ from tantra.markets.india.costs import (
 from tantra.markets.india.settlement import settlement_days_for
 from tantra.money import Currency, Money
 from tantra.order import OrderIntent, OrderSide
+from tantra.types import OrderSide as CompiledOrderSide
 
 from tantra_examples._compat import D
 from tantra_examples.base import ts_to_date
@@ -180,6 +181,12 @@ def _is_buy(side: OrderSide | str) -> bool:
     return str(getattr(side, "value", side)).upper().endswith("BUY")
 
 
+def _side_value(side: OrderSide | CompiledOrderSide) -> str:
+    if isinstance(side, OrderSide):
+        return side.value
+    return side.code.lower()
+
+
 def nse_equity_delivery_fill_cost(side: OrderSide, quantity: Decimal, price: Decimal) -> Decimal:
     """NSE equity-delivery (CNC) cost of one fill as exact Decimal.
 
@@ -230,8 +237,8 @@ class FillRecord:
     symbol: str
     exchange: str
     side: str
-    quantity: float
-    price: float
+    quantity: Decimal
+    price: Decimal
     notional_minor: int
     cost_minor: int
     submitted_date: str
@@ -245,7 +252,7 @@ class OrderEvent:
     order_id: str
     symbol: str
     side: str
-    quantity: float
+    quantity: Decimal
     kind: str  # "suppressed_warmup" | "released_unfunded" | "released_no_position" | ...
 
 
@@ -447,7 +454,7 @@ def run_portfolio_backtest(
                 order_id=f.order_id or "",
                 symbol=f.instrument_id.symbol,
                 exchange=f.instrument_id.exchange,
-                side=f.side.value,
+                side=_side_value(f.side),
                 quantity=f.quantity,
                 price=f.price,
                 notional_minor=_minor(notional),
@@ -491,7 +498,7 @@ def run_portfolio_backtest(
     return run
 
 
-def _event(ts: int, order_id: str, intent: OrderIntent, qty: float, kind: str) -> OrderEvent:
+def _event(ts: int, order_id: str, intent: OrderIntent, qty: Decimal, kind: str) -> OrderEvent:
     return OrderEvent(
         date=ts_to_date(ts).isoformat(),
         order_id=order_id,

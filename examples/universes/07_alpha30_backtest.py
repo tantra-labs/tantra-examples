@@ -45,6 +45,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -157,11 +158,12 @@ class Alpha30BacktestExample(TantraExample):
 
         universe_param = cfg.params.get("universe")
         universe = self.resolve(universe_param if isinstance(universe_param, str) else None)
-        capital = (
+        capital_raw = (
             self.initial_capital
             if self.initial_capital is not None
-            else float(cfg.params.get("initial_capital", cfg.params.get("capital", 1_000_000)))
+            else cfg.params.get("initial_capital", cfg.params.get("capital", 1_000_000))
         )
+        capital = Decimal(str(capital_raw))
         if capital <= 0:
             raise SystemExit("--initial-capital / --capital must be positive")
         # ``capital`` is the config's major-unit (₹) figure; ``run_portfolio_backtest``
@@ -250,7 +252,7 @@ class Alpha30BacktestExample(TantraExample):
 def print_summary(out: dict[str, Any], result: BacktestRun) -> None:
     cfg, m = out["config"], out["result"]["metrics"]
 
-    def rupees(minor: int) -> float:
+    def rupees(minor: int) -> Decimal:
         return Money.from_minor(minor, Currency.INR).to_major()
 
     render_kv(
